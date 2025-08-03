@@ -1,0 +1,81 @@
+let {
+  $tray = { 
+    type = "tray"
+    class = "widget-tray"
+  }
+
+  $clock = {
+    type = "clock"
+    format = "%B %d | %H:%M"
+  }
+
+  $zscroll = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "zscroll"
+        class = "zscroll"
+        label = "{{watch:2000:~/.config/ironbar/scripts/zscroll.sh}}"
+        on_click_left = "playerctl play-pause"
+        on_scroll_down = "playerctl next"
+        on_scroll_up = "playerctl previous"
+      }
+    ]
+  }
+
+$volume = {
+  type = "script"
+  name = "volume"
+  mode = "poll"
+  interval = 2000
+  cmd = "~/.config/ironbar/scripts/volume"
+  on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
+  on_scroll_up = "wpctl set-volume @DEFAULT_SINK@ 2%+"
+}
+
+  $workspaces = {
+    type = "workspaces"
+    sort = "name"
+    visible_range = 1
+    on_scroll_up = "hyprctl dispatch workspace -1"
+    on_scroll_down = "hyprctl dispatch workspace +1"
+  }
+
+  $wlogout = {
+    type = "custom"
+    bar = [
+      {
+        type = "button"
+        name = "wlogout"
+        class = "wlogout"
+        label = "󰐥 "
+        on_click = "!~/.config/ironbar/scripts/wlogout"
+      }
+    ]
+  }
+
+  $SysInfo = {
+    type = "sys_info"
+    interval.cpu = 1
+    interval.memory = 30
+    interval.temps = 3
+    format = [
+      " {cpu_percent}%"
+      "󰘚 {memory_percent}%"
+      " {temp_c:coretemp-Package-id-0}°C"
+    ]
+  }
+
+  $start = [ $workspaces ]
+  $center = [ $clock $zscroll ]
+  $end = [ $tray $SysInfo $volume $wlogout ]
+}
+
+in {
+  position = "top"
+  start = $start
+  center = $center
+  end = $end
+}
+

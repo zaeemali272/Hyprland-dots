@@ -1,0 +1,31 @@
+swipe:
+  3:
+    left:
+      sendkey: "PREVIOUSSONG"
+    right:
+      sendkey: "NEXTSONG"
+    up:
+      sendkey: "volumeup"
+    down:
+      sendkey: "volumedown"
+  4:
+    up:
+      sendkey: "F5"
+    down:
+      sendkey: "F6"
+hold:
+  3:
+    sendkey: "PLAYPAUSE"
+  4:
+    sendkey: "LEFTCTRL+LEFTALT+DELETE"
+pinch:
+  in:
+    sendkey: "PLAYPAUSE"
+threshold:
+  pinch: 1
+  hold: 0.5
+
+interval:
+  swipe: 1
+  pinch: 1
+  hold: 0.5
