@@ -7,7 +7,7 @@ A fully automated script to install, configure, and personalize your Arch Linux 
 - Fully scripted Arch install (no manual package entry)
 - Wayland desktop with [Hyprland](https://github.com/hyprwm/Hyprland)
 - Fish shell, Kitty terminal, Ironbar, Mako, Fuzzel, and more
-- GTK/QT themes, Nerd Fonts, Bibata cursor, OneUI4 icons
+- GTK/QT themes, Nerd Fonts, Bibata cursor, OneUI4 icons, Materia-dark
 - PipeWire + Bluetooth audio stack with EasyEffects
 - Extra tools: Lutris, VS Code, Yazi, Zen Browser, MPV, Winetricks
 - Optional: Autologin setup + Hyprland auto-start on tty1
