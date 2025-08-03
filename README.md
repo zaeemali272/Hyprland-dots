@@ -1,6 +1,37 @@
 # 🌐 Hyprland Arch Setup - Automated Dotfiles & Environment
 
+
 A fully automated script to install, configure, and personalize your Arch Linux with Hyprland and a minimal Wayland-only desktop environment. This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences.
+
+<details>
+<summary>📷 Main Desktop Views (Click to expand)</summary>
+
+<p align="center">
+  <img src=".assets/view-1.png" width="700" style="border-radius: 5px;"><br>
+  <img src=".assets/view-2.png" width="700" style="border-radius: 5px;"><br>
+  <img src=".assets/view-3.png" width="700" style="border-radius: 5px;">
+</p>
+
+</details>
+
+<details>
+<summary>🧩 Ironbar UI Preview</summary>
+
+<p align="center">
+  <img src=".assets/ironbar.png" width="700" style="border-radius: 5px;">
+</p>
+
+</details>
+
+<details>
+<summary>🔔 Mako Notification Style</summary>
+
+<p align="center">
+  <img src=".assets/mako.png" width="700" style="border-radius: 5px;">
+</p>
+
+</details>
+
 
 ## 📦 What's Included?
 
