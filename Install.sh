@@ -87,7 +87,33 @@ find ~/.local/bin -type f -exec chmod +x {} \; || true
 echo "✅ Dotfiles copied successfully."
 
 ###-------------------------------
-### Step 7: Set fish as default shell
+### Step 7: Install and activate OneUI4 Icons
+###-------------------------------
+echo "🎨 Installing OneUI4 Icons..."
+
+# Clone the icon theme repository
+git clone https://github.com/mjkim0727/OneUI4-Icons.git /tmp/OneUI4-Icons
+
+# Create ~/.icons if it doesn't exist
+mkdir -p ~/.icons
+
+# Move the dark variant to ~/.icons
+mv /tmp/OneUI4-Icons/OneUI-dark ~/.icons/
+
+# Clean up
+rm -rf /tmp/OneUI4-Icons
+
+# Apply the icon theme using gsettings (if available)
+if command -v gsettings &> /dev/null; then
+  gsettings set org.gnome.desktop.interface icon-theme "One UI Icon Theme"
+  echo "✅ One UI Icon Theme applied using gsettings."
+else
+  echo "⚠️  gsettings not found. You may need to manually set the icon theme."
+fi
+
+
+###-------------------------------
+### Step 8: Set fish as default shell
 ###-------------------------------
 if ! echo "$SHELL" | grep -q fish; then
   echo "💡 Setting fish as default shell for $USER..."
@@ -95,7 +121,7 @@ if ! echo "$SHELL" | grep -q fish; then
 fi
 
 ###-------------------------------
-### Step 8: Setup autologin on tty1
+### Step 9: Setup autologin on tty1
 ###-------------------------------
 read -p "❓ Do you want to enable autologin on tty1? [y/N]: " enable_autologin
 if [[ "$enable_autologin" =~ ^[Yy]$ ]]; then
@@ -125,7 +151,7 @@ else
 fi
 
 ###-------------------------------
-### Step 9: Check rfkill status
+### Step 10: Check rfkill status
 ###-------------------------------
 echo ">>> Checking wireless and Bluetooth block status..."
 if ! command -v rfkill &> /dev/null; then
