@@ -15,9 +15,10 @@ A fully automated script to install, configure, and personalize your Arch Linux 
 ## 🗂️ Repo Structure
 
 Hyprland-dots/
-├── .config/ → All configs (Hyprland, Ironbar, Fuzzel, Fish, etc.)
-├── .local/ → Local scripts, fish history, color schemes
-├── Install.sh → Main install and setup script
+
+├── .config/ → All configs (Hyprland, Ironbar, Fuzzel, Fish, etc.)  
+├── .local/ → Local scripts, fish history, color schemes  
+├── Install.sh → Main install and setup script  
 └── README.md → You're here
 
 
@@ -42,50 +43,50 @@ chmod +x Install.sh
 
 You'll be prompted to enable autologin (optional).
 
-🧰 What the Script Does
+### 🧰 What the Script Does
 
 #### Step 0: Update keyring and mirrors
 
-```
+`
 archlinux-keyring
-```
+`
 
 #### Step 1: Install essential base system and firmware
 
-```
+`
 base base-devel linux linux-headers linux-firmware
 networkmanager nano fish git man-db efibootmgr
 intel-ucode cpupower
-```
+`
 
 #### Step 2: Install audio & multimedia stack
 
-```
+`
 pipewire pipewire-alsa pipewire-jack pipewire-pulse libpulse
 alsa-plugins pavucontrol easyeffects cava ffmpegthumbnailer
-```
+`
 
 #### Step 3: Install Hyprland + Wayland apps
 
-```
+`
 hyprland hypridle hyprpicker hyprshot wl-clipboard slurp grim
 fuzzel wlogout mako swww qt5-wayland qt5ct qt6ct gtk3-demos
 qt5-tools qt6-tools xdg-desktop-portal xdg-desktop-portal-hyprland
 polkit-gnome wireplumber
-```
+`
 
 #### Step 4: Install UI appearance tools
 
-```
+`
 kvantum bibata-cursor-theme
 materia-gtk-theme adwaita-dark papirus-icon-theme
 noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-dejavu
 ttf-material-icons-git ttf-material-symbols-variable-git ttf-nerd-fonts-symbols
-```
+`
 
 #### Step 5: Install extra apps and tools
 
-```
+`
 nemo nemo-fileroller gnome-keyring gnome-text-editor freedownloadmanager
 visual-studio-code-bin youtube-music-bin zen-browser-bin yay yay-debug
 glances playerctl tree jq eza starship yazi yt-dlp
@@ -93,7 +94,7 @@ ruby-fusuma ruby-fusuma-plugin-sendkey python-pywal16 tumbler
 wget sshfs gammastep gamemode blueman bluez bluez-utils bluez-tools
 kdeconnect speedtest-cli losslesscut-bin lutris wine winetricks
 gparted ncdu wev cameractrls cloudflare-warp-bin rar
-```
+`
 
 ### 📂 Dotfiles Installation
 
@@ -115,9 +116,9 @@ And makes the following scripts executable:
 
 The script can optionally set up autologin on tty1 with:
 
-```
+`
 /etc/systemd/system/getty@tty1.service.d/override.conf
-```
+`
 
 Using agetty --autologin <user>
 And it starts Hyprland automatically from your config.fish.
