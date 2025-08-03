@@ -1,0 +1,29 @@
+
+
+# Appearance
+background-color=#0f0f0fCC
+text-color=#e4e2e1
+border-color=#4c4c4c
+border-size=0
+border-radius=14
+padding=10
+
+# Icons
+max-icon-size=64
+
+# Behavior
+default-timeout=3000
+max-history=100
+output=*
+
+
+sort=-time
+width=400
+height=100
+border-size=1
+border-color=#010101
+
+icons=1
+font=JetBrains Mono 11
+
+

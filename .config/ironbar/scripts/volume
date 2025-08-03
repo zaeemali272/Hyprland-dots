@@ -1,0 +1,26 @@
+#!/bin/bash
+
+# Get volume and mute status
+volume_info=$(wpctl get-volume @DEFAULT_AUDIO_SINK@)
+volume=$(echo "$volume_info" | awk '{print int($2 * 100)}')
+muted=$(echo "$volume_info" | grep -o '\[MUTED\]')
+
+# Detect if Bluetooth audio is the default sink
+default_sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ | grep -i "node.name" | grep -iE "bluez|bluetooth")
+
+# Select icon
+if [[ "$muted" == "[MUTED]" ]]; then
+    icon="󰖁"
+elif [[ -n "$default_sink" ]]; then
+    icon=""  # Bluetooth icon if connected to Bluetooth audio
+elif (( volume > 70 )); then
+    icon="󰕾"
+elif (( volume > 30 )); then
+    icon=""
+else
+    icon=""
+fi
+
+# Output
+echo "$icon $volume%"
+
