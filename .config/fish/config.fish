@@ -56,4 +56,6 @@ alias conf 'nano .config//fish/config.fish'
 
 
 set -Ux GTK_THEME Materia-dark
+set -Ux QT_QPA_PLATFORMTHEME qt5ct
+set -Ux QT_STYLE_OVERRIDE kvantum-dark
 
