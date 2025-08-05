@@ -16,6 +16,10 @@ let {
         type = "label"
         name = "zscroll"
         class = "zscroll"
+        icons.play = " "
+        icons.pause = " "
+        icons.prev = ""
+      	  icons.next = ""
         label = "{{watch:2000:~/.config/ironbar/scripts/zscroll.sh}}"
         on_click_left = "playerctl play-pause"
         on_scroll_down = "playerctl next"
@@ -31,7 +35,8 @@ $volume = {
   interval = 2000
   cmd = "~/.config/ironbar/scripts/volume"
   on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
-  on_scroll_up = "wpctl set-volume @DEFAULT_SINK@ 2%+"
+  on_scroll_up = "wpctl set-volume -l 1 @DEFAULT_SINK@ 2%+"
+  
 }
 
   $workspaces = {
@@ -78,4 +83,3 @@ in {
   center = $center
   end = $end
 }
-

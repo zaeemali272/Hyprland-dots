@@ -2,6 +2,12 @@
 *{
   font-size: 14px;
 }
+
+body{
+  background: transparent;
+
+}
+
 .common {
     border-radius: 10px;
     background: #000000;
@@ -26,12 +32,16 @@
 .background { background-color: rgba(0, 0, 0, 0); }
 
 .widget-tray {
-    padding: 0 15px 0 10px;
+    padding: 0 10px 0 10px;
     margin: 5px 8px 0 0;
     border-radius: 10px;
     color: #ff757f;
     background: #000000;
     opacity: 0.8;
+}
+
+.widget-tray * {
+    background: #000000;
 }
 
 .wlogout, .wlogout:hover {
@@ -153,23 +163,24 @@
     margin: 5px;
 }
 
-/* Tooltips */
-tooltip.background {
-    background-color: rgba(0, 0, 0, 0.5);
-    font-size: 18px;
-    border-radius: 10px;
-    color: #fdfdfd;
+.music-btn {
+  padding: 4px 6px;
+  font-size: 14px;
+  border-radius: 8px;
+  background: #1a1b26;
+  color: #c0caf5;
 }
-tooltip * {
-    padding: 4px;
-    background: transparent;
-    color: white;
+.music-btn:hover {
+  background: #3b4261;
+  color: #7dcfff;
 }
-.host tooltip { background: rgba(255, 0, 0, 0.5); }
+
+
 
 /* Workspaces Section */
 .workspaces {
     background: #000000;
+    opacity: 0.8;
     padding: 5px 6px;
     margin: 5px 0 0 9px;
     border-radius: 10px;
