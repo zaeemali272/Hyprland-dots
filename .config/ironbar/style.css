@@ -1,217 +1,132 @@
-/* Shared Styles */
-*{
+@define-color bg #000;
+@define-color fg #fff;
+@define-color accent #7dcfff;
+
+label {
+  font-family: "Inter", "CaskaydiaCove Nerd Font", sans-serif;
   font-size: 14px;
+  padding-left: 4px;
 }
 
-body{
-  background: transparent;
-
+.background {
+  background-color: transparent;
 }
 
-.common {
-    border-radius: 10px;
-    background: #000000;
-    opacity: 0.8;
+.widget-tray,
+.wlogout,
+.sysinfo-dynamic,
+.netspeed,
+.combinedBattery,
+.volume,
+.clock,
+.zscroll,
+.workspaces {
+  background: @bg;
+  opacity: 0.8;
+  border-radius: 10px;
 }
-
-.padding-5-10 {
-    padding: 0 10px;
-}
-
-.margin-top-5 {
-    margin-top: 5px;
-}
-
-.font-default {
-    font-family: MesloLGSDZ Nerd Font;
-}
-
-/* Specific Widgets */
-.container { font-family: MesloLGSDZ Nerd Font; }
-
-.background { background-color: rgba(0, 0, 0, 0); }
 
 .widget-tray {
-    padding: 0 10px 0 10px;
-    margin: 5px 8px 0 0;
-    border-radius: 10px;
-    color: #ff757f;
-    background: #000000;
-    opacity: 0.8;
+  padding: 0 10px;
+  margin: 5px 0 0;
+  color: #ff757f;
 }
 
 .widget-tray * {
-    background: #000000;
+  background: @bg;
+  padding: 0 1px;
 }
 
-.wlogout, .wlogout:hover {
-    padding: 0 8px 0 12px;
-    margin: 5px 9.5px 0 0;
-    font-size: 17px;
-    border-radius: 10px;
-    background: #000000;
-    opacity: 0.8;
+.wlogout {
+  padding: 0 8px 0 12px;
+  margin: 5px 9.5px 0 0;
+  font-size: 17px;
+  color: #ff3c4a;
 }
-.wlogout { color: #ff757f; }
+
 .wlogout:hover {
-    color: #7dcfff;
-    min-width: 30px;
-    transition: all 0.3s ease-in-out;
+  color: @accent;
+  min-width: 30px;
+  transition: 0.3s ease-in-out;
 }
 
-/* sysinfo */
-.sysinfo .item:nth-child(1) { color: #ff9e64; }
-.sysinfo .item:nth-child(2) { color: #7dcfff; }
-.sysinfo .item:nth-child(3) { color: #bb9af7; }
-.sysinfo .item:nth-child(1),
-.sysinfo .item:nth-child(2),
-.sysinfo .item:nth-child(3) {
-    padding: 0 10px;
-    margin-top: 5px;
-    border-radius: 10px;
-    background: #000000;
-    opacity: 0.8;
+.sysinfo-dynamic {
+  color: @accent;
+  padding: 0 10px;
+  margin-top: 5px;
 }
 
-/* Volume */
+.netspeed,
+.combinedBattery {
+  padding: 0 10px;
+  margin: 5px 8px 0;
+}
+
+.netspeed {
+  color: #fb7d34;
+}
+
+.combinedBattery {
+  color: #ff7da8;
+}
+
 .volume {
-    padding: 0 10px;
-    margin: 5px 10px 0 0;
-    border-radius: 10px;
-    color: #9abdf5;
-    background: #000000;
-    opacity: 0.8;
-}
-.popup-volume {
-    padding: 20px;
-    border-radius: 5px;
-    color: #c0caf5;
-    border: 2px solid #bb9af7;
+  padding: 0 10px;
+  margin: 5px 0 0 8px;
+  color: #ab97d2;
 }
 
-/* Clock */
 .clock {
-    font-family: CaskaydiaCove Nerd Font;
-    margin: 5px 0 0 0;
-    padding: 8px;
-    border-radius: 10px;
-    color: #7dcfff;
-    background: #000000;
-    opacity: 0.8;
-}
-.clock_date { color: rgb(94, 129, 172); }
-
-/* Popup Clock */
-.popup-clock {
-    font-weight: bolder;
-    background: rgba(26, 27, 38, 0.8);
-    border-radius: 10px;
-    border: 2px solid #bb9af7;
-}
-.popup-clock .calendar-clock {
-    color: #c0caf5;
-    padding-bottom: 0.1em;
-}
-.popup-clock .calendar {
-    background: rgba(26, 27, 38, 0.8);
-    color: #c0caf5;
-    border-radius: 10px;
-}
-.popup-clock .calendar .header {
-    padding-top: 1em;
-    border-top: 1px solid #424242;
-    font-size: 1.5em;
-}
-.popup-clock .calendar:selected { background-color: #3d59a1; }
-
-/* Script */
-.script {
-    padding: 0 10px;
-    margin: 5px 8px 0 8px;
-    border-radius: 10px;
-    color: #9abdf5;
-    background: #000000;
-    opacity: 0.8;
-    box-shadow: rgba(0, 0, 0, 0.288) 2px 2px 5px 2px;
-}
-.script:hover {
-    color: #7dcfff;
-    min-width: 30px;
-    transition: all 0.3s ease-in-out;
+  font-family: "CaskaydiaCove Nerd Font";
+  margin: 5px 0 0;
+  padding: 8px;
+  color: @accent;
 }
 
-/* Music Widgets */
-.zscroll, .music {
-    padding: 0 10px;
-    margin: 5px 7px 0 10px;
-    border-radius: 10px;
-    color: #bb9af7;
-    background: #000000;
-    opacity: 0.8;
-    box-shadow: rgba(0, 0, 0, 0.288) 2px 2px 5px 2px;
-}
-.popup-music {
-    margin-left: 5px;
-    padding: 10px;
-    border-radius: 5px;
-    color: #c0caf5;
-    background: rgba(26, 27, 38, 0.8);
-    border: 2px solid #bb9af7;
-}
-.popup-music .volume .slider {
-    padding: 2px;
-    margin: 5px;
+.clock_date {
+  color: rgb(94, 129, 172);
 }
 
-.music-btn {
-  padding: 4px 6px;
-  font-size: 14px;
-  border-radius: 8px;
-  background: #1a1b26;
-  color: #c0caf5;
-}
-.music-btn:hover {
-  background: #3b4261;
-  color: #7dcfff;
+.zscroll {
+  padding: 0 10px;
+  margin: 5px 7px 0 10px;
+  color: #bb9af7;
+  box-shadow: rgba(0, 0, 0, 0.288) 2px 2px 5px 2px;
 }
 
-
-
-/* Workspaces Section */
 .workspaces {
-    background: #000000;
-    opacity: 0.8;
-    padding: 5px 6px;
-    margin: 5px 0 0 9px;
-    border-radius: 10px;
-    font-weight: bold;
-    font-size: 15px;
-    color: #fff;
-}
-.workspaces button {
-    padding: 0 5px;
-    margin: 0 2px;
-    border-radius: 11px;
-    border: 0;
-    color: #c0caf5;
-    background: #3b4261;
-    transition: all 0.3s ease-in-out;
-    opacity: 0.7;
-}
-.workspaces .item.focused {
-    color: #fff;
-    background: #545c7e;
-    border-radius: 9px;
-    margin: 0 2.5px;
-    min-width: 40px;
-    transition: all 0.3s ease-in-out;
-    opacity: 1;
-}
-.workspaces button:hover {
-    color: #fff;
-    background: #545c7e;
-    border-radius: 11px;
-    min-width: 40px;
-    opacity: 0.7;
+  padding: 5px 6px;
+  margin: 5px 0 0 9px;
+  font-weight: bold;
+  font-size: 15px;
+  color: @fg;
 }
 
+.workspaces button {
+  padding: 0 5px;
+  margin: 0 2px;
+  border-radius: 11px;
+  border: 0;
+  color: #c0caf5;
+  background: #3b4261;
+  transition: 0.3s ease-in-out;
+  opacity: 0.7;
+}
+
+.workspaces .item.focused {
+  color: @fg;
+  background: #545c7e;
+  border-radius: 9px;
+  margin: 0 2.5px;
+  min-width: 40px;
+  transition: 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.workspaces button:hover {
+  color: @fg;
+  background: #545c7e;
+  border-radius: 11px;
+  min-width: 40px;
+  opacity: 0.7;
+}
