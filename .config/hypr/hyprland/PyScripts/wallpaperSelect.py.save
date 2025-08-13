@@ -1,0 +1,85 @@
+
+            filepath = os.path.join(WALLPAPER_DIR, filename) thumb = 
+            self.create_thumbnail(filepath) self.grid.add(thumb)
+	#!/usr/bin/env python3
+
+import os
+import gi
+import subprocess
+from PIL import Image
+gi.require_version("Gtk", "3.0")
+from gi.repository import Gtk, GdkPixbuf, GLib
+
+WALLPAPER_DIR = os.path.expanduser("~/Pictures/Wallpapers")
+THUMB_SIZE = 256  # thumbnail resolution
+
+class WallpaperSelector(Gtk.Window):
+    def __init__(self):
+        super().__init__(title="Wallpaper Selector")
+        self.set_default_size(1400, 800)
+        self.set_border_width(10)
+
+        # Scrollable grid
+        scroll = Gtk.ScrolledWindow()
+        scroll.set_policy(Gtk.PolicyType.AUTOMATIC, Gtk.PolicyType.AUTOMATIC)
+        self.grid = Gtk.FlowBox()
+        self.grid.set_max_children_per_line(5)
+        self.grid.set_selection_mode(Gtk.SelectionMode.NONE)
+        scroll.add(self.grid)
+        self.add(scroll)
+
+        # Load thumbnails lazily
+        GLib.idle_add(self.load_thumbnails)
+
+    def load_thumbnails(self):
+        for filename in sorted(os.listdir(WALLPAPER_DIR)):
+            if not filename.lower().endswith((".jpg", ".jpeg", ".png", ".webp")):
+                continue
+
+        self.show_all()
+        return False
+
+    def create_thumbnail(self, path):
+        image = Gtk.Image()
+        pixbuf = self.get_pixbuf(path)
+        if pixbuf:
+            image.set_from_pixbuf(pixbuf)
+
+        event_box = Gtk.EventBox()
+        event_box.set_tooltip_text(os.path.basename(path))
+        event_box.add(image)
+        event_box.connect("button-press-event", self.set_wallpaper, path)
+        return event_box
+
+    def get_pixbuf(self, path):
+        try:
+            im = Image.open(path)
+            im.thumbnail((THUMB_SIZE, THUMB_SIZE))
+            data = im.tobytes()
+            return GdkPixbuf.Pixbuf.new_from_data(
+                data,
+                GdkPixbuf.Colorspace.RGB,
+                im.mode == "RGBA",
+                8,
+                im.width,
+                im.height,
+                im.width * (4 if im.mode == "RGBA" else 3)
+            )
+        except Exception as e:
+            print(f"Error loading image {path}: {e}")
+            return None
+
+    def set_wallpaper(self, _, event, path):
+        monitor = subprocess.getoutput("hyprctl monitors -j | jq -r '.[] | select(.focused) | .name'")
+        subprocess.Popen(["swww", "img", path, "--transition-type", "any", "--transition-fps", "60", "--transition-duration", "1", "--output", monitor])
+        Gtk.main_quit()
+
+def main():
+    app = WallpaperSelector()
+    app.connect("destroy", Gtk.main_quit)
+    app.show_all()
+    Gtk.main()
+
+if __name__ == "__main__":
+    main()
+

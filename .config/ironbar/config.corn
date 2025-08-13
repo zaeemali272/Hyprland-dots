@@ -1,12 +1,25 @@
 let {
-  $tray = { 
+  $sysinfoDynamic = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "sysinfo-dynamic"
+        class = "sysinfo-dynamic"
+        label = "{{watch:2000:~/.config/ironbar/scripts/sysinfo-dynamic.sh}}"
+      }
+    ]
+  }
+  
+  $tray = {
     type = "tray"
+    name = "tray"
     class = "widget-tray"
   }
 
   $clock = {
     type = "clock"
-    format = "%B %d | %H:%M"
+    format = "%B %d | %H:%M "
   }
 
   $zscroll = {
@@ -16,10 +29,6 @@ let {
         type = "label"
         name = "zscroll"
         class = "zscroll"
-        icons.play = " "
-        icons.pause = " "
-        icons.prev = ""
-      	  icons.next = ""
         label = "{{watch:2000:~/.config/ironbar/scripts/zscroll.sh}}"
         on_click_left = "playerctl play-pause"
         on_scroll_down = "playerctl next"
@@ -28,16 +37,16 @@ let {
     ]
   }
 
-$volume = {
-  type = "script"
-  name = "volume"
-  mode = "poll"
-  interval = 2000
-  cmd = "~/.config/ironbar/scripts/volume"
-  on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
-  on_scroll_up = "wpctl set-volume -l 1 @DEFAULT_SINK@ 2%+"
-  
-}
+  $volume = {
+    type = "script"
+    name = "volume"
+    class = "volume"
+    mode = "poll"
+    interval = 2000
+    cmd = "~/.config/ironbar/scripts/volume"
+    on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
+    on_scroll_up = "wpctl set-volume -l 1 @DEFAULT_SINK@ 2%+"
+  }
 
   $workspaces = {
     type = "workspaces"
@@ -60,26 +69,35 @@ $volume = {
     ]
   }
 
-  $SysInfo = {
-    type = "sys_info"
-    interval.cpu = 1
-    interval.memory = 30
-    interval.temps = 3
-    format = [
-      " {cpu_percent}%"
-      "󰘚 {memory_percent}%"
-      " {temp_c:coretemp-Package-id-0}°C"
-    ]
+  $netspeed = {
+    type = "script"
+    name = "netspeed"
+    class = "netspeed"
+    mode = "poll"
+    interval = 1000
+    cmd = "~/.config/ironbar/scripts/netspeed_down.sh"
+  }
+  
+  $combinedBattery = {
+    type = "script"
+    name = "combinedBattery"
+    class = "combinedBattery"
+    mode = "poll"
+    interval = 60
+    cmd = "~/.config/ironbar/scripts/combined_battery.sh"
   }
 
   $start = [ $workspaces ]
   $center = [ $clock $zscroll ]
-  $end = [ $tray $SysInfo $volume $wlogout ]
+  $end = [ $tray $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
 }
 
 in {
+  name = "main"
   position = "top"
+  height = 24
   start = $start
   center = $center
   end = $end
 }
+

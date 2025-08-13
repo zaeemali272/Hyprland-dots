@@ -10,15 +10,15 @@ default_sink=$(wpctl inspect @DEFAULT_AUDIO_SINK@ | grep -i "node.name" | grep -
 
 # Select icon
 if [[ "$muted" == "[MUTED]" ]]; then
-    icon="󰖁"
+    icon="󰖁 "
 elif [[ -n "$default_sink" ]]; then
-    icon=""  # Bluetooth icon if connected to Bluetooth audio
+    icon="󰂱 "  # Bluetooth icon if connected to Bluetooth audio
 elif (( volume > 70 )); then
-    icon="󰕾"
+    icon="󰕾 "
 elif (( volume > 30 )); then
-    icon=""
+    icon=" "
 else
-    icon=""
+    icon=" "
 fi
 
 # Output
