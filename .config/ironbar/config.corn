@@ -10,7 +10,7 @@ let {
       }
     ]
   }
-  
+
   $tray = {
     type = "tray"
     name = "tray"
@@ -30,9 +30,10 @@ let {
         name = "zscroll"
         class = "zscroll"
         label = "{{watch:2000:~/.config/ironbar/scripts/zscroll.sh}}"
-        on_click_left = "playerctl play-pause"
-        on_scroll_down = "playerctl next"
-        on_scroll_up = "playerctl previous"
+        on_click_right = "exec ~/.config/ironbar/scripts/popup/open_player.sh"
+        on_click_left  = "exec playerctl play-pause"
+        on_scroll_down = "exec playerctl next"
+        on_scroll_up   = "exec playerctl previous"
       }
     ]
   }
@@ -42,17 +43,18 @@ let {
     name = "volume"
     class = "volume"
     mode = "poll"
-    interval = 2000
+    interval = 1000
     cmd = "~/.config/ironbar/scripts/volume"
     on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
-    on_scroll_up = "wpctl set-volume -l 1 @DEFAULT_SINK@ 2%+"
+    on_scroll_up   = "wpctl set-volume @DEFAULT_SINK@ 2%+"
+    on_click_left  = "exec pavucontrol"
   }
 
   $workspaces = {
     type = "workspaces"
     sort = "name"
     visible_range = 1
-    on_scroll_up = "hyprctl dispatch workspace -1"
+    on_scroll_up   = "hyprctl dispatch workspace -1"
     on_scroll_down = "hyprctl dispatch workspace +1"
   }
 
@@ -60,44 +62,56 @@ let {
     type = "custom"
     bar = [
       {
-        type = "button"
+        type = "label"
         name = "wlogout"
         class = "wlogout"
-        label = "󰐥 "
-        on_click = "!~/.config/ironbar/scripts/wlogout"
+        label = "󰐥"
+        on_click_left = "exec wlogout -m 300px -p layer-shell"
+        activate_on_release = false
       }
     ]
   }
 
   $netspeed = {
-    type = "script"
+    type = "custom"
     name = "netspeed"
     class = "netspeed"
-    mode = "poll"
-    interval = 1000
-    cmd = "~/.config/ironbar/scripts/netspeed_down.sh"
+    bar = [
+      {
+        type = "label"
+        name = "netspeed-label"
+        class = "netspeed-label"
+        label = "{{watch:1000:~/.config/ironbar/scripts/netspeed_down.sh}}"
+        tooltip = "{{watch:1000:~/.config/ironbar/scripts/current_wifi.sh}}"
+        tooltip_class = "tooltip-solid"
+        on_click_left  = "exec ~/.config/ironbar/scripts/netspeed_wifi.sh"
+        on_click_right = "exec kitty --hold -e speedtest"
+      }
+    ]
   }
-  
+
   $combinedBattery = {
     type = "script"
     name = "combinedBattery"
     class = "combinedBattery"
     mode = "poll"
-    interval = 60
+    interval = 5000
     cmd = "~/.config/ironbar/scripts/combined_battery.sh"
+    on_click_left = "exec kitty -e ~/.config/ironbar/scripts/popup/BatteryInfo.sh"
   }
 
-  $start = [ $workspaces ]
+  $start  = [ $workspaces ]
   $center = [ $clock $zscroll ]
-  $end = [ $tray $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
+  $end    = [ $tray $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
 }
 
 in {
-  name = "main"
+  name     = "main"
   position = "top"
-  height = 24
-  start = $start
-  center = $center
-  end = $end
+  height   = 26
+  margin = [0 4 4 5]
+  start    = $start
+  center   = $center
+  end      = $end
 }
 

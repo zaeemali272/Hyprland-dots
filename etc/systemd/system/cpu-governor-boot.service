@@ -1,0 +1,10 @@
+[Unit]
+Description=Set CPU governor based on AC status
+After=multi-user.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/cpu-governor-switch.sh
+
+[Install]
+WantedBy=multi-user.target

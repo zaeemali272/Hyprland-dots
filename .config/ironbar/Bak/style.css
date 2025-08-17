@@ -1,0 +1,139 @@
+@define-color bg #000;
+@define-color fg #fff;
+@define-color accent #7dcfff;
+
+label {
+  font-family: "Inter", "CaskaydiaCove Nerd Font", sans-serif;
+  font-size: 14px;
+  padding-left: 4px;
+}
+
+.background {
+  background-color: transparent;
+}
+
+.tooltip-solid {
+  background-color: @bg;
+  opacity: 0.8;
+  border-radius: 10px;
+  padding-top: 10px;
+}
+
+.widget-tray,
+.wlogout,
+.sysinfo-dynamic,
+.netspeed,
+.combinedBattery,
+.volume,
+.clock,
+.zscroll,
+.workspaces {
+  background: @bg;
+  opacity: 0.8;
+  border-radius: 10px;
+}
+
+.widget-tray {
+  padding: 0 10px;
+  margin: 5px 0 0;
+  color: #ff757f;
+}
+
+.widget-tray * {
+  background: @bg;
+  padding: 0 1px;
+}
+
+.wlogout {
+  padding: 0 15px 0 13px;
+  margin: 5px 9.5px 0 0;
+  font-size: 17px;
+  color: #ff3c4a;
+}
+
+.wlogout:hover {
+  color: @accent;
+  min-width: 30px;
+  transition: 0.3s ease-in-out;
+}
+
+.sysinfo-dynamic {
+  color: @accent;
+  padding: 0 10px;
+  margin-top: 5px;
+}
+
+.netspeed,
+.combinedBattery {
+  padding: 0 10px;
+  margin: 5px 8px 0;
+}
+
+.netspeed {
+  color: #fb7d34;
+}
+
+.combinedBattery {
+  color: #ff7da8;
+}
+
+.volume {
+  padding: 0 10px;
+  margin: 5px 0 0 8px;
+  color: #ab97d2;
+}
+
+.clock {
+  font-family: "CaskaydiaCove Nerd Font";
+  margin: 5px 0 0;
+  padding: 8px;
+  color: @accent;
+}
+
+.clock_date {
+  color: rgb(94, 129, 172);
+}
+
+.zscroll {
+  padding: 0 10px;
+  margin: 5px 7px 0 10px;
+  color: #bb9af7;
+  box-shadow: rgba(0, 0, 0, 0.288) 2px 2px 5px 2px;
+}
+
+.workspaces {
+  padding: 5px 6px;
+  margin: 5px 0 0 9px;
+  font-weight: bold;
+  font-size: 15px;
+  color: @fg;
+}
+
+.workspaces button {
+  padding: 0 5px 0 0px;
+  margin: 0 2px;
+  border-radius: 11px;
+  border: 0;
+  color: #c0caf5;
+  background: #3b4261;
+  transition: 0.3s ease-in-out;
+  opacity: 0.7;
+}
+
+.workspaces .item.focused {
+  color: @fg;
+  background: #545c7e;
+  border-radius: 9px;
+  margin: 0 2.5px;
+  min-width: 40px;
+  transition: 0.3s ease-in-out;
+  opacity: 1;
+}
+
+.workspaces button:hover {
+  color: @fg;
+  background: #545c7e;
+  border-radius: 11px;
+  min-width: 40px;
+  opacity: 0.7;
+}

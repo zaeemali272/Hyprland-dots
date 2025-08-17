@@ -6,29 +6,31 @@ padding=10
 
 # Icons
 max-icon-size=64
+icons=1
+font=JetBrainsMono Nerd Font 11  # Nerd Font for proper icon support
 
 # Behavior
-max-history=100
+max-history=3
+max-visible=3
 output=*
-
+actions=1
 
 sort=-time
-width=400
+width=370
 height=100
-border-size=1
+border-size=2
 border-color=#010101
-
-icons=1
-font=JetBrains Mono 11
-
-
+# Notification timeouts
 default-timeout=2000
 
 [urgency=low]
 default-timeout=2000
+progress-color=over #e96b6b
 
 [urgency=normal]
 default-timeout=2000
+progress-color=over #ef5353
 
 [urgency=critical]
 default-timeout=2000
+progress-color=over #f53a3a
