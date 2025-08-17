@@ -1,0 +1,9 @@
+[Unit]
+Description=Run battery_check every minute
+
+[Timer]
+OnBootSec=1min
+OnUnitActiveSec=60
+
+[Install]
+WantedBy=default.target

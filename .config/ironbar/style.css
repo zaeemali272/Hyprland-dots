@@ -4,12 +4,19 @@
 
 label {
   font-family: "Inter", "CaskaydiaCove Nerd Font", sans-serif;
-  font-size: 14px;
+  font-size: 15px;
   padding-left: 4px;
 }
 
 .background {
   background-color: transparent;
+}
+
+.tooltip-solid {
+  background-color: @bg;
+  opacity: 0.85;
+  border-radius: 10px;
+  padding: 6px 10px;
 }
 
 .widget-tray,
@@ -21,47 +28,40 @@ label {
 .clock,
 .zscroll,
 .workspaces {
-  background: @bg;
-  opacity: 0.8;
+  background-color: @bg;
+  opacity: 0.85;
   border-radius: 10px;
+  transition: 0.2s ease-in-out;
+  padding: 0 10px;
+  margin: 0 2.5px;
 }
 
+/* Tray */
 .widget-tray {
-  padding: 0 10px;
-  margin: 5px 0 0;
   color: #ff757f;
 }
 
 .widget-tray * {
-  background: @bg;
+  background-color: @bg;
   padding: 0 1px;
 }
 
+/* Wlogout */
 .wlogout {
-  padding: 0 8px 0 12px;
-  margin: 5px 9.5px 0 0;
   font-size: 17px;
   color: #ff3c4a;
 }
 
 .wlogout:hover {
   color: @accent;
-  min-width: 30px;
-  transition: 0.3s ease-in-out;
 }
 
+/* Sysinfo */
 .sysinfo-dynamic {
   color: @accent;
-  padding: 0 10px;
-  margin-top: 5px;
 }
 
-.netspeed,
-.combinedBattery {
-  padding: 0 10px;
-  margin: 5px 8px 0;
-}
-
+/* Netspeed / Battery / Volume */
 .netspeed {
   color: #fb7d34;
 }
@@ -71,15 +71,12 @@ label {
 }
 
 .volume {
-  padding: 0 10px;
-  margin: 5px 0 0 8px;
   color: #ab97d2;
 }
 
+/* Clock */
 .clock {
   font-family: "CaskaydiaCove Nerd Font";
-  margin: 5px 0 0;
-  padding: 8px;
   color: @accent;
 }
 
@@ -87,46 +84,43 @@ label {
   color: rgb(94, 129, 172);
 }
 
+/* Zscroll */
 .zscroll {
-  padding: 0 10px;
-  margin: 5px 7px 0 10px;
   color: #bb9af7;
-  box-shadow: rgba(0, 0, 0, 0.288) 2px 2px 5px 2px;
+  box-shadow: rgba(0, 0, 0, 0.25) 2px 2px 5px 2px;
 }
 
+/* Workspaces */
 .workspaces {
-  padding: 5px 6px;
-  margin: 5px 0 0 9px;
+  font-size: 12px;
+  /* smaller numbers */
   font-weight: bold;
-  font-size: 15px;
-  color: @fg;
+  color: #000;
 }
 
 .workspaces button {
-  padding: 0 5px;
-  margin: 0 2px;
-  border-radius: 11px;
-  border: 0;
-  color: #c0caf5;
-  background: #3b4261;
-  transition: 0.3s ease-in-out;
+  min-width: 20px;
+  /* enough for circle border */
+  padding: 0 4.5px 2px 2px;
+  /* top right bottom left */
+  margin: 2px 1px 2px 1px;
+  border-radius: 50%;
+  /* circle shape */
+  background: transparent;
+  color: #fff;
   opacity: 0.7;
+  transition: 0.2s ease-in-out;
 }
 
 .workspaces .item.focused {
-  color: @fg;
-  background: #545c7e;
-  border-radius: 9px;
-  margin: 0 2.5px;
-  min-width: 40px;
-  transition: 0.3s ease-in-out;
+  background: #fc2d3a;
+  color: #000;
   opacity: 1;
 }
 
 .workspaces button:hover {
-  color: @fg;
-  background: #545c7e;
-  border-radius: 11px;
-  min-width: 40px;
-  opacity: 0.7;
+  background: rgba(255, 45, 38, 0.3);
+  /* subtle hover for unfocused */
+  color: #000;
+  opacity: 0.85;
 }

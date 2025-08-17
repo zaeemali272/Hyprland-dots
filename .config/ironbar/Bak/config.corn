@@ -1,0 +1,119 @@
+let {
+  $sysinfoDynamic = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "sysinfo-dynamic"
+        class = "sysinfo-dynamic"
+        label = "{{watch:2000:~/.config/ironbar/scripts/sysinfo-dynamic.sh}}"
+      }
+    ]
+  }
+  
+  $tray = {
+    type = "tray"
+    name = "tray"
+    class = "widget-tray"
+  }
+
+  $clock = {
+    type = "clock"
+    format = "%B %d | %H:%M "
+  }
+
+  $zscroll = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "zscroll"
+        class = "zscroll"
+        label = "{{watch:2000:~/.config/ironbar/scripts/zscroll.sh}}"
+        on_click_right = "exec ~/.config/ironbar/scripts/popup/open_player.sh"
+        on_click_left = "exec playerctl play-pause"
+        on_scroll_down = "exec playerctl next"
+        on_scroll_up = "exec playerctl previous"
+      }
+    ]
+  }
+
+  $volume = {
+    type = "script"
+    name = "volume"
+    class = "volume"
+    mode = "poll"
+    interval = 1000
+    cmd = "~/.config/ironbar/scripts/volume"
+    on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
+    on_scroll_up = "wpctl set-volume -l 1 @DEFAULT_SINK@ 2%+"
+    on_click_left = "exec pavucontrol"
+  }
+
+  $workspaces = {
+    type = "workspaces"
+    sort = "name"
+    visible_range = 1
+    on_scroll_up = "hyprctl dispatch workspace -1"
+    on_scroll_down = "hyprctl dispatch workspace +1"
+  }
+
+  $wlogout = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "wlogout"
+        class = "wlogout"
+        label = "󰐥"
+        on_click_left = "exec wlogout"
+        activate_on_release = false
+      }
+    ]
+  }
+  
+$netspeed = {
+  type = "custom"
+  name = "netspeed"
+  class = "netspeed"
+  bar = [
+    {
+      type = "label"
+      name = "netspeed-label"
+      class = "netspeed-label"
+      label = "{{watch:1000:~/.config/ironbar/scripts/netspeed_down.sh}}"
+      tooltip = "{{watch:1000:~/.config/ironbar/scripts/current_wifi.sh}}"
+      tooltip_class = "tooltip-solid"
+      on_click_left = "exec ~/.config/ironbar/scripts/netspeed_wifi.sh"
+      on_click_right = "exec kitty --hold -e speedtest"
+    }
+  ]
+}
+
+
+  
+  $combinedBattery = {
+    type = "script"
+    name = "combinedBattery"
+    class = "combinedBattery"
+    mode = "poll"
+    interval = 5000
+    cmd = "~/.config/ironbar/scripts/combined_battery.sh"
+    on_click_left = "exec kitty -e ~/.config/ironbar/scripts/popup/BatteryInfo.sh"
+
+  }
+
+  $start = [ $workspaces ]
+  $center = [ $clock $zscroll ]
+  $end = [ $tray $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
+}
+
+in {
+  name = "main"
+  position = "top"
+  height = 24
+  start = $start
+  center = $center
+  end = $end
+}
+

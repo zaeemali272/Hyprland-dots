@@ -1,0 +1,9 @@
+[Unit]
+Description=Auto lock screen after idle
+
+[Service]
+ExecStart=/usr/bin/hyprlock
+Restart=always
+
+[Install]
+WantedBy=default.target

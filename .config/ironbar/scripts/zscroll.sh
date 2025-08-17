@@ -1,6 +1,6 @@
 #!/bin/bash
 
-max_len=40
+max_len=45
 statefile="/tmp/skull_frame_index"
 
 # Skull frames for animation (can be Nerd Font icons or emojis)
@@ -29,6 +29,16 @@ esac
 if [[ "$status" == "Playing" || "$status" == "Paused" ]]; then
     title=$(playerctl metadata title 2>/dev/null)
     artist=$(playerctl metadata artist 2>/dev/null)
+    player=$(playerctl metadata --format '{{xesam:playerName}}' 2>/dev/null)
+
+    # If the player is a browser (Firefox, Zen Browser, etc.), remove site name prefix
+    if [[ "$player" =~ firefox|zen ]]; then
+        # Assume format "Site Name - Video Title" and keep only the part after first dash
+        title=$(echo "$title" | sed -E 's/^[^-]+ - //')
+    else
+        # Remove common site suffixes for other players
+        title=$(echo "$title" | sed -E 's/ - YouTube$//; s/ – Spotify$//; s/ \| Netflix$//')
+    fi
 
     if [[ -n "$title" && -n "$artist" ]]; then
         now_playing="$title — $artist"
