@@ -4,11 +4,21 @@
 #### This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences — with interactive choices for gaming setup and Waydroid.
 
 ## 🎥 Quick Overview
-<p align="center"> <video src=".assets/overview.mp4" width="700" controls></video> </p>
+<p align="center">
+  <video src="https://github.com/zaeemali272/Hyprland-dots/raw/main/.assets/overview.mp4" width="700" controls></video>
+</p>
+
 
 ### 📸 Screenshots
 
 <details> <summary>✨ New Desktop Setup</summary> <p align="center"> <img src=".assets/new_desktop_1.png" width="700"><br> <img src=".assets/new_desktop_2.png" width="700"> </p> </details> <details> <summary>🖼️ Old Desktop Setup (Before Migration)</summary> <p align="center"> <img src=".assets/old_desktop_1.png" width="700"><br> <img src=".assets/old_desktop_2.png" width="700"><br> <img src=".assets/old_desktop_3.png" width="700"> </p> </details> <details> <summary>🧩 Ironbar UI Preview (New vs Old)</summary> <p align="center"> <img src=".assets/new_ironbar.png" width="700"><br> <img src=".assets/old_ironbar.png" width="700"> </p> </details> <details> <summary>🔔 Mako Notification Style</summary> <p align="center"> <img src=".assets/mako.png" width="700"> </p> </details>
+<details> <summary>🖱️ Fuzzel Launcher Previews</summary>
+<p align="center">
+  <img src=".assets/fuzzel_1.png" width="700"><br>
+  <img src=".assets/fuzzel_2.png" width="700"><br>
+  <img src=".assets/fuzzel_3.png" width="700">
+</p>
+</details>
 </br>
 
 
@@ -60,14 +70,17 @@ You can control behavior with flags:
 
 | Flag                   | Description                                       |
 |------------------------|---------------------------------------------------|
-| `--dry-run`            | Show what would change (no writes)                |
-| `--force`              | Overwrite without backups (**dangerous**)         |
-| `--no-overwrite`       | Skip overwriting existing files                   |
-| `--skip-aur`           | Skip AUR bootstrap & packages                     |
-| `--no-icons`           | Skip OneUI icon theme step                        |
-| `--enable-user-services` | Enable created user services after creation    |
-| `-y` or `--non-interactive` | Run without prompts (default **yes** to optional steps) |
-
+| `--extras`             | Install optional extra utilities (gparted, htop, ncdu, etc.) |
+| `--gaming`             | Install gaming stack (Steam, Lutris, Wine, Gamemode, MangoHud) |
+| `--waydroid`           | Install Waydroid (Android in container)         |
+| `--waydroid-init`      | Install Waydroid **and** automatically run `waydroid init` |
+| `--dry-run`            | Show what would change (no writes)              |
+| `--force`              | Overwrite existing files without backup (**dangerous**) |
+| `--no-overwrite`       | Skip overwriting existing files                  |
+| `--skip-aur`           | Skip AUR bootstrap & packages                   |
+| `--no-icons`           | Skip OneUI icon theme installation              |
+| `--enable-user-services` | Enable user services (Ironbar, etc.)         |
+| `-y` or `--non-interactive` | Run without prompts (default yes to optional steps) |
 
 
 ## 🎮 Gaming Setup (Optional)
