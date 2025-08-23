@@ -4,7 +4,9 @@
 #### This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences — with interactive choices for gaming setup and Waydroid.
 
 ## 🎥 Quick Overview
-<p align="center"> <video src=".assets/overview.mp4" width="700" controls></video> </p>
+<p align="center">
+  <a href="https://youtu.be/KwMltR92CV0">▶️ Watch Overview Video</a>
+</p>
 
 ### 📸 Screenshots
 
