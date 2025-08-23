@@ -1,11 +1,59 @@
 #!/usr/bin/env python3
 import glob
-import os, gi, subprocess
+import os, gi, subprocess, re
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf, GLib, Gdk
 
 WALLPAPER_DIR = os.path.expanduser("~/Pictures/Wallpapers")
 THUMB_DIR = os.path.expanduser("~/.cache/wallpaper_thumbs")
+WALLUST_CONFIG_DIR = os.path.expanduser("~/.config/wallust")  # contains ironbar.template.toml
+HYPLOCK_CONF = os.path.expanduser("~/.config/hypr/hyprlock.conf")
+
+def update_hyprlock_conf(new_path: str):
+    """Replace or insert wallpaper path in hyprlock.conf"""
+    try:
+        with open(HYPLOCK_CONF, "r") as f:
+            lines = f.readlines()
+
+        updated = []
+        replaced = False
+        inside_background = False
+
+        for line in lines:
+            stripped = line.strip()
+
+            # Detect background block
+            if stripped.startswith("background"):
+                inside_background = True
+                updated.append(line)
+                continue
+            if inside_background and stripped.startswith("}"):
+                if not replaced:
+                    updated.append(f"    path = {new_path}\n")
+                    replaced = True
+                inside_background = False
+                updated.append(line)
+                continue
+
+            # Replace path if inside background block
+            if inside_background and stripped.startswith("path"):
+                updated.append(f"    path = {new_path}\n")
+                replaced = True
+            else:
+                updated.append(line)
+
+        # If no background block found, append at end
+        if not replaced:
+            updated.append("\nbackground {\n")
+            updated.append(f"    path = {new_path}\n")
+            updated.append("}\n")
+
+        with open(HYPLOCK_CONF, "w") as f:
+            f.writelines(updated)
+
+        print(f"✔ hyprlock.conf updated with wallpaper: {new_path}")
+    except Exception as e:
+        print(f"✗ Failed to update hyprlock.conf: {e}")
 
 class WallpaperSelector(Gtk.Window):
     def __init__(self):
@@ -15,10 +63,13 @@ class WallpaperSelector(Gtk.Window):
         self.connect("key-press-event", self.on_key_press)
         self.connect("button-press-event", self.on_outer_click)
 
-        # 🟦 Run thumbnail generator script
-        subprocess.run(["python3", os.path.expanduser("~/.config/hypr/hyprland/PyScripts/generate_thumbnails.py")])
+        # Run thumbnail generator script
+        subprocess.run([
+            "python3",
+            os.path.expanduser("~/.config/hypr/hyprland/PyScripts/generate_thumbnails.py")
+        ])
 
-        # 💅 Minimal scrollbar styling
+        # Minimal scrollbar styling
         css = b"""
         scrollbar slider {
             min-width: 3px;
@@ -78,13 +129,12 @@ class WallpaperSelector(Gtk.Window):
             thumb_path = os.path.join(THUMB_DIR, filename)
             base_name = os.path.splitext(filename)[0]
 
-            # 🔍 Try to find the matching wallpaper by any valid extension
             match = glob.glob(os.path.join(WALLPAPER_DIR, base_name + ".*"))
             if not match:
                 print(f"✗ No original image found for: {base_name}")
                 continue
 
-            original_path = match[0]  # Use the first match (jpg, png, etc)
+            original_path = match[0]
 
             try:
                 pixbuf = GdkPixbuf.Pixbuf.new_from_file(thumb_path)
@@ -119,19 +169,54 @@ class WallpaperSelector(Gtk.Window):
         return False
 
     def set_wallpaper(self, _, event, path):
+        # Quit GTK main loop immediately
+        Gtk.main_quit()
+
+        # Set wallpaper using swww
         subprocess.Popen([
             "swww", "img", path,
             "--transition-type", "any",
             "--transition-fps", "60",
             "--transition-duration", "1"
         ])
-        Gtk.main_quit()
+
+        # Save current wallpaper path
+        wallpaper_file = os.path.expanduser("~/.config/current_wallpaper.txt")
+        with open(wallpaper_file, "w") as f:
+            f.write(path)
+
+        # Update hyprlock.conf
+        update_hyprlock_conf(path.strip())
+
+        # Generate Wallust palette
+        wallust_cmd = [
+            "wallust", "run", path,
+            "--templates-dir", WALLUST_CONFIG_DIR,
+            "--quiet"
+        ]
+        try:
+            subprocess.run(wallust_cmd, check=True)
+        except Exception as e:
+            print(f"✗ Wallust failed: {e}")
+
+        # Full Ironbar restart
+        try:
+            subprocess.run(["pkill", "ironbar"])  # stop current
+            subprocess.Popen(
+                ["ironbar"],  # start new detached
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+                preexec_fn=os.setpgrp
+            )
+        except Exception as e:
+            print(f"✗ Ironbar failed to restart: {e}")
 
 
 def main():
     app = WallpaperSelector()
     app.connect("destroy", Gtk.main_quit)
     Gtk.main()
+
 
 if __name__ == "__main__":
     main()

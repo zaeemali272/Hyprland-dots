@@ -1,6 +1,6 @@
+@import url("/home/zaeem/.config/ironbar/ironbar_dynamic_colors.css");
+
 @define-color bg #000;
-@define-color fg #fff;
-@define-color accent #7dcfff;
 
 label {
   font-family: "Inter", "CaskaydiaCove Nerd Font", sans-serif;
@@ -22,105 +22,92 @@ label {
 .widget-tray,
 .wlogout,
 .sysinfo-dynamic,
+.warp,
 .netspeed,
 .combinedBattery,
 .volume,
 .clock,
 .zscroll,
+.todoist,
+.ultra_power_saving,
 .workspaces {
   background-color: @bg;
   opacity: 0.85;
-  border-radius: 10px;
+  border-radius: 13px;
   transition: 0.2s ease-in-out;
   padding: 0 10px;
   margin: 0 2.5px;
 }
 
 /* Tray */
-.widget-tray {
-  color: #ff757f;
+.widget-tray { color: @font6; }
+.widget-tray * { background-color: @bg; padding: 0 1px; }
+
+/* UPSM */
+.ultra_power_saving {
+  padding: 0 7px;
+  font-size: 16px;
 }
 
-.widget-tray * {
+.waydroid{
+  font-size: 20px;
+  padding: 0 0px 0 9px;
   background-color: @bg;
-  padding: 0 1px;
+  opacity: 0.85;
+  border-radius: 13px;
+  transition: 0.2s ease-in-out;
+  margin: 0px 2.5px;
 }
+
+/* Warp */
+.warp { color: @font7; padding: 0 11.9px 0 7px; font-size: 16px; }
 
 /* Wlogout */
-.wlogout {
-  font-size: 17px;
-  color: #ff3c4a;
-}
-
-.wlogout:hover {
-  color: @accent;
-}
+.wlogout { font-size: 17px; color: @font0; }
+.wlogout:hover { color: @accent; }
 
 /* Sysinfo */
-.sysinfo-dynamic {
-  color: @accent;
-}
+.sysinfo-dynamic { color: @font3; }
 
 /* Netspeed / Battery / Volume */
-.netspeed {
-  color: #fb7d34;
-}
-
-.combinedBattery {
-  color: #ff7da8;
-}
-
-.volume {
-  color: #ab97d2;
-}
+.netspeed { color: @font4; }
+.combinedBattery { color: @font1; }
+.volume { color: @font2; }
 
 /* Clock */
-.clock {
-  font-family: "CaskaydiaCove Nerd Font";
-  color: @accent;
-}
-
-.clock_date {
-  color: rgb(94, 129, 172);
-}
+.clock { font-family: "CaskaydiaCove Nerd Font"; color: @font6; }
+.clock_date { color: @accent; }
 
 /* Zscroll */
-.zscroll {
-  color: #bb9af7;
-  box-shadow: rgba(0, 0, 0, 0.25) 2px 2px 5px 2px;
-}
+.zscroll { color: @font5; box-shadow: rgba(0, 0, 0, 0.25) 2px 2px 5px 2px; }
 
 /* Workspaces */
 .workspaces {
   font-size: 12px;
-  /* smaller numbers */
   font-weight: bold;
-  color: #000;
+  color: @accent;
 }
 
 .workspaces button {
   min-width: 20px;
-  /* enough for circle border */
   padding: 0 4.5px 2px 2px;
-  /* top right bottom left */
   margin: 2px 1px 2px 1px;
   border-radius: 50%;
-  /* circle shape */
   background: transparent;
-  color: #fff;
+  color: @accent;
   opacity: 0.7;
   transition: 0.2s ease-in-out;
 }
 
 .workspaces .item.focused {
-  background: #fc2d3a;
-  color: #000;
+  background: @accent;
+  color: @bg;
   opacity: 1;
 }
 
 .workspaces button:hover {
-  background: rgba(255, 45, 38, 0.3);
-  /* subtle hover for unfocused */
-  color: #000;
+  background: rgba(125, 207, 255, 0.3); /* semi-transparent accent */
+  color: @bg;
   opacity: 0.85;
 }
+

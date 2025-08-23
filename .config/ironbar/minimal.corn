@@ -1,0 +1,86 @@
+let {
+  $tray = {
+    type = "tray"
+    name = "tray"
+    class = "widget-tray"
+  }
+
+  $clock = {
+    type = "clock"
+    format = "%a %d | %I:%M "
+  }
+
+  $volume = {
+    type = "script"
+    name = "volume"
+    class = "volume"
+    mode = "poll"
+    interval = 1000
+    cmd = "~/.config/ironbar/scripts/volume"
+    on_scroll_down = "wpctl set-volume @DEFAULT_SINK@ 2%-"
+    on_scroll_up   = "wpctl set-volume @DEFAULT_SINK@ 2%+"
+    on_click_left  = "exec pavucontrol"
+  }
+
+  $workspaces = {
+    type = "workspaces"
+    sort = "name"
+    visible_range = 1
+    on_scroll_up   = "hyprctl dispatch workspace -1"
+    on_scroll_down = "hyprctl dispatch workspace +1"
+  }
+
+  $wlogout = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "wlogout"
+        class = "wlogout"
+        label = "󰐥"
+        on_click_left = "exec wlogout -m 300px -p layer-shell"
+        activate_on_release = false
+      }
+    ]
+  }
+  
+    $ultra_power_saving = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "ultra_power_saving"
+        class = "ultra_power_saving"
+        label = "{{watch:3000:~/.config/ironbar/scripts/ultra_power_saving_status.sh}}"
+        on_click_left = "exec ~/.local/bin/ultra_power_saving.sh"
+        tooltip = "Toggle Ultra Power Saving"
+        tooltip_class = "tooltip-solid"
+      }
+    ]
+  }
+  
+  $combinedBattery = {
+    type = "script"
+    name = "combinedBattery"
+    class = "combinedBattery"
+    mode = "poll"
+    interval = 5000
+    cmd = "~/.config/ironbar/scripts/combined_battery.sh"
+    on_click_left = "exec kitty -e ~/.config/ironbar/scripts/popup/BatteryInfo.sh"
+  }
+
+  $start  = [ $workspaces ]
+  $center = [ $clock ]
+  $end    = [ $tray $ultra_power_saving $volume $combinedBattery $wlogout ]
+}
+
+in {
+  name     = "main"
+  position = "top"
+  height   = 26
+  margin = [0 4 4 5]
+  start    = $start
+  center   = $center
+  end      = $end
+}
+

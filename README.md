@@ -47,9 +47,12 @@ A fully automated script to install, configure, and personalize your Arch Linux 
 
 Hyprland-dots/
 
-├── .config/ → All configs (Hyprland, Ironbar, Fuzzel, Fish, etc.)  
-├── .local/ → Local scripts, fish history, color schemes  
-├── Install.sh → Main install and setup script  
+Hyprland-dots/
+├── .config/ → All configs (Hyprland, Ironbar, Fuzzel, Fish, etc.)
+├── .local/  → Local scripts, fish history, color schemes
+├── systemd/system/ → Custom system services (e.g. Bluetooth fixes)
+├── scripts/ → Helper scripts (installed to /usr/local/bin/)
+├── Install.sh → Main install and setup script
 └── README.md → You're here
 
 

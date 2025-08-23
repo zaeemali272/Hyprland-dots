@@ -3,40 +3,51 @@
 max_len=45
 statefile="/tmp/skull_frame_index"
 
-# Skull frames for animation (can be Nerd Font icons or emojis)
+# Skull frames for animation
 frames=( "💀" "☠️" "💀" "☠️" )
 
 # Initialize statefile if missing
-if [[ ! -f $statefile ]]; then
-  echo 0 > "$statefile"
-fi
+[[ ! -f $statefile ]] && echo 0 > "$statefile"
 
-index=$(cat "$statefile")
+index=$(<"$statefile")
 index=$(( (index + 1) % ${#frames[@]} ))
 echo $index > "$statefile"
 
+# Check default player first
 status=$(playerctl status 2>/dev/null)
+player=""
 
-icon=""
+if [[ "$status" == "Paused" || -z "$status" ]]; then
+    # Look for another player that is Playing
+    for p in $(playerctl -l 2>/dev/null); do
+        p_status=$(playerctl -p "$p" status 2>/dev/null)
+        if [[ "$p_status" == "Playing" ]]; then
+            status="Playing"
+            player="$p"
+            break
+        fi
+    done
+fi
 
+# If still no player chosen, fallback to default
+[[ -z "$player" ]] && player=$(playerctl -l 2>/dev/null | head -n1)
+
+# Icon logic
 case "$status" in
-  Playing) icon="  ";;   # play icon
-  Paused)  icon="  ";;   # pause icon
-  Stopped) icon="${frames[$index]}";;  # animated skull cycle
-  *)       icon="${frames[$index]}";;  # fallback skull animation
+  Playing) icon="  ";;   # play
+  Paused)  icon="  ";;   # pause
+  Stopped|"") icon="${frames[$index]}";; # skull animation
+  *) icon="${frames[$index]}";;
 esac
 
 if [[ "$status" == "Playing" || "$status" == "Paused" ]]; then
-    title=$(playerctl metadata title 2>/dev/null)
-    artist=$(playerctl metadata artist 2>/dev/null)
-    player=$(playerctl metadata --format '{{xesam:playerName}}' 2>/dev/null)
+    title=$(playerctl -p "$player" metadata title 2>/dev/null)
+    artist=$(playerctl -p "$player" metadata artist 2>/dev/null)
 
-    # If the player is a browser (Firefox, Zen Browser, etc.), remove site name prefix
+    # Clean up titles for browsers
     if [[ "$player" =~ firefox|zen ]]; then
-        # Assume format "Site Name - Video Title" and keep only the part after first dash
         title=$(echo "$title" | sed -E 's/^[^-]+ - //')
     else
-        # Remove common site suffixes for other players
         title=$(echo "$title" | sed -E 's/ - YouTube$//; s/ – Spotify$//; s/ \| Netflix$//')
     fi
 
@@ -48,14 +59,11 @@ if [[ "$status" == "Playing" || "$status" == "Paused" ]]; then
         now_playing="Now Playing"
     fi
 
-    # Truncate if longer than max_len
-    if [[ ${#now_playing} -gt $max_len ]]; then
-        now_playing="${now_playing:0:$((max_len - 1))}…"
-    fi
+    # Truncate if too long
+    (( ${#now_playing} > max_len )) && now_playing="${now_playing:0:$((max_len - 1))}…"
 
     echo "$icon$now_playing"
 else
-    # Show just the animated skull icon when stopped/no music
     echo "$icon"
 fi
 

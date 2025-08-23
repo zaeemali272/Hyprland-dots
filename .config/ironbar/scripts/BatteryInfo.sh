@@ -16,3 +16,4 @@ grep -E "ONLINE=" "/sys/class/power_supply/$AC_PATH/uevent" | sed 's/POWER_SUPPL
 
 echo
 read -n 1 -s -r -p "Press any key to close..."
+

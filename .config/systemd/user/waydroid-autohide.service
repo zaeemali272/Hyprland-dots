@@ -1,0 +1,10 @@
+[Unit]
+Description=Auto-hide Waydroid on unfocus
+After=graphical-session.target
+
+[Service]
+ExecStart=%h/.config/hypr/hyprland/scripts/hide_waydroid_on_unfocus.sh
+Restart=always
+
+[Install]
+WantedBy=default.target

@@ -6,9 +6,9 @@ sleep 0.5
 ironbar &
 
 # Kill & restart Mako
-pkill mako
+pkill fnott
 sleep 0.5
-mako &
+fnott &
 
 # Restart Bluetooth service
 systemctl --user restart bluetooth.service 2>/dev/null || \

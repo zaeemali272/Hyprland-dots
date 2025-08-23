@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Max characters for display
-MAX_LENGTH=
+MAX_LENGTH=60
 
 # Get the player status
 status=$(playerctl status 2>/dev/null)

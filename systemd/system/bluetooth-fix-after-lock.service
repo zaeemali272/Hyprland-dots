@@ -1,0 +1,11 @@
+[Unit]
+Description=Restart Bluetooth service (manual or other triggers)
+After=bluetooth.service
+
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl restart bluetooth.service
+
+[Install]
+WantedBy=multi-user.target
+

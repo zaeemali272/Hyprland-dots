@@ -7,6 +7,7 @@ let {
         name = "sysinfo-dynamic"
         class = "sysinfo-dynamic"
         label = "{{watch:2000:~/.config/ironbar/scripts/sysinfo-dynamic.sh}}"
+        on_click_left = "exec kitty glances"
       }
     ]
   }
@@ -19,7 +20,22 @@ let {
 
   $clock = {
     type = "clock"
-    format = "%B %d | %H:%M "
+    format = "%a %d | %I:%M "
+  }
+  
+  $waydroid = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "waydroid"
+        class = "waydroid"
+        label = "{{watch:3000:~/.config/ironbar/scripts/waydroid_notifier.sh}}"
+		  on_click_left = "exec ~/.config/ironbar/scripts/open_waydroid.sh"
+        tooltip = "Waydroid Notifications"
+        tooltip_class = "tooltip-solid"
+      }
+    ]
   }
 
   $zscroll = {
@@ -71,6 +87,37 @@ let {
       }
     ]
   }
+  
+    $ultra_power_saving = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "ultra_power_saving"
+        class = "ultra_power_saving"
+        label = "{{watch:3000:~/.config/ironbar/scripts/ultra_power_saving_status.sh}}"
+        on_click_left = "exec ~/.local/bin/ultra_power_saving.sh"
+        tooltip = "Toggle Ultra Power Saving"
+        tooltip_class = "tooltip-solid"
+      }
+    ]
+  }
+  
+    $warp = {
+    type = "custom"
+    bar = [
+      {
+        type = "label"
+        name = "warp"
+        class = "warp"
+        label = "{{watch:3000:~/.config/ironbar/scripts/warp.sh}}"
+        on_click_left = "exec ~/.config/ironbar/scripts/warp.sh --toggle"
+        on_click_right = "exec kitty sh -c '~/.local/bin/cleanup.sh | lolcat'"
+        tooltip = "{{watch:3000:~/.config/ironbar/scripts/warp_status.sh}}"
+        tooltip_class = "tooltip-solid"
+      }
+    ]
+  }
 
   $netspeed = {
     type = "custom"
@@ -81,11 +128,12 @@ let {
         type = "label"
         name = "netspeed-label"
         class = "netspeed-label"
-        label = "{{watch:1000:~/.config/ironbar/scripts/netspeed_down.sh}}"
-        tooltip = "{{watch:1000:~/.config/ironbar/scripts/current_wifi.sh}}"
+        label = "{{watch:1000:~/.config/ironbar/scripts/netspeed.sh}}"
+        tooltip = "{{watch:3000:~/.config/ironbar/scripts/current_wifi.sh}}"
         tooltip_class = "tooltip-solid"
         on_click_left  = "exec ~/.config/ironbar/scripts/netspeed_wifi.sh"
         on_click_right = "exec kitty --hold -e speedtest"
+        on_click_middle = "~/.config/ironbar/scripts/netspeed_toggle.sh"
       }
     ]
   }
@@ -100,9 +148,9 @@ let {
     on_click_left = "exec kitty -e ~/.config/ironbar/scripts/popup/BatteryInfo.sh"
   }
 
-  $start  = [ $workspaces ]
+  $start  = [ $waydroid $workspaces ]
   $center = [ $clock $zscroll ]
-  $end    = [ $tray $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
+  $end    = [ $tray $ultra_power_saving $warp $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
 }
 
 in {
