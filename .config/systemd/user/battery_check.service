@@ -2,4 +2,6 @@
 Description=Battery Low Notification
 
 [Service]
-ExecStart=/home/$USER/.local/bin/battery_check.sh
+ExecStart=[Service]
+ExecStart=/home/%u/.local/bin/battery_check.sh
+

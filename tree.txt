@@ -1,0 +1,537 @@
+.
+├── .assets
+│   ├── ironbar.png
+│   ├── mako.png
+│   ├── view-1.png
+│   ├── view-2.png
+│   └── view-3.png
+├── .config
+│   ├── chrome-flags.conf
+│   ├── code-flags.conf
+│   ├── environment.d
+│   │   ├── 99-qt.conf
+│   │   └── 99-theme.conf
+│   ├── fish
+│   │   ├── completions
+│   │   ├── conf.d
+│   │   ├── config.fish
+│   │   ├── fish_variables
+│   │   └── functions
+│   ├── fuzzel
+│   │   ├── fuzzel_clipboard.ini
+│   │   ├── fuzzel.ini
+│   │   └── fuzzel_theme.ini
+│   ├── gtk-3.0
+│   │   ├── bookmarks
+│   │   ├── gtk.css
+│   │   └── settings.ini
+│   ├── gtk-4.0
+│   │   ├── gtk.css
+│   │   └── settings.ini
+│   ├── hypr
+│   │   ├── custom
+│   │   │   ├── env.conf
+│   │   │   ├── execs.conf
+│   │   │   ├── general.conf
+│   │   │   ├── keybinds.conf
+│   │   │   └── rules.conf
+│   │   ├── hypr.bak
+│   │   │   ├── custom
+│   │   │   │   ├── env.conf
+│   │   │   │   ├── execs.conf
+│   │   │   │   ├── general.conf
+│   │   │   │   ├── keybinds.conf
+│   │   │   │   └── rules.conf
+│   │   │   ├── hypridle.conf
+│   │   │   ├── hyprland
+│   │   │   │   ├── colors.conf
+│   │   │   │   ├── env.conf
+│   │   │   │   ├── execs.conf
+│   │   │   │   ├── general.conf
+│   │   │   │   ├── keybinds.conf
+│   │   │   │   ├── rules.conf
+│   │   │   │   └── scripts
+│   │   │   │       ├── fuzzel-emoji.sh
+│   │   │   │       ├── launch_first_available.sh
+│   │   │   │       ├── record.sh
+│   │   │   │       ├── workspace_action.sh
+│   │   │   │       └── zoom.sh
+│   │   │   ├── hyprland.conf
+│   │   │   └── hyprlock.conf
+│   │   ├── hypridle.conf
+│   │   ├── hyprland
+│   │   │   ├── colors.conf
+│   │   │   ├── env.conf
+│   │   │   ├── execs.conf
+│   │   │   ├── general.conf
+│   │   │   ├── keybinds.conf
+│   │   │   ├── PyScripts
+│   │   │   │   ├── generate_thumbnails.py
+│   │   │   │   ├── wallpaperSelect.py
+│   │   │   │   └── wallpaperSelect.py.save
+│   │   │   ├── rules.conf
+│   │   │   └── scripts
+│   │   │       ├── brightness_notify.sh
+│   │   │       ├── fuzzel-emoji.sh
+│   │   │       ├── hide_waydroid_on_unfocus.sh
+│   │   │       ├── launch_first_available.sh
+│   │   │       ├── record.sh
+│   │   │       ├── restart_everything.sh
+│   │   │       ├── volume_notify.sh
+│   │   │       ├── workspace_action.sh
+│   │   │       └── zoom.sh
+│   │   ├── hyprland.conf
+│   │   ├── hyprlock
+│   │   │   ├── akeno.webm
+│   │   │   ├── battery.sh
+│   │   │   ├── check-capslock.sh
+│   │   │   ├── current_wallpaper.sh
+│   │   │   ├── network-status.sh
+│   │   │   ├── status.sh
+│   │   │   ├── whatsong.sh
+│   │   │   └── whoami.sh
+│   │   └── hyprlock.conf
+│   ├── ironbar
+│   │   ├── Bak
+│   │   │   ├── config.corn
+│   │   │   └── style.css
+│   │   ├── config.corn
+│   │   ├── default.corn
+│   │   ├── ironbar_dynamic_colors.css
+│   │   ├── minimal.corn
+│   │   ├── scripts
+│   │   │   ├── BatteryInfo.sh
+│   │   │   ├── combined_battery.sh
+│   │   │   ├── current_wifi.sh
+│   │   │   ├── netspeed.sh
+│   │   │   ├── netspeed_toggle.sh
+│   │   │   ├── netspeed_wifi.sh
+│   │   │   ├── open_waydroid.sh
+│   │   │   ├── popup
+│   │   │   │   ├── BatteryInfo.sh
+│   │   │   │   └── open_player.sh
+│   │   │   ├── sysinfo-dynamic.sh
+│   │   │   ├── toggle_waydroid.sh
+│   │   │   ├── ultra_power_saving_status.sh
+│   │   │   ├── vol
+│   │   │   ├── volume
+│   │   │   ├── warp.sh
+│   │   │   ├── warp_status.sh
+│   │   │   ├── waydroid_notifier.sh
+│   │   │   └── zscroll.sh
+│   │   ├── state
+│   │   │   └── waydroid_tray
+│   │   ├── style.css
+│   │   └── wifi_saved.json
+│   ├── kitty
+│   │   ├── kitty.conf
+│   │   ├── scroll_mark.py
+│   │   └── search.py
+│   ├── Kvantum
+│   │   ├── Colloid
+│   │   │   ├── ColloidDark.kvconfig
+│   │   │   ├── ColloidDark.svg
+│   │   │   ├── Colloid.kvconfig
+│   │   │   └── Colloid.svg
+│   │   ├── kvantum.kvconfig
+│   │   └── MaterialAdw
+│   │       ├── MaterialAdw.kvconfig
+│   │       └── MaterialAdw.svg
+│   ├── mako
+│   │   └── config
+│   ├── qt5ct
+│   │   ├── colors
+│   │   ├── qss
+│   │   └── qt5ct.conf
+│   ├── qt6ct
+│   │   ├── colors
+│   │   │   └── darker (copy).conf
+│   │   ├── qss
+│   │   └── qt6ct.conf
+│   ├── starship.toml
+│   ├── systemd
+│   │   └── user
+│   │       ├── battery_check.service
+│   │       ├── battery_check.timer
+│   │       ├── default.target.wants
+│   │       │   ├── battery_check.timer -> /home/zaeem/.config/systemd/user/battery_check.timer
+│   │       │   ├── hyprlock-idle.service -> /home/zaeem/.config/systemd/user/hyprlock-idle.service
+│   │       │   ├── pipewire-pulse.service -> /usr/lib/systemd/user/pipewire-pulse.service
+│   │       │   ├── pipewire-pulse.socket -> /usr/lib/systemd/user/pipewire-pulse.socket
+│   │       │   ├── waydroid-autohide.service -> /home/zaeem/.config/systemd/user/waydroid-autohide.service
+│   │       │   └── waydroid-session.service -> /home/zaeem/.config/systemd/user/waydroid-session.service
+│   │       ├── graphical-session.target.wants
+│   │       │   ├── fnott.service -> /usr/lib/systemd/user/fnott.service
+│   │       │   └── hypridle.service -> /usr/lib/systemd/user/hypridle.service
+│   │       ├── hyprlock-idle.service
+│   │       ├── waydroid-autohide.service
+│   │       └── waydroid-session.service
+│   ├── wallust
+│   │   ├── ironbar.template.toml
+│   │   └── wallust.toml
+│   ├── wlogout
+│   │   ├── layout
+│   │   └── style.css
+│   └── youtube-music-flags.conf
+├── .git
+│   ├── COMMIT_EDITMSG
+│   ├── config
+│   ├── description
+│   ├── FETCH_HEAD
+│   ├── HEAD
+│   ├── hooks
+│   │   ├── applypatch-msg.sample
+│   │   ├── commit-msg.sample
+│   │   ├── fsmonitor-watchman.sample
+│   │   ├── post-update.sample
+│   │   ├── pre-applypatch.sample
+│   │   ├── pre-commit.sample
+│   │   ├── pre-merge-commit.sample
+│   │   ├── prepare-commit-msg.sample
+│   │   ├── pre-push.sample
+│   │   ├── pre-rebase.sample
+│   │   ├── pre-receive.sample
+│   │   ├── push-to-checkout.sample
+│   │   ├── sendemail-validate.sample
+│   │   └── update.sample
+│   ├── index
+│   ├── info
+│   │   └── exclude
+│   ├── logs
+│   │   ├── HEAD
+│   │   └── refs
+│   │       ├── heads
+│   │       │   └── main
+│   │       └── remotes
+│   │           └── origin
+│   │               ├── HEAD
+│   │               └── main
+│   ├── objects
+│   │   ├── 02
+│   │   │   └── b8a5eb64a689a5085da3539b41b4bd89a5b925
+│   │   ├── 03
+│   │   │   └── 8297b72605eba3427e6e8bbabd1d3434935537
+│   │   ├── 05
+│   │   │   ├── 0f42fbbf52e8e96d9831b090cabdfaba2f218e
+│   │   │   └── 87aa296f16ef75d69cb633f21c3589d4da6722
+│   │   ├── 0b
+│   │   │   ├── 1ff54900b2362509b96798500b61423d8ab1d5
+│   │   │   └── 62f216ac5b0f3c31847434cc94b7010693b5b8
+│   │   ├── 10
+│   │   │   └── dd3a05ba777909f9b6bc7fa322bfeed531fbf5
+│   │   ├── 11
+│   │   │   └── aa2b0eb811288db788f2139e05e62b2ead6a7d
+│   │   ├── 14
+│   │   │   └── 527cd6a817beecabc8245b750aadbbe9371a29
+│   │   ├── 16
+│   │   │   └── 28a45882274015e9a0b710d6b3eb1277fa7ccc
+│   │   ├── 17
+│   │   │   ├── 00f23214e7177b2b6c6f4bb86352f96859e620
+│   │   │   └── 52d0c472866c32f7f5366703a52aef6173b67a
+│   │   ├── 1a
+│   │   │   └── 1f259aaec60a30659f8fc38c751ab55bdeabb3
+│   │   ├── 1b
+│   │   │   └── 3ebf0fff4b27a3b7e1b0adf7072ea8f3630cbf
+│   │   ├── 1e
+│   │   │   └── 393a1cb83a220c30d46f44a73bc4937348453c
+│   │   ├── 29
+│   │   │   ├── 68b12d2cf37f341043b3e1b91d90642bef25ef
+│   │   │   └── baaebc5124e6a7d0eea20b9574d4233d35ae4c
+│   │   ├── 2a
+│   │   │   ├── 3b19bcca2919d09015dc760f9b7b146480cee2
+│   │   │   └── b950402f5660478a3177bd562faabb98d4933a
+│   │   ├── 2d
+│   │   │   └── 047e2b300a0e68015f66a33100c1e7c63f30a1
+│   │   ├── 2e
+│   │   │   └── 8606558d58e1d4e2ccc9578fe8c06b91ea5653
+│   │   ├── 35
+│   │   │   └── b232a0ccf26192120a045ee1022058655d3894
+│   │   ├── 36
+│   │   │   ├── 25abda1be73fb6fb02c19d4528b1d9f3aac5b7
+│   │   │   └── af84421320c3a511ca25b3541bc256842c23e4
+│   │   ├── 37
+│   │   │   └── 2486a651d36d5590439171108c27040d47d2a5
+│   │   ├── 38
+│   │   │   └── e597d040be8b7eaecdf4977ba87312e6b7ed82
+│   │   ├── 3b
+│   │   │   └── 135e1d8468ed995912801b9e6b51da884eaee9
+│   │   ├── 3c
+│   │   │   ├── 4477a935edb9de1224bc5fccdd1ddbfd33da0b
+│   │   │   └── 5e326cd693c6b7aeacef874ee9658316fac71d
+│   │   ├── 40
+│   │   │   └── fee8c7e770b5fd773e510e83829a13dea2f131
+│   │   ├── 41
+│   │   │   └── 8b4a93ea327d2bf67105a68146846622466be7
+│   │   ├── 43
+│   │   │   └── 433651c0ae877942f4291eb16f4bb029b87953
+│   │   ├── 44
+│   │   │   └── 856c459f335d8aef30fc3e7b2c405e46a3af39
+│   │   ├── 45
+│   │   │   └── 3511cdf50bc6b3300e10c50b4a81917f829aae
+│   │   ├── 46
+│   │   │   └── a624d44eb9c039c03d8f4109a3005d4fcfa0f1
+│   │   ├── 47
+│   │   │   ├── 86072b7b4b9331a8b36e2a6e53f4eb0ed99cce
+│   │   │   ├── 87da2a88f46db877598fb8090b44c998c50ade
+│   │   │   └── 98fe313a91a7e4098cfa400ee8c83f22fb6381
+│   │   ├── 48
+│   │   │   └── 8fe24b97865ea3417f1fdbdb431e4db660296d
+│   │   ├── 4f
+│   │   │   └── cedde5509aa9d624292d3c59a29a728f1d3350
+│   │   ├── 51
+│   │   │   └── 2d4c960552b305cd31e990a664cc3b81fbac8b
+│   │   ├── 52
+│   │   │   └── 5c50e88ca00589b01462ae29ef55dd036f992d
+│   │   ├── 54
+│   │   │   ├── 8626d2655537f473b0fe9762561b88e622acbd
+│   │   │   ├── a632348b9c00ccf1d75b0c994136e2e0fd936b
+│   │   │   ├── f30a72300d50cd0c3ab4175a31515f153f37b7
+│   │   │   └── f6f8569cc363553ce4b66a2958c6a0f68babb4
+│   │   ├── 55
+│   │   │   ├── ce23666ee505dccf95d98ae9b73738aad6cc81
+│   │   │   └── da29318ddb838a1703ae77874ce368e0848cf4
+│   │   ├── 56
+│   │   │   └── b43b7ac62b654c0549120476d9373030058ab3
+│   │   ├── 57
+│   │   │   ├── 3df41a5064e25f87be2304018dbe8aa7478dea
+│   │   │   └── abf198fa43f24aef60bd17a6ceabf8d8b8a09e
+│   │   ├── 59
+│   │   │   └── f1c763be5ffafd4db6d116cd7425a5fbc52bdd
+│   │   ├── 5a
+│   │   │   └── d3023c263c538adf07ff9ccc7b0110ae96a307
+│   │   ├── 5d
+│   │   │   └── a721afc634860895831b89bb4a7208ea9e084a
+│   │   ├── 5f
+│   │   │   └── b5c347a8bbe001aca6dbd4b6b2ebdc95d2a0db
+│   │   ├── 61
+│   │   │   └── e044a6c73216d8a2d2d768bf90245c80352d98
+│   │   ├── 64
+│   │   │   └── 03c14c8ab77c4272f7e0972c771334f5010a66
+│   │   ├── 65
+│   │   │   └── 470510c24073390e2479e0a0001d51d181fd64
+│   │   ├── 68
+│   │   │   └── d356607988c08e102e214ef7910bf5eb1c63e2
+│   │   ├── 6b
+│   │   │   └── 297473d4ac1fe5019068439dbd049d271efec9
+│   │   ├── 6c
+│   │   │   └── 75539e5f46638797e5ac1e765538096600afe8
+│   │   ├── 6d
+│   │   │   ├── 11f87fff662d6504a495da4002e78d258207a3
+│   │   │   └── 6aa5532488f08370663c5d5c563669f6963680
+│   │   ├── 6e
+│   │   │   └── 95da497c6fcac8c990e37e5f54f1fbc231c9a6
+│   │   ├── 6f
+│   │   │   └── 513765fd8925b09e98aeb8c6834df6ba209b67
+│   │   ├── 72
+│   │   │   └── fe2c668d88342419a867440b543ba589874122
+│   │   ├── 74
+│   │   │   ├── 181c883338b21c96ebf98c1fe2a52dc23b6a34
+│   │   │   ├── a499853162c132116185de04de39b58b48b9e2
+│   │   │   └── b77ce4dcf47c2a88d831765374030410862ec8
+│   │   ├── 75
+│   │   │   └── 7672f6e3b147acfefea3c67ff21dd23b36f3dc
+│   │   ├── 76
+│   │   │   └── f090a5b7a6a7b515719470e89a746e3a41cda9
+│   │   ├── 7b
+│   │   │   ├── 7ebc1fa47a06ade65b11fa91b130cbaf6a3dd4
+│   │   │   └── c7eab798e57f40cbaa995d6f47d46fffe1cabe
+│   │   ├── 7c
+│   │   │   ├── b5cb0d4ffde0f4196b722bbbae41949f1d2ff8
+│   │   │   └── e2cc6425403f34cc3a2a13c4bff7345336acd2
+│   │   ├── 7f
+│   │   │   └── 1a7b9b2ea84fcb1e266fd655ef439217e71e5c
+│   │   ├── 81
+│   │   │   └── c6d07c9fd38ff220131401651218de2bdb686a
+│   │   ├── 83
+│   │   │   └── b240797fec247a9d01b9218a3de052389e9d01
+│   │   ├── 84
+│   │   │   └── 707753aac7c2f64aa2681b926cc7332b00dd66
+│   │   ├── 85
+│   │   │   └── 28f3fb433293d6f3e8cbdf6a4b0da1c6df671c
+│   │   ├── 86
+│   │   │   └── 6bbef9dc2180d83f51eeadbc1b16f970257f38
+│   │   ├── 88
+│   │   │   ├── 04e2208dfaae6f5b2f66cf27a03a5b62cc8881
+│   │   │   └── 3cdcc4fa1be201c5aabe8c1a56a6b339671d2f
+│   │   ├── 8b
+│   │   │   └── 137891791fe96927ad78e64b0aad7bded08bdc
+│   │   ├── 8e
+│   │   │   └── c203ecfd886806a615795edba9ef5161d409f7
+│   │   ├── 90
+│   │   │   └── a762205fcade2a1fc8396fffdc65de0da5dce3
+│   │   ├── 91
+│   │   │   ├── 84920f3efade2d03a0a6a123754e4892e6c2fe
+│   │   │   ├── bfe3e608c30cc0faef3e6543c73c6a0e672678
+│   │   │   └── e9ead49f25714040c366d37d92ede37a541e5e
+│   │   ├── 92
+│   │   │   └── 96fdff7cb988a96c646701c66abcc974ca10b4
+│   │   ├── 94
+│   │   │   └── 734765971a9cc20cdac901a394c54b5c2d0288
+│   │   ├── 95
+│   │   │   └── 6c173c1d4bf7688f8dfb0b067277ede0888dca
+│   │   ├── 98
+│   │   │   ├── 4e5c101ce68421ecefc0b49d0e7eb9623c5927
+│   │   │   └── 572ccb73fdd9679267846f4d2bced652092489
+│   │   ├── 99
+│   │   │   └── 1c68de746d947e7534ed2089ed18ffdc9b0d7a
+│   │   ├── 9b
+│   │   │   └── 04aa0b9d7a8fa8030966ec2a653ff40259ad0a
+│   │   ├── 9d
+│   │   │   ├── 91726357f41c13da8dca341d1086363024c30e
+│   │   │   └── ee389922043df214cdeb00ce4c9c5dfb5cf705
+│   │   ├── 9e
+│   │   │   ├── 5750b8fb26aae499a8c31f70bfa79af5ca5158
+│   │   │   └── d449e79c6990530466867aeb79f24474f02c5d
+│   │   ├── 9f
+│   │   │   └── 3690c60388ebecb6309ffe126050a53038ff7d
+│   │   ├── a3
+│   │   │   ├── 0b0aebb8cd5a69de67388a43b5e58cff646021
+│   │   │   └── 7c1c9084348923fcf0701c6c3673235696f1e0
+│   │   ├── a4
+│   │   │   └── 3a230bf617e2327731f0768b45ad4f28f65394
+│   │   ├── a8
+│   │   │   └── ed922e0fc559d74a7d6646da09167cd0826e95
+│   │   ├── aa
+│   │   │   └── b496d04fbe1fa53895ffeee0035f3ad827ff7e
+│   │   ├── ad
+│   │   │   └── 2d567ef4ad6fc8857195f50cf83cb5722b1740
+│   │   ├── b0
+│   │   │   └── 9920dc9604b661200ad90dc543bb60184782c8
+│   │   ├── b3
+│   │   │   └── 0ca9ed409c27c2ca0f4d5e6e1825463f48af16
+│   │   ├── b4
+│   │   │   ├── 6e9cac94cd7f34b2c66ee47f93697ae8e3f384
+│   │   │   └── fd4291cdec8afbd2a5cfd7a747a073c2331747
+│   │   ├── b8
+│   │   │   └── ba9e7c9ef85f4a6ab9aab948b45550b561b3d6
+│   │   ├── b9
+│   │   │   └── df037d878a9ebe193163c541ca22e966b67c87
+│   │   ├── bb
+│   │   │   ├── 1978be4ba600f87d7126360001c8d53c8b6c5e
+│   │   │   └── a9e39eaba11da47713a88771822bb957527107
+│   │   ├── bc
+│   │   │   └── 1854cc5dc22ea68489ea690e6053a66ac24d97
+│   │   ├── be
+│   │   │   └── 4158437fe194fde5509673d2348df4bc569a86
+│   │   ├── c1
+│   │   │   ├── a141a2fd696f22ff019c4a25eee47ba68acc22
+│   │   │   └── fcfc093507153e7c1757c1f1df3e5323a46288
+│   │   ├── c4
+│   │   │   └── 90d5da4fe3b410a8884697288b44590a9a338a
+│   │   ├── c9
+│   │   │   ├── 425a11fbd699e98b3e10b2badf6d61e792eeaa
+│   │   │   └── 669240e149a152cbf5c92018359163e944c205
+│   │   ├── ca
+│   │   │   └── f701465f647f602f6759f18440578fdf26f914
+│   │   ├── cf
+│   │   │   ├── 2f69f7f660dcf8ecec2771a1d41e084231be20
+│   │   │   └── adb30ca2a6a7255d46a4cd14858099e3aa9806
+│   │   ├── d2
+│   │   │   └── 406c1431cb100d5e99e55f2a6ce4913eee0de4
+│   │   ├── d3
+│   │   │   ├── 7a5889f122dd317b85f27fa10f7e31a6e1f95a
+│   │   │   └── b86b5cb4fb9fffc9fcce1ef29761baa5132346
+│   │   ├── d4
+│   │   │   ├── 3e3aab3ecd2218fee7604c2ca5ab858f740d20
+│   │   │   └── e0025e682ffd55cf0543fb4eb1898ebe6b8109
+│   │   ├── d5
+│   │   │   └── 629bc83a5807adf89039bcb3b842034ef76bb2
+│   │   ├── d6
+│   │   │   └── ee54cd6e55bd13a0a2494b5c46c1f94cf5184d
+│   │   ├── d7
+│   │   │   ├── 21d3e0b8c785968d5a32942ee184af39d6e3e0
+│   │   │   └── ac415946d2cddb6f3a1188630125cd5bee0916
+│   │   ├── dd
+│   │   │   └── bef8087c4194e19cbef90f31c14d273208b8f5
+│   │   ├── df
+│   │   │   └── 32a0e3383561d8c0e39a177a8323ab04b12194
+│   │   ├── e0
+│   │   │   └── 17c0cd1beb7bde26efff7a08df386be4812df6
+│   │   ├── e3
+│   │   │   ├── 19f96ed760ee232bd6ae886718e71d304cd6ad
+│   │   │   ├── 2e1dfdb8dbaca8286c23f2f9b92dbf04b8592f
+│   │   │   └── 896f4ad579ad55af4aa93fa5b4cba9a7a26c26
+│   │   ├── e7
+│   │   │   └── 20d27ee48d804909df6ebd35392a9f158071c1
+│   │   ├── ec
+│   │   │   ├── 43a5b2d1e6dfd217995774524e478c4757debc
+│   │   │   ├── cff990dff27a28a347612dbecd5211afddfd98
+│   │   │   └── d2cc0a3402481c0fe9662bee09c172d6787665
+│   │   ├── ee
+│   │   │   ├── 0442002b1a9dd6833a4ee2224e4736495439c3
+│   │   │   └── fffc0f3de2e075d1d1954942c7fac1a0236847
+│   │   ├── ef
+│   │   │   └── c894a704a9f7f5fe2e4a3e2c1049f3d646ce69
+│   │   ├── f0
+│   │   │   └── 4b83fc8c4e4cd445fa190f08baf05c2425e2d3
+│   │   ├── f1
+│   │   │   └── 0209471ceb6b9d8a13a71fd7bbb7820b42eab1
+│   │   ├── f3
+│   │   │   └── 89faf9ca8637cf28b13e498051375e83168d80
+│   │   ├── f7
+│   │   │   ├── a6253fb1489e6a3d53c59dff139649bde348be
+│   │   │   └── b5cc1e0941e48a220c132cec4e6ecc4c3187d1
+│   │   ├── f9
+│   │   │   └── 9d3f1d7e50f2069b8151bde762d391b9f55947
+│   │   ├── fa
+│   │   │   ├── 7bff5c36e1256b68a121d4ad50ccc550edd038
+│   │   │   ├── c908ab6e98416a21a23c94052e2ccf5e99e296
+│   │   │   ├── ce705b78025904a5a6b7796d180ea02bbceb58
+│   │   │   └── e826feb8dfb5d57dd712c889ad267801656e59
+│   │   ├── fc
+│   │   │   ├── 5b15113ea8f305122588dad35782b051178f78
+│   │   │   └── 8ac968568197ecfd1b28c9c81096705b763470
+│   │   ├── info
+│   │   └── pack
+│   │       ├── pack-76bb7b9ad789caecc02d9b70c01fbb532884dd40.idx
+│   │       ├── pack-76bb7b9ad789caecc02d9b70c01fbb532884dd40.pack
+│   │       └── pack-76bb7b9ad789caecc02d9b70c01fbb532884dd40.rev
+│   ├── ORIG_HEAD
+│   ├── packed-refs
+│   └── refs
+│       ├── heads
+│       │   └── main
+│       ├── remotes
+│       │   └── origin
+│       │       ├── HEAD
+│       │       └── main
+│       └── tags
+├── .github
+│   └── ISSUE_TEMPLATE
+│       ├── bug_report.md
+│       ├── custom.md
+│       └── feature_request.md
+├── .gitignore
+├── .icons
+│   └── Oneui.zip
+├── Install.sh
+├── .local
+│   ├── bin
+│   │   ├── battery_check.sh
+│   │   └── switch_wifi.sh
+│   └── share
+│       └── color-schemes
+│           ├── MaterialYouDark2.colors
+│           ├── MaterialYouDark.colors
+│           ├── MaterialYouDark_darker_titlebar2.colors
+│           ├── MaterialYouDark_darker_titlebar.colors
+│           ├── MaterialYouDarkZaeem.colors
+│           ├── MaterialYouLight2.colors
+│           ├── MaterialYouLight.colors
+│           ├── MaterialYouLight_darker_titlebar2.colors
+│           └── MaterialYouLight_darker_titlebar.colors
+├── README.md
+├── systemd
+│   └── system
+│       ├── bluetooth-autofix.service
+│       └── bluetooth-fix-after-lock.service
+├── todo.txt
+├── tree.txt
+├── usr
+│   └── bin
+│       └── local
+│           └── bin
+│               └── bluetooth-autofix.sh
+└── zen-mods-export.json
+
+187 directories, 348 files

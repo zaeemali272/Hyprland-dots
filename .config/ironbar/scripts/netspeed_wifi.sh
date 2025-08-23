@@ -17,17 +17,33 @@ get_saved_ssids() {
 }
 
 scan_networks() {
-    iwctl station "$IFACE" get-networks | tail -n +2 | awk '{$1=""; print substr($0,2)}' | sort -u
+    iwctl station "$IFACE" scan >/dev/null 2>&1
+    sleep 2
+
+    iwctl station "$IFACE" get-networks \
+        | tail -n +3 \
+        | sed -r 's/\x1B\[[0-9;]*[mK]//g' \
+        | awk '{$(NF-1)=$(NF)=""; print $0}' \
+        | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' \
+        | grep -vE '^\s*$' \
+        | sort -u
 }
 
+
 add_network() {
-    SSID=$(zenity --list --title="Available Networks" --text="Select a network or type new" \
-        --column="SSID" $(scan_networks) --editable)
+    SSID=$(scan_networks | zenity --list \
+        --title="Available Networks" \
+        --text="Select a network or type new" \
+        --column="SSID" --editable)
     [[ -z "$SSID" ]] && return
-    PASSWORD=$(zenity --entry --title="Password" --text="Enter password for $SSID:" --hide-text)
+
+    PASSWORD=$(zenity --entry --title="Password" \
+        --text="Enter password for $SSID:" --hide-text)
     [[ -z "$PASSWORD" ]] && return
+
     jq --arg s "$SSID" --arg p "$PASSWORD" '. + {($s): $p}' "$SAVE_FILE" \
         > "$SAVE_FILE.tmp" && mv "$SAVE_FILE.tmp" "$SAVE_FILE"
+
     connect_network "$SSID"
 }
 
@@ -83,3 +99,4 @@ case "$CHOICE" in
     "Change Password") change_password ;;
     *) connect_network "$CHOICE" ;;
 esac
+

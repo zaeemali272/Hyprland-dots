@@ -1,0 +1,10 @@
+@define-color accent {{ colors[1] }};
+
+@define-color font1 {{ colors[2] }};
+@define-color font2 {{ colors[3] }};
+@define-color font3 {{ colors[4] }};
+@define-color font4 {{ colors[5] }};
+@define-color font5 {{ colors[6] }};
+@define-color font6 {{ colors[7] }};
+@define-color font7 {{ colors[0] }}; 
+@define-color font8 {{ colors[7] }};
