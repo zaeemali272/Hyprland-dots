@@ -1,12 +1,12 @@
 [Unit]
-Description=Fix Bluetooth on boot and resume
-After=bluetooth.target suspend.target
+Description=Bluetooth Auto Reconnect
+After=bluetooth.service suspend.target
 Requires=bluetooth.service
 
 [Service]
 Type=oneshot
 ExecStart=/usr/local/bin/bluetooth-autofix.sh
-RemainAfterExit=true
+RemainAfterExit=false
 
 [Install]
 WantedBy=multi-user.target suspend.target

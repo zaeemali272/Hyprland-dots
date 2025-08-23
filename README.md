@@ -1,168 +1,121 @@
 # 🌐 Hyprland Arch Setup - Automated Dotfiles & Environment
 
+####  A fully automated script to install, configure, and personalize your Arch Linux with Hyprland and a minimal Wayland-only desktop.
+#### This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences — with interactive choices for gaming setup and Waydroid.
 
-A fully automated script to install, configure, and personalize your Arch Linux with Hyprland and a minimal Wayland-only desktop environment. This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences.
+## 🎥 Quick Overview
+<p align="center"> <video src=".assets/overview.mp4" width="700" controls></video> </p>
 
-<details>
-<summary>📷 Main Desktop Views (Click to expand)</summary>
+### 📸 Screenshots
 
-<p align="center">
-  <img src=".assets/view-1.png" width="700" style="border-radius: 5px;"><br>
-  <img src=".assets/view-2.png" width="700" style="border-radius: 5px;"><br>
-  <img src=".assets/view-3.png" width="700" style="border-radius: 5px;">
-</p>
-
-</details>
-
-<details>
-<summary>🧩 Ironbar UI Preview</summary>
-
-<p align="center">
-  <img src=".assets/ironbar.png" width="700" style="border-radius: 5px;">
-</p>
-
-</details>
-
-<details>
-<summary>🔔 Mako Notification Style</summary>
-
-<p align="center">
-  <img src=".assets/mako.png" width="700" style="border-radius: 5px;">
-</p>
-
-</details>
+<details> <summary>✨ New Desktop Setup</summary> <p align="center"> <img src=".assets/new_desktop_1.png" width="700"><br> <img src=".assets/new_desktop_2.png" width="700"> </p> </details> <details> <summary>🖼️ Old Desktop Setup (Before Migration)</summary> <p align="center"> <img src=".assets/old_desktop_1.png" width="700"><br> <img src=".assets/old_desktop_2.png" width="700"><br> <img src=".assets/old_desktop_3.png" width="700"> </p> </details> <details> <summary>🧩 Ironbar UI Preview (New vs Old)</summary> <p align="center"> <img src=".assets/new_ironbar.png" width="700"><br> <img src=".assets/old_ironbar.png" width="700"> </p> </details> <details> <summary>🔔 Mako Notification Style</summary> <p align="center"> <img src=".assets/mako.png" width="700"> </p> </details>
+</br>
 
 
-## 📦 What's Included?
-
-- Fully scripted Arch install (no manual package entry)
-- Wayland desktop with [Hyprland](https://github.com/hyprwm/Hyprland)
-- Fish shell, Kitty terminal, Ironbar, Mako, Fuzzel, and more
-- GTK/QT themes, Nerd Fonts, Bibata cursor, OneUI4 icons, Materia-dark
-- PipeWire + Bluetooth audio stack with EasyEffects
-- Extra tools: Lutris, VS Code, Yazi, Zen Browser, MPV, Winetricks
-- Optional: Autologin setup + Hyprland auto-start on tty1
+## 📦 What's Included?   
+🔹 Fully scripted Arch install (no manual package entry)  
+🔹 Wayland desktop with Hyprland  
+🔹 Notifications via Mako.  
+🔹 Status bar = Ironbar.   
+🔹 Menus/launcher = Fuzzel.    
+🔹 Audio stack = PipeWire + EasyEffects.
 
 ## 🗂️ Repo Structure
-
-Hyprland-dots/
-
-Hyprland-dots/
-├── .config/ → All configs (Hyprland, Ironbar, Fuzzel, Fish, etc.)
-├── .local/  → Local scripts, fish history, color schemes
-├── systemd/system/ → Custom system services (e.g. Bluetooth fixes)
-├── scripts/ → Helper scripts (installed to /usr/local/bin/)
-├── Install.sh → Main install and setup script
-└── README.md → You're here
+Hyprland-dots/  
+├── .config/           → All configs (Hyprland, Ironbar, Fuzzel, Fish, etc.)  
+├── .local/            → Local scripts, fish history, color schemes   
+├── systemd/system/    → Custom system services (e.g. Bluetooth fixes)    
+├── scripts/           → Helper scripts (installed to /usr/local/bin/)    
+├── .assets/           → Screenshots + overview video   
+├── install.sh         → Main install and setup script    
+└── README.md          → You're here
 
 
-## 📥 How to Use
-
+## 📥 Installation
 ### 1. Boot into Arch with internet (TTY)
 
-This script is intended for a **fresh Arch Linux minimal install**.
+This script is intended for a fresh Arch Linux minimal install.
 
 ### 2. Clone the repo
 
 ```
-git clone https://github.com/yourusername/Hyprland-dots.git
+git clone https://github.com/zaeemali272/Hyprland-dots.git                 
 cd Hyprland-dots
 ```
-### 3. Run the installer script
+
+### 3. Run the installer
 
 ```
-chmod +x Install.sh
-./Install.sh
+chmod +x install.sh
+./install.sh
 ```
 
-You'll be prompted to enable autologin (optional).
+The script is idempotent — safe to re-run, will back up existing configs unless --force is used.
 
-### 🧰 What the Script Does
+<br>
 
-#### Step 0: Update keyring and mirrors
+## ⚡ Installer Flags  
 
-`
-archlinux-keyring
-`
+You can control behavior with flags:  
 
-#### Step 1: Install essential base system and firmware
+| Flag                   | Description                                       |
+|------------------------|---------------------------------------------------|
+| `--dry-run`            | Show what would change (no writes)                |
+| `--force`              | Overwrite without backups (**dangerous**)         |
+| `--no-overwrite`       | Skip overwriting existing files                   |
+| `--skip-aur`           | Skip AUR bootstrap & packages                     |
+| `--no-icons`           | Skip OneUI icon theme step                        |
+| `--enable-user-services` | Enable created user services after creation    |
+| `-y` or `--non-interactive` | Run without prompts (default **yes** to optional steps) |
 
-`
-base base-devel linux linux-headers linux-firmware
-networkmanager nano fish git man-db efibootmgr
-intel-ucode cpupower
-`
 
-#### Step 2: Install audio & multimedia stack
 
-`
-pipewire pipewire-alsa pipewire-jack pipewire-pulse libpulse
-alsa-plugins pavucontrol easyeffects cava ffmpegthumbnailer
-`
+## 🎮 Gaming Setup (Optional)
 
-#### Step 3: Install Hyprland + Wayland apps
+When prompted, you can install the gaming stack:
 
-`
-hyprland hypridle hyprpicker hyprshot wl-clipboard slurp grim
-fuzzel wlogout mako swww qt5-wayland qt5ct qt6ct gtk3-demos
-qt5-tools qt6-tools xdg-desktop-portal xdg-desktop-portal-hyprland
-polkit-gnome wireplumber
-`
+- **Lutris**  
+- **Wine + Winetricks**  
+- **Gamemode**  
+- **Steam** (if you add it to `PACMAN_PKGS`)  
+- **Game-related optimizations**  
 
-#### Step 4: Install UI appearance tools
+If you say **no**, the related scripts/services are removed so your environment stays clean.
 
-`
-kvantum bibata-cursor-theme
-materia-gtk-theme adwaita-dark papirus-icon-theme
-noto-fonts noto-fonts-cjk noto-fonts-emoji ttf-dejavu
-ttf-material-icons-git ttf-material-symbols-variable-git ttf-nerd-fonts-symbols
-`
 
-#### Step 5: Install extra apps and tools
+## 📱 Waydroid Setup (Optional)
 
-`
-nemo nemo-fileroller gnome-keyring gnome-text-editor freedownloadmanager
-visual-studio-code-bin youtube-music-bin zen-browser-bin yay yay-debug
-glances playerctl tree jq eza starship yazi yt-dlp
-ruby-fusuma ruby-fusuma-plugin-sendkey python-pywal16 tumbler
-wget sshfs gammastep gamemode blueman bluez bluez-utils bluez-tools
-kdeconnect speedtest-cli losslesscut-bin lutris wine winetricks
-gparted ncdu wev cameractrls cloudflare-warp-bin rar
-`
+The installer will ask if you want Waydroid:
 
-### 📂 Dotfiles Installation
+- If yes → installs Waydroid + helper scripts + systemd user services.
+- If no → asks if you want to keep the scripts (for later manual setup) or purge them completely.
 
-The script automatically copies:
 
-    All files from .config/ → ~/.config/
+## 🔐 Autologin
 
-    All files from .local/ → ~/.local/
+The script can optionally set up autologin on **tty1** with:
 
-And makes the following scripts executable:
-
-    ~/.config/ironbar/scripts/*
-
-    ~/.config/hypr/hyprland/scripts/*
-
-    ~/.local/bin/*
-
-### 🔐 Autologin (Optional)
-
-The script can optionally set up autologin on tty1 with:
-
-`
+```
 /etc/systemd/system/getty@tty1.service.d/override.conf
-`
+```
 
-Using agetty --autologin <user>
-And it starts Hyprland automatically from your config.fish.
-✅ Final Checks
+It then starts Hyprland automatically via `config.fish`.
 
-Before finishing, the script checks via rfkill if:
 
-    Wi-Fi is blocked
+## ✅ Final Checks
 
-    Bluetooth is blocked
+Before finishing, the script runs:
 
-It warns you accordingly if anything is disabled.
+- rfkill list → warns if Wi-Fi or Bluetooth are blocked.
+- Ensures services are reloaded.
+- Prints reboot recommendation.
 
+
+## 🚀 After Installation
+
+- Log in → you’ll land directly in Hyprland.
+- Wallpapers managed with swww.
+- Notifications via Mako.
+- Status bar = Ironbar.
+- Menus/launcher = Fuzzel.
+- Audio stack = PipeWire + EasyEffects.
