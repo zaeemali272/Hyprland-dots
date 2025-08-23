@@ -5,7 +5,7 @@
 
 ## 🎥 Quick Overview
 <p align="center">
-  <video src="https://github.com/zaeemali272/Hyprland-dots/raw/main/.assets/overview.mp4" width="700" controls></video>
+  <a href="https://youtu.be/KwMltR92CV0">▶️ Watch Overview Video</a>
 </p>
 
 
