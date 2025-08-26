@@ -46,18 +46,11 @@ Hyprland-dots/
 
 This script is intended for a fresh Arch Linux minimal install.
 
-### 2. Clone the repo
+### 2. Run the installer
 
 ```
-git clone https://github.com/zaeemali272/Hyprland-dots.git                 
-cd Hyprland-dots
-```
+bash <(curl -s https://raw.githubusercontent.com/zaeemali272/Hyprland-dots/main/Install.sh)
 
-### 3. Run the installer
-
-```
-chmod +x install.sh
-./install.sh
 ```
 
 The script is idempotent — safe to re-run, will back up existing configs unless --force is used.

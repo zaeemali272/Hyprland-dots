@@ -1,13 +1,14 @@
 #!/usr/bin/env bash
 # Install.sh – Arch post-install automation (Hyprland, Ironbar, etc.)
-# Safe, idempotent, modular
+# Self-contained: can be run directly via curl
 
 set -euo pipefail
 
 #============================#
 #         CONFIG             #
 #============================#
-DOTS_DIR="$(pwd)"
+REPO_URL="https://github.com/zaeemali272/Hyprland-dots.git"
+DOTS_DIR="$HOME/.hyprland-dots"
 BACKUP_DIR="$HOME/.dotfiles_backup"
 BACKUP_SUFFIX=".bak.$(date +%Y%m%d%H%M%S)"
 
@@ -32,6 +33,19 @@ log()    { echo -e "\e[1;32m[INFO]\e[0m $*"; }
 warn()   { echo -e "\e[1;33m[WARN]\e[0m $*"; }
 error()  { echo -e "\e[1;31m[ERR ]\e[0m $*" >&2; }
 prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
+
+#============================#
+#    PREPARE DOTS REPO       #
+#============================#
+prepare_repo() {
+  if [[ -d "$DOTS_DIR/.git" ]]; then
+    log "Updating existing dotfiles repo…"
+    git -C "$DOTS_DIR" pull --rebase
+  else
+    log "Cloning dotfiles repo…"
+    git clone --depth=1 "$REPO_URL" "$DOTS_DIR"
+  fi
+}
 
 #============================#
 #      INSTALL PACKAGES      #
@@ -110,7 +124,7 @@ if [[ $EUID -eq 0 ]]; then
   exit 1
 fi
 
-# Run tasks
+prepare_repo
 install_pkgs "${CORE_PKGS[@]}"
 $EXTRAS && install_pkgs "${EXTRA_PKGS[@]}"
 $GAMING && install_pkgs "${GAMING_PKGS[@]}"
@@ -121,4 +135,3 @@ setup_user_services
 setup_system_services
 
 log "✅ Post-install setup complete!"
-
