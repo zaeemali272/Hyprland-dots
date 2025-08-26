@@ -22,21 +22,6 @@ let {
     type = "clock"
     format = "%a %d | %I:%M "
   }
-  
-  $waydroid = {
-    type = "custom"
-    bar = [
-      {
-        type = "label"
-        name = "waydroid"
-        class = "waydroid"
-        label = "{{watch:3000:~/.config/ironbar/scripts/waydroid_notifier.sh}}"
-		  on_click_left = "exec ~/.config/ironbar/scripts/open_waydroid.sh"
-        tooltip = "Waydroid Notifications"
-        tooltip_class = "tooltip-solid"
-      }
-    ]
-  }
 
   $zscroll = {
     type = "custom"
@@ -148,7 +133,7 @@ let {
     on_click_left = "exec kitty -e ~/.config/ironbar/scripts/popup/BatteryInfo.sh"
   }
 
-  $start  = [ $waydroid $workspaces ]
+  $start  = [ $workspaces ]
   $center = [ $clock $zscroll ]
   $end    = [ $tray $ultra_power_saving $warp $netspeed $sysinfoDynamic $volume $combinedBattery $wlogout ]
 }

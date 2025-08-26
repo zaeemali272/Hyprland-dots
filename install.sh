@@ -15,7 +15,7 @@ CORE_PKGS=(
   base base-devel git fish neovim wget curl unzip zip
   hyprland waybar ironbar kitty fuzzel
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
-  brightnessctl bluez bluez-utils networkmanager
+  brightnessctl bluez bluez-utils iwd
   starship eza ripgrep fd jq
 )
 
@@ -24,8 +24,6 @@ EXTRA_PKGS=( gparted htop ncdu rar unzip )
 GAMING_PKGS=(
   steam lutris wine winetricks mangohud goverlay gamemode
 )
-
-WAYDROID_PKGS=( waydroid python-gbinder )
 
 #============================#
 #         HELPERS            #
@@ -78,7 +76,10 @@ setup_user_services() {
 }
 
 setup_system_services() {
-  log "Installing bluetooth-autofix system service…"
+  log "Configuring system services (iwd instead of NetworkManager)…"
+  sudo systemctl disable --now NetworkManager.service || true
+  sudo systemctl enable --now iwd.service
+
   if [[ -f "$DOTS_DIR/systemd/system/bluetooth-autofix.service" ]]; then
     sudo cp "$DOTS_DIR/systemd/system/bluetooth-autofix.service" /etc/systemd/system/
     sudo systemctl daemon-reload
@@ -89,32 +90,15 @@ setup_system_services() {
 }
 
 #============================#
-#        WAYDROID            #
-#============================#
-setup_waydroid() {
-  install_pkgs "${WAYDROID_PKGS[@]}"
-  if $WAYDROID_INIT; then
-    log "Initializing Waydroid…"
-    sudo waydroid init
-  else
-    warn "Skipping Waydroid init (pass --waydroid-init to auto-run)."
-  fi
-}
-
-#============================#
 #        MAIN LOGIC          #
 #============================#
 EXTRAS=false
 GAMING=false
-WAYDROID=false
-WAYDROID_INIT=false
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --extras) EXTRAS=true ;;
     --gaming) GAMING=true ;;
-    --waydroid) WAYDROID=true ;;
-    --waydroid-init) WAYDROID=true; WAYDROID_INIT=true ;;
     *) error "Unknown option: $1"; exit 1 ;;
   esac
   shift
@@ -130,7 +114,6 @@ fi
 install_pkgs "${CORE_PKGS[@]}"
 $EXTRAS && install_pkgs "${EXTRA_PKGS[@]}"
 $GAMING && install_pkgs "${GAMING_PKGS[@]}"
-$WAYDROID && setup_waydroid
 
 sync_dotfiles
 set_fish_shell
@@ -138,3 +121,4 @@ setup_user_services
 setup_system_services
 
 log "✅ Post-install setup complete!"
+

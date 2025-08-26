@@ -4,15 +4,13 @@ color_space = "lch"
 palette = "dark"
 # Ensures a "readable contrast" (OPTIONAL, disabled by default)
 check_contrast = true
-saturation = 120
+saturation = 80
 # alpha = 100
 lighten= 60
 threshold = 20
 
 [templates]
-
-[templates.ironbar]
-template = 'ironbar.template.toml'
-target   = '/home/zaeem/.config/ironbar/ironbar_dynamic_colors.css'
-
+hyprland = { template = "colors.conf", target = "~/.config/hypr/hyprland/colors.conf" }
+ironbar  = { template = "ironbar.template.toml", target = "~/.config/ironbar/ironbar_dynamic_colors.css" }
+mako     = { template = "mako.conf", target = "~/.config/mako/config" }
 

@@ -1,6 +1,6 @@
 @import url("/home/zaeem/.config/ironbar/ironbar_dynamic_colors.css");
 
-@define-color bg #000;
+@define-color bg rgba(0, 0, 0, 0.9);
 
 label {
   font-family: "Inter", "CaskaydiaCove Nerd Font", sans-serif;
@@ -9,7 +9,11 @@ label {
 }
 
 .background {
-  background-color: transparent;
+   background-color: transparent;
+  /*
+   for full black bar
+   background-color: @bg;
+   border-radius: 15px; */
 }
 
 .tooltip-solid {
@@ -32,7 +36,7 @@ label {
 .ultra_power_saving,
 .workspaces {
   background-color: @bg;
-  opacity: 0.85;
+  opacity: 0.95;
   border-radius: 13px;
   transition: 0.2s ease-in-out;
   padding: 0 10px;
@@ -41,11 +45,11 @@ label {
 
 /* Tray */
 .widget-tray { color: @font6; }
-.widget-tray * { background-color: @bg; padding: 0 1px; }
+.widget-tray * { background-color: transparent; padding: 0 1px; }
 
 /* UPSM */
 .ultra_power_saving {
-  padding: 0 7px;
+  padding: 0 10px 0 7px;
   font-size: 16px;
 }
 
@@ -60,7 +64,7 @@ label {
 }
 
 /* Warp */
-.warp { color: @font7; padding: 0 11.9px 0 7px; font-size: 16px; }
+.warp { padding: 0 11.9px 0 7px; font-size: 16px; }
 
 /* Wlogout */
 .wlogout { font-size: 17px; color: @font0; }
@@ -101,13 +105,13 @@ label {
 
 .workspaces .item.focused {
   background: @accent;
-  color: @bg;
+  color: @font6;
   opacity: 1;
 }
 
 .workspaces button:hover {
   background: rgba(125, 207, 255, 0.3); /* semi-transparent accent */
-  color: @bg;
+  color: @font6;
   opacity: 0.85;
 }
 

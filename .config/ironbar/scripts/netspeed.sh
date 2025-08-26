@@ -9,11 +9,11 @@ MODE=$(<"$MODE_FILE")
 if [[ "$MODE" == "down" ]]; then
     STAT_FILE="/sys/class/net/$(ip route get 1.1.1.1 | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1);exit}}')/statistics/rx_bytes"
     PREV_FILE="/tmp/.netspeed_rx_prev"
-    ICON="󰁆"   # download icon
+    ICON=" "   # download icon
 else
     STAT_FILE="/sys/class/net/$(ip route get 1.1.1.1 | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1);exit}}')/statistics/tx_bytes"
     PREV_FILE="/tmp/.netspeed_tx_prev"
-    ICON="󰁞"   # upload icon
+    ICON=" "   # upload icon
 fi
 
 [[ -f "$STAT_FILE" ]] || exit 0

@@ -1,6 +1,6 @@
 # Appearance
-background-color=#0f0f0f99
-text-color=#e4e2e1
+background-color=#00000099
+text-color=#E1CCC4
 border-radius=14
 padding=10
 
@@ -20,17 +20,18 @@ width=370
 height=100
 border-size=2
 border-color=#010101
+
 # Notification timeouts
 default-timeout=2000
 
 [urgency=low]
 default-timeout=2000
-progress-color=over #e96b6b
+progress-color=over #D4531F
 
 [urgency=normal]
 default-timeout=2000
-progress-color=over #ef5353
+progress-color=over #9C1A1A
 
 [urgency=critical]
 default-timeout=2000
-progress-color=over #f53a3a
+progress-color=over #711884
