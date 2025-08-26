@@ -4,8 +4,8 @@
 STATE_FILE="/tmp/ultra_power_saving.state"
 
 if [ -f "$STATE_FILE" ]; then
-    echo "󰾆"
+    echo ""
 else
-    echo "󰁹"
+    echo ""
 fi
 

@@ -1,7 +1,7 @@
 # 🌐 Hyprland Arch Setup - Automated Dotfiles & Environment
 
 ####  A fully automated script to install, configure, and personalize your Arch Linux with Hyprland and a minimal Wayland-only desktop.
-#### This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences — with interactive choices for gaming setup and Waydroid.
+#### This setup includes your custom dotfiles, essential utilities, UI themes, and personal preferences — with interactive choices for gaming setup.
 
 ## 🎥 Quick Overview
 <p align="center">
@@ -11,7 +11,7 @@
 
 ### 📸 Screenshots
 
-<details> <summary>✨ New Desktop Setup</summary> <p align="center"> <img src=".assets/new_desktop_1.png" width="700"><br> <img src=".assets/new_desktop_2.png" width="700"> </p> </details> <details> <summary>🖼️ Old Desktop Setup (Before Migration)</summary> <p align="center"> <img src=".assets/old_desktop_1.png" width="700"><br> <img src=".assets/old_desktop_2.png" width="700"><br> <img src=".assets/old_desktop_3.png" width="700"> </p> </details> <details> <summary>🧩 Ironbar UI Preview (New vs Old)</summary> <p align="center"> <img src=".assets/new_ironbar.png" width="700"><br> <img src=".assets/old_ironbar.png" width="700"> </p> </details> <details> <summary>🔔 Mako Notification Style</summary> <p align="center"> <img src=".assets/mako.png" width="700"> </p> </details>
+<details> <summary>✨ New Desktop Setup</summary> <p align="center"> <img src=".assets/new_desktop_1.png" width="700"><br> <img src=".assets/new_desktop_2.png" width="700"><br> <img src=".assets/new_desktop_3.png" width="700"> </p> </details> <details> <summary>🖼️ Old Desktop Setup (Before Migration)</summary> <p align="center"> <img src=".assets/old_desktop_1.png" width="700"><br> <img src=".assets/old_desktop_2.png" width="700"><br> <img src=".assets/old_desktop_3.png" width="700"><br> <img src=".assets/old_desktop_4.png" width="700"><br> <img src=".assets/old_desktop_5.png" width="700"> </p> </details> <details> <summary>🧩 Ironbar UI Preview (New vs Old)</summary> <p align="center"> <img src=".assets/new_ironbar.png" width="700"><br> <img src=".assets/old_ironbar.png" width="700"> </p> </details> <details> <summary>🔔 Mako Notification Style</summary> <p align="center"> <img src=".assets/mako.png" width="700"> </p> </details>
 <details> <summary>🖱️ Fuzzel Launcher Previews</summary>
 <p align="center">
   <img src=".assets/fuzzel_1.png" width="700"><br>
@@ -72,8 +72,6 @@ You can control behavior with flags:
 |------------------------|---------------------------------------------------|
 | `--extras`             | Install optional extra utilities (gparted, htop, ncdu, etc.) |
 | `--gaming`             | Install gaming stack (Steam, Lutris, Wine, Gamemode, MangoHud) |
-| `--waydroid`           | Install Waydroid (Android in container)         |
-| `--waydroid-init`      | Install Waydroid **and** automatically run `waydroid init` |
 | `--dry-run`            | Show what would change (no writes)              |
 | `--force`              | Overwrite existing files without backup (**dangerous**) |
 | `--no-overwrite`       | Skip overwriting existing files                  |
@@ -94,15 +92,6 @@ When prompted, you can install the gaming stack:
 - **Game-related optimizations**  
 
 If you say **no**, the related scripts/services are removed so your environment stays clean.
-
-
-## 📱 Waydroid Setup (Optional)
-
-The installer will ask if you want Waydroid:
-
-- If yes → installs Waydroid + helper scripts + systemd user services.
-- If no → asks if you want to keep the scripts (for later manual setup) or purge them completely.
-
 
 ## 🔐 Autologin
 
