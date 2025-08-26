@@ -1,6 +1,8 @@
 #!/usr/bin/env bash
 # Install.sh – Arch post-install automation (Hyprland, Ironbar, etc.)
-# Self-contained: can be run directly via curl
+# Works in two modes:
+#  1) curl | bash → auto-clones into ~/.hyprland-dots
+#  2) ./Install.sh inside repo → uses current directory
 
 set -euo pipefail
 
@@ -8,7 +10,7 @@ set -euo pipefail
 #         CONFIG             #
 #============================#
 REPO_URL="https://github.com/zaeemali272/Hyprland-dots.git"
-DOTS_DIR="$HOME/.hyprland-dots"
+DOTS_DIR=""
 BACKUP_DIR="$HOME/.dotfiles_backup"
 BACKUP_SUFFIX=".bak.$(date +%Y%m%d%H%M%S)"
 
@@ -35,15 +37,22 @@ error()  { echo -e "\e[1;31m[ERR ]\e[0m $*" >&2; }
 prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
 
 #============================#
-#    PREPARE DOTS REPO       #
+#    DETECT EXECUTION MODE   #
 #============================#
-prepare_repo() {
-  if [[ -d "$DOTS_DIR/.git" ]]; then
-    log "Updating existing dotfiles repo…"
-    git -C "$DOTS_DIR" pull --rebase
+detect_mode() {
+  # If script file exists inside a git repo → local mode
+  if git rev-parse --show-toplevel >/dev/null 2>&1; then
+    DOTS_DIR="$(git rev-parse --show-toplevel)"
+    log "Running in local mode (DOTS_DIR=$DOTS_DIR)"
   else
-    log "Cloning dotfiles repo…"
-    git clone --depth=1 "$REPO_URL" "$DOTS_DIR"
+    DOTS_DIR="$HOME/.hyprland-dots"
+    if [[ -d "$DOTS_DIR/.git" ]]; then
+      log "Updating existing dotfiles repo…"
+      git -C "$DOTS_DIR" pull --rebase
+    else
+      log "Cloning dotfiles repo…"
+      git clone --depth=1 "$REPO_URL" "$DOTS_DIR"
+    fi
   fi
 }
 
@@ -124,7 +133,7 @@ if [[ $EUID -eq 0 ]]; then
   exit 1
 fi
 
-prepare_repo
+detect_mode
 install_pkgs "${CORE_PKGS[@]}"
 $EXTRAS && install_pkgs "${EXTRA_PKGS[@]}"
 $GAMING && install_pkgs "${GAMING_PKGS[@]}"
