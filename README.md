@@ -46,8 +46,21 @@ Hyprland-dots/
 
 This script is intended for a fresh Arch Linux minimal install.
 
-### 2. Run the installer
+### 2. Clone the repo
 
+```
+git clone https://github.com/zaeemali272/Hyprland-dots.git                 
+cd Hyprland-dots
+```
+
+### 3. Run the installer
+
+```
+chmod +x install.sh
+./install.sh
+```
+
+### Alternate method
 ```
 bash <(curl -s https://raw.githubusercontent.com/zaeemali272/Hyprland-dots/main/Install.sh)
 
