@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Install.sh – Arch post-install automation (Hyprland, Ironbar, etc.)
-# Safe, idempotent, modular
+# Safe, idempotent, modular, resumable
 
 set -euo pipefail
 
@@ -12,7 +12,7 @@ BACKUP_DIR="$HOME/.dotfiles_backup"
 BACKUP_SUFFIX=".bak.$(date +%Y%m%d%H%M%S)"
 
 CORE_PKGS=(
-  base base-devel git fish neovim wget curl unzip zip
+  base base-devel git fish neovim wget curl unzip zip rsync
   hyprland kitty fuzzel
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
   brightnessctl bluez bluez-utils iwd
@@ -20,11 +20,7 @@ CORE_PKGS=(
 )
 
 EXTRA_PKGS=( gparted htop ncdu rar unzip )
-
-GAMING_PKGS=(
-  steam lutris wine winetricks mangohud goverlay gamemode
-)
-
+GAMING_PKGS=( steam lutris wine winetricks mangohud goverlay gamemode )
 AUR_PKGS=( ironbar-git )
 
 #============================#
@@ -39,7 +35,7 @@ prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
 #     CONNECTIVITY CHECK     #
 #============================#
 check_internet() {
-  log "Checking internet connectivity…"
+  log "🔍 Checking internet connectivity…"
   if ! ping -c 1 archlinux.org &>/dev/null; then
     error "No internet connection detected. Please connect before running this script."
     exit 1
@@ -50,15 +46,15 @@ check_internet() {
 #   SYSTEM UPDATE + MIRRORS  #
 #============================#
 system_prep() {
-  log "Updating system package database…"
+  log "📦 Updating system package database…"
   sudo pacman -Syyu --noconfirm
 
   if ! pacman -Q reflector &>/dev/null; then
-    log "Installing reflector for mirror optimization…"
+    log "⬇️ Installing reflector for mirror optimization…"
     sudo pacman -S --needed --noconfirm reflector
   fi
 
-  log "Optimizing mirrors with reflector…"
+  log "🌐 Optimizing mirrors with reflector (this may take a while)…"
   sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
 }
 
@@ -67,12 +63,13 @@ system_prep() {
 #============================#
 install_pkgs() {
   local pkgs=("$@")
+  log "📦 Installing packages: ${pkgs[*]}"
   sudo pacman -Syu --needed --noconfirm "${pkgs[@]}"
 }
 
 ensure_yay() {
   if ! command -v yay &>/dev/null; then
-    log "Installing yay (AUR helper)…"
+    log "⬇️ Installing yay (AUR helper)…"
     tmpdir=$(mktemp -d)
     git clone https://aur.archlinux.org/yay.git "$tmpdir"
     pushd "$tmpdir"
@@ -80,12 +77,13 @@ ensure_yay() {
     popd
     rm -rf "$tmpdir"
   else
-    log "yay already installed."
+    log "👍 yay already installed."
   fi
 }
 
 install_aur() {
   local pkgs=("$@")
+  log "📦 Installing AUR packages: ${pkgs[*]}"
   ensure_yay
   yay -Syu --needed --noconfirm "${pkgs[@]}"
 }
@@ -94,7 +92,7 @@ install_aur() {
 #        DOTFILES SYNC       #
 #============================#
 sync_dotfiles() {
-  log "Syncing dotfiles…"
+  log "🗂️ Syncing dotfiles into ~/.config …"
   rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
     --exclude ".git" --exclude "README.md" \
     --exclude "Install.sh" \
@@ -105,6 +103,7 @@ sync_dotfiles() {
 #     SHELL CONFIG           #
 #============================#
 set_fish_shell() {
+  log "🐟 Configuring fish shell…"
   if ! grep -q "$(command -v fish)" /etc/shells; then
     log "Adding fish to /etc/shells"
     echo "$(command -v fish)" | sudo tee -a /etc/shells
@@ -119,17 +118,18 @@ set_fish_shell() {
 #     SYSTEMD SERVICES       #
 #============================#
 setup_user_services() {
-  log "Enabling user services (Ironbar etc)…"
+  log "⚙️ Enabling user services (Ironbar etc)…"
   systemctl --user daemon-reload
   systemctl --user enable ironbar.service || true
 }
 
 setup_system_services() {
-  log "Configuring system services (iwd instead of NetworkManager)…"
+  log "⚙️ Configuring system services (iwd instead of NetworkManager)…"
   sudo systemctl disable --now NetworkManager.service || true
   sudo systemctl enable --now iwd.service
 
   if [[ -f "$DOTS_DIR/systemd/system/bluetooth-autofix.service" ]]; then
+    log "🔧 Installing bluetooth-autofix service"
     sudo cp "$DOTS_DIR/systemd/system/bluetooth-autofix.service" /etc/systemd/system/
     sudo systemctl daemon-reload
     sudo systemctl enable bluetooth-autofix.service
@@ -139,48 +139,64 @@ setup_system_services() {
 }
 
 #============================#
-#        MAIN LOGIC          #
+#        MAIN STAGES         #
+#============================#
+stage_pkgs() {
+  check_internet
+  system_prep
+  install_pkgs "${CORE_PKGS[@]}"
+  $EXTRAS && install_pkgs "${EXTRA_PKGS[@]}"
+  $GAMING && install_pkgs "${GAMING_PKGS[@]}"
+  install_aur "${AUR_PKGS[@]}"
+}
+
+stage_dotfiles() {
+  sync_dotfiles
+  set_fish_shell
+}
+
+stage_services() {
+  setup_user_services
+  setup_system_services
+}
+
+#============================#
+#        ENTRY POINT         #
 #============================#
 EXTRAS=false
 GAMING=false
+STAGE="all"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     --extras) EXTRAS=true ;;
     --gaming) GAMING=true ;;
+    pkgs|dotfiles|services|all) STAGE=$1 ;;
     *) error "Unknown option: $1"; exit 1 ;;
   esac
   shift
 done
 
-# Require non-root
 if [[ $EUID -eq 0 ]]; then
   error "Run as user, not root."
   exit 1
 fi
 
-# Run tasks
-check_internet
-system_prep
-install_pkgs "${CORE_PKGS[@]}"
-$EXTRAS && install_pkgs "${EXTRA_PKGS[@]}"
-$GAMING && install_pkgs "${GAMING_PKGS[@]}"
-install_aur "${AUR_PKGS[@]}"
+case $STAGE in
+  pkgs)      stage_pkgs ;;
+  dotfiles)  stage_dotfiles ;;
+  services)  stage_services ;;
+  all)       stage_pkgs; stage_dotfiles; stage_services ;;
+esac
 
-sync_dotfiles
-set_fish_shell
-setup_user_services
-setup_system_services
+log "✅ Post-install stage [$STAGE] complete!"
 
-log "✅ Post-install setup complete!"
-
-#============================#
-#        REBOOT PROMPT       #
-#============================#
-if prompt "Reboot now to apply changes?"; then
-  log "Rebooting…"
-  sudo reboot
-else
-  log "Reboot skipped. Please reboot manually later."
+if [[ $STAGE == "all" ]]; then
+  if prompt "Reboot now to apply changes?"; then
+    log "Rebooting…"
+    sudo reboot
+  else
+    log "Reboot skipped. Please reboot manually later."
+  fi
 fi
 
