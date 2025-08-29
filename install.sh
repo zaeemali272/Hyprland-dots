@@ -1,22 +1,19 @@
 #!/usr/bin/env bash
 # Install.sh – Arch post-install automation (Hyprland, Ironbar, etc.)
-# Works in two modes:
-#  1) curl | bash → auto-clones into ~/.hyprland-dots
-#  2) ./Install.sh inside repo → uses current directory
+# Safe, idempotent, modular
 
 set -euo pipefail
 
 #============================#
 #         CONFIG             #
 #============================#
-REPO_URL="https://github.com/zaeemali272/Hyprland-dots.git"
-DOTS_DIR=""
+DOTS_DIR="$(pwd)"
 BACKUP_DIR="$HOME/.dotfiles_backup"
 BACKUP_SUFFIX=".bak.$(date +%Y%m%d%H%M%S)"
 
 CORE_PKGS=(
   base base-devel git fish neovim wget curl unzip zip
-  hyprland waybar ironbar kitty fuzzel
+  hyprland kitty fuzzel
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
   brightnessctl bluez bluez-utils iwd
   starship eza ripgrep fd jq
@@ -28,6 +25,8 @@ GAMING_PKGS=(
   steam lutris wine winetricks mangohud goverlay gamemode
 )
 
+AUR_PKGS=( ironbar-git )
+
 #============================#
 #         HELPERS            #
 #============================#
@@ -37,31 +36,58 @@ error()  { echo -e "\e[1;31m[ERR ]\e[0m $*" >&2; }
 prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
 
 #============================#
-#    DETECT EXECUTION MODE   #
+#     CONNECTIVITY CHECK     #
 #============================#
-detect_mode() {
-  # If script file exists inside a git repo → local mode
-  if git rev-parse --show-toplevel >/dev/null 2>&1; then
-    DOTS_DIR="$(git rev-parse --show-toplevel)"
-    log "Running in local mode (DOTS_DIR=$DOTS_DIR)"
-  else
-    DOTS_DIR="$HOME/.hyprland-dots"
-    if [[ -d "$DOTS_DIR/.git" ]]; then
-      log "Updating existing dotfiles repo…"
-      git -C "$DOTS_DIR" pull --rebase
-    else
-      log "Cloning dotfiles repo…"
-      git clone --depth=1 "$REPO_URL" "$DOTS_DIR"
-    fi
+check_internet() {
+  log "Checking internet connectivity…"
+  if ! ping -c 1 archlinux.org &>/dev/null; then
+    error "No internet connection detected. Please connect before running this script."
+    exit 1
   fi
 }
 
 #============================#
-#      INSTALL PACKAGES      #
+#   SYSTEM UPDATE + MIRRORS  #
+#============================#
+system_prep() {
+  log "Updating system package database…"
+  sudo pacman -Syyu --noconfirm
+
+  if ! pacman -Q reflector &>/dev/null; then
+    log "Installing reflector for mirror optimization…"
+    sudo pacman -S --needed --noconfirm reflector
+  fi
+
+  log "Optimizing mirrors with reflector…"
+  sudo reflector --latest 20 --sort rate --save /etc/pacman.d/mirrorlist
+}
+
+#============================#
+#   PACMAN & YAY INSTALLER   #
 #============================#
 install_pkgs() {
   local pkgs=("$@")
   sudo pacman -Syu --needed --noconfirm "${pkgs[@]}"
+}
+
+ensure_yay() {
+  if ! command -v yay &>/dev/null; then
+    log "Installing yay (AUR helper)…"
+    tmpdir=$(mktemp -d)
+    git clone https://aur.archlinux.org/yay.git "$tmpdir"
+    pushd "$tmpdir"
+    makepkg -si --noconfirm
+    popd
+    rm -rf "$tmpdir"
+  else
+    log "yay already installed."
+  fi
+}
+
+install_aur() {
+  local pkgs=("$@")
+  ensure_yay
+  yay -Syu --needed --noconfirm "${pkgs[@]}"
 }
 
 #============================#
@@ -133,10 +159,13 @@ if [[ $EUID -eq 0 ]]; then
   exit 1
 fi
 
-detect_mode
+# Run tasks
+check_internet
+system_prep
 install_pkgs "${CORE_PKGS[@]}"
 $EXTRAS && install_pkgs "${EXTRA_PKGS[@]}"
 $GAMING && install_pkgs "${GAMING_PKGS[@]}"
+install_aur "${AUR_PKGS[@]}"
 
 sync_dotfiles
 set_fish_shell
@@ -144,3 +173,14 @@ setup_user_services
 setup_system_services
 
 log "✅ Post-install setup complete!"
+
+#============================#
+#        REBOOT PROMPT       #
+#============================#
+if prompt "Reboot now to apply changes?"; then
+  log "Rebooting…"
+  sudo reboot
+else
+  log "Reboot skipped. Please reboot manually later."
+fi
+
