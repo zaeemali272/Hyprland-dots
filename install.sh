@@ -14,7 +14,7 @@ CORE_PKGS=(
   base base-devel git fish neovim wget curl unzip zip rsync
   hyprland kitty fuzzel
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
-  brightnessctl bluez bluez-utils iwd
+  brightnessctl bluez bluez-utils iwd dhcpcd
   starship eza ripgrep fd jq
 )
 
@@ -30,9 +30,6 @@ warn()   { echo -e "\e[1;33m[WARN]\e[0m $*"; }
 error()  { echo -e "\e[1;31m[ERR ]\e[0m $*" >&2; }
 prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
 
-#============================#
-#      SAFE EXECUTION        #
-#============================#
 safe_run() {
   local cmd="$1"
   local desc="$2"
@@ -51,13 +48,52 @@ safe_run() {
 }
 
 #============================#
+#  PRE-NETWORK FIX           #
+#============================#
+pre_network_fix() {
+  log "💾 Installing nano and fixing /etc/resolv.conf"
+  sudo pacman -S --needed --noconfirm nano
+  echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf >/dev/null
+}
+
+#============================#
 #     CONNECTIVITY CHECK     #
 #============================#
 check_internet() {
   log "🔍 Checking internet connectivity…"
   if ! ping -c 1 archlinux.org &>/dev/null; then
-    error "No internet connection detected. Please connect before running this script."
-    exit 1
+    warn "No internet detected. Attempting to start DHCP for Ethernet…"
+    setup_ethernet_dhcp
+    sleep 3
+    if ! ping -c 1 archlinux.org &>/dev/null; then
+      error "Still no internet. Please fix network manually."
+      exit 1
+    fi
+  fi
+}
+
+#============================#
+#  ETHERNET DHCP SETUP       #
+#============================#
+setup_ethernet_dhcp() {
+  log "🖧 Setting up systemd-networkd + dhcpcd for Ethernet…"
+
+  # Enable dhcpcd service for all Ethernet interfaces
+  safe_run "sudo systemctl enable --now dhcpcd" "Enabling dhcpcd service"
+
+  # Fallback: systemd-networkd config
+  ETH_IFACE=$(ip -o link show | awk -F': ' '/en|eth/{print $2}' | head -n1)
+  if [[ -n "$ETH_IFACE" ]]; then
+    NET_FILE="/etc/systemd/network/20-wired.network"
+    if [[ ! -f "$NET_FILE" ]]; then
+      log "Creating minimal networkd config for $ETH_IFACE"
+      echo -e "[Match]\nName=$ETH_IFACE\n\n[Network]\nDHCP=yes" | sudo tee "$NET_FILE" >/dev/null
+      safe_run "sudo systemctl enable --now systemd-networkd" "Enabling systemd-networkd"
+      safe_run "sudo systemctl enable --now systemd-resolved" "Enabling systemd-resolved"
+      safe_run "sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf" "Linking resolv.conf"
+    fi
+  else
+    warn "No Ethernet interface found; cannot setup DHCP automatically"
   fi
 }
 
@@ -73,7 +109,7 @@ system_prep() {
 }
 
 #============================#
-#   PACMAN & YAY INSTALLER   #
+#   PACMAN & AUR INSTALLER   #
 #============================#
 install_pkgs() {
   local pkgs=("$@")
@@ -88,10 +124,15 @@ ensure_yay() {
   fi
 }
 
+update_yay() {
+  ensure_yay
+  safe_run "yay -Syu --noconfirm" "Updating AUR packages and dependencies"
+}
+
 install_aur() {
   local pkgs=("$@")
   ensure_yay
-  safe_run "yay -Syu --needed --noconfirm \"\${pkgs[@]}\"" "Installing AUR packages: ${pkgs[*]}"
+  safe_run "yay -S --needed --noconfirm \"\${pkgs[@]}\"" "Installing AUR packages: ${pkgs[*]}"
 }
 
 #============================#
@@ -112,6 +153,10 @@ sync_dotfiles() {
   if [[ -d "$DOTS_DIR/.local" ]]; then
     safe_run "rsync -avh --backup --suffix=\"$BACKUP_SUFFIX\" \"$DOTS_DIR/.local/\" \"$HOME/.local/\"" "Syncing local files to ~/.local"
   fi
+
+  # ✅ Create Pictures folder
+  mkdir -p "$HOME/Pictures"
+  log "📁 Created $HOME/Pictures folder"
 }
 
 #============================#
@@ -132,7 +177,6 @@ setup_user_services() {
 }
 
 setup_system_services() {
-  # Disable NetworkManager safely
   if systemctl is-active --quiet NetworkManager.service; then
     safe_run "sudo systemctl disable --now NetworkManager.service" "Disabling NetworkManager.service"
   fi
@@ -146,12 +190,8 @@ setup_system_services() {
     safe_run "echo -e \"[General]\nEnableNetworkConfiguration=true\" | sudo tee \"$IWD_CONF_FILE\" >/dev/null" "Creating minimal iwd config"
   fi
 
-  wifi_iface=$(ip -o link show | awk -F': ' '/wl/{print $2}' | head -n1)
-  if [[ -n "$wifi_iface" ]]; then
-    safe_run "sudo systemctl enable --now iwd.service" "Enabling iwd.service for interface $wifi_iface"
-  else
-    warn "⚠️ No Wi-Fi interface detected; skipping iwd.service start"
-  fi
+  # ✅ Always enable iwd.service, even if Wi-Fi is not present
+  safe_run "sudo systemctl enable --now iwd.service" "Enabling iwd.service"
 
   if [[ -f "$DOTS_DIR/systemd/system/bluetooth-autofix.service" ]]; then
     safe_run "sudo cp \"$DOTS_DIR/systemd/system/bluetooth-autofix.service\" /etc/systemd/system/ && sudo systemctl daemon-reload && sudo systemctl enable bluetooth-autofix.service" "Installing bluetooth-autofix.service"
@@ -161,9 +201,30 @@ setup_system_services() {
 }
 
 #============================#
+#  AUTOLOGIN SETUP           #
+#============================#
+setup_autologin() {
+  local user="$USER"
+  local service_dir="/etc/systemd/system/getty@tty1.service.d"
+  local override_file="$service_dir/override.conf"
+
+  log "🔑 Setting up autologin for user '$user' on tty1"
+  
+  # Create directory if missing
+  sudo mkdir -p "$service_dir"
+
+  # Write override.conf
+  echo -e "[Service]\nExecStart=\nExecStart=-/usr/bin/agetty --autologin $user %I \$TERM >/dev/null 2>&1" | sudo tee "$override_file" >/dev/null
+
+  # Reload systemd daemon
+  sudo systemctl daemon-reexec
+}
+
+#============================#
 #        MAIN STAGES         #
 #============================#
 stage_pkgs() {
+  safe_run "pre_network_fix" "Pre-network setup (nano + resolv.conf)"
   safe_run "check_internet" "Checking internet"
   safe_run "system_prep" "System update and mirror optimization"
   safe_run "install_pkgs \"\${CORE_PKGS[@]}\"" "Installing core packages"
@@ -180,6 +241,7 @@ stage_dotfiles() {
 stage_services() {
   safe_run "setup_user_services" "Reloading user services"
   safe_run "setup_system_services" "Configuring system services"
+  safe_run "setup_autologin" "Setting up autologin for current user"
 }
 
 #============================#
