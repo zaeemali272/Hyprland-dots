@@ -15,12 +15,12 @@ CORE_PKGS=(
   hyprland kitty fuzzel
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
   brightnessctl bluez bluez-utils iwd dhcpcd
-  starship eza ripgrep fd jq
+  starship eza ripgrep fd jq kvantum materia-gtk-theme
 )
 
 EXTRA_PKGS=( ncdu rar unzip )
 GAMING_PKGS=( steam lutris wine winetricks mangohud goverlay gamemode )
-AUR_PKGS=( ironbar-git kvantum kvantum-qt5 kvantum-theme-materia materia-gtk-theme )
+AUR_PKGS=( ironbar-git kvantum-qt5 kvantum-theme-materia )
 
 #============================#
 #         HELPERS            #
@@ -131,8 +131,20 @@ update_yay() {
 
 install_aur() {
   local pkgs=("$@")
-  ensure_yay
-  safe_run "yay -S --needed --noconfirm \"\${pkgs[@]}\"" "Installing AUR packages: ${pkgs[*]}"
+  local virt
+  virt=$(systemd-detect-virt || true)
+
+  if [[ "$virt" == "none" ]]; then
+    log "🏗️ Bare metal detected – using yay for AUR packages."
+    ensure_yay
+    safe_run "yay -S --needed --noconfirm \"\${pkgs[@]}\"" "Installing AUR packages: ${pkgs[*]}"
+  else
+    log "💻 VM detected ($virt) – using makepkg directly for AUR packages."
+    safe_run "sudo pacman -S --needed --noconfirm git base-devel" "Installing build tools"
+    for pkg in "${pkgs[@]}"; do
+      safe_run "git clone https://aur.archlinux.org/$pkg.git /tmp/$pkg && cd /tmp/$pkg && makepkg -si --noconfirm && cd -" "Building $pkg from AUR"
+    done
+  fi
 }
 
 #============================#
