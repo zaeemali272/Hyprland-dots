@@ -19,9 +19,9 @@ CORE_PKGS=(
   starship eza ripgrep fd jq
 )
 
-EXTRA_PKGS=( gparted htop ncdu rar unzip )
+EXTRA_PKGS=( ncdu rar unzip )
 GAMING_PKGS=( steam lutris wine winetricks mangohud goverlay gamemode )
-AUR_PKGS=( ironbar-git )
+AUR_PKGS=( ironbar-git kvantum kvantum-qt5 kvantum-theme-materia materia-gtk-theme )
 
 #============================#
 #         HELPERS            #
@@ -97,6 +97,27 @@ sync_dotfiles() {
     --exclude ".git" --exclude "README.md" \
     --exclude "Install.sh" \
     "$DOTS_DIR"/.config/ "$HOME/.config/"
+
+  if [[ -d "$DOTS_DIR/.icons" ]]; then
+    log "🎨 Syncing icons into ~/.icons …"
+    rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
+      "$DOTS_DIR"/.icons/ "$HOME/.icons/"
+
+    # --- unzip any archives in ~/.icons ---
+    shopt -s nullglob
+    for zipfile in "$HOME/.icons"/*.zip; do
+      log "📦 Extracting icon archive: $(basename "$zipfile")"
+      unzip -o "$zipfile" -d "$HOME/.icons/"
+      rm -f "$zipfile"
+    done
+    shopt -u nullglob
+  fi
+
+  if [[ -d "$DOTS_DIR/.local" ]]; then
+    log "📂 Syncing local files into ~/.local …"
+    rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
+      "$DOTS_DIR"/.local/ "$HOME/.local/"
+  fi
 }
 
 #============================#
@@ -118,18 +139,45 @@ set_fish_shell() {
 #     SYSTEMD SERVICES       #
 #============================#
 setup_user_services() {
-  log "⚙️ Enabling user services (Ironbar etc)…"
+  log "⚙️ Reloading user systemd daemon…"
   systemctl --user daemon-reload
-  systemctl --user enable ironbar.service || true
 }
 
 setup_system_services() {
-  log "⚙️ Configuring system services (iwd instead of NetworkManager)…"
-  sudo systemctl disable --now NetworkManager.service || true
-  sudo systemctl enable --now iwd.service
+  log "⚙️ Configuring system services…"
 
+  # Disable NetworkManager safely
+  if systemctl is-active --quiet NetworkManager.service; then
+    log "🛑 Disabling NetworkManager.service"
+    sudo systemctl disable --now NetworkManager.service || true
+  else
+    log "ℹ️ NetworkManager not active, skipping disable"
+  fi
+
+  # Create minimal iwd config if missing
+  IWD_CONF_DIR="/etc/iwd"
+  IWD_CONF_FILE="$IWD_CONF_DIR/main.conf"
+  if [[ ! -d "$IWD_CONF_DIR" ]]; then
+    log "📁 Creating iwd config directory $IWD_CONF_DIR"
+    sudo mkdir -p "$IWD_CONF_DIR"
+  fi
+  if [[ ! -f "$IWD_CONF_FILE" ]]; then
+    log "📝 Creating minimal iwd config at $IWD_CONF_FILE"
+    echo -e "[General]\nEnableNetworkConfiguration=true" | sudo tee "$IWD_CONF_FILE" >/dev/null
+  fi
+
+  # Only enable iwd if a Wi-Fi interface exists
+  wifi_iface=$(ip -o link show | awk -F': ' '/wl/{print $2}' | head -n1)
+  if [[ -n "$wifi_iface" ]]; then
+    log "📶 Enabling iwd.service for interface $wifi_iface"
+    sudo systemctl enable --now iwd.service
+  else
+    warn "⚠️ No Wi-Fi interface detected; skipping iwd.service start"
+  fi
+
+  # Install bluetooth-autofix service if it exists
   if [[ -f "$DOTS_DIR/systemd/system/bluetooth-autofix.service" ]]; then
-    log "🔧 Installing bluetooth-autofix service"
+    log "🔧 Installing bluetooth-autofix.service"
     sudo cp "$DOTS_DIR/systemd/system/bluetooth-autofix.service" /etc/systemd/system/
     sudo systemctl daemon-reload
     sudo systemctl enable bluetooth-autofix.service
@@ -167,6 +215,21 @@ EXTRAS=false
 GAMING=false
 STAGE="all"
 
+if [[ $EUID -eq 0 ]]; then
+  error "Run as user, not root."
+  exit 1
+fi
+
+# --- 🔑 Keep sudo alive across the whole script ---
+sudo -v
+while true; do
+  sudo -n true
+  sleep 60
+  kill -0 "$$" || exit
+done 2>/dev/null &
+trap 'kill $(jobs -p) 2>/dev/null || true' EXIT
+# -----------------------------------------------
+
 while [[ $# -gt 0 ]]; do
   case $1 in
     --extras) EXTRAS=true ;;
@@ -176,11 +239,6 @@ while [[ $# -gt 0 ]]; do
   esac
   shift
 done
-
-if [[ $EUID -eq 0 ]]; then
-  error "Run as user, not root."
-  exit 1
-fi
 
 case $STAGE in
   pkgs)      stage_pkgs ;;
