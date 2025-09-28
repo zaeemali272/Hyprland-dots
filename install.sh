@@ -301,8 +301,8 @@ install_fusuma() {
 setup_icons() {
   if [[ $NO_ICONS -eq 0 ]] && pacman -Q illogical-impulse-oneui4-icons-git &>/dev/null; then
     if command -v gsettings &>/dev/null; then
-      safe_run gsettings set org.gnome.desktop.interface icon-theme "OneUi-Dark" \
-        "Setting GNOME icon theme to OneUi-Dark"
+      safe_run gsettings set org.gnome.desktop.interface icon-theme "OneUI-dark" \
+        "Setting GNOME icon theme to OneUI-dark"
     else
       warn "gsettings not found – skipping icon theme setup"
     fi
