@@ -4,10 +4,8 @@ alias pamcan pacman
 alias ls 'eza --icons'
 alias clear "printf '\033[2J\033[3J\033[1;1H'"
 
-alias q 'qs -c ii'
 alias yt 'yt-dlp'
 alias gl 'gallery-dl'
-alias ai 'tgpt'
 
 # Lenovo Conservation Mode
 alias con 'sudo sh -c "echo 1 > /sys/bus/platform/drivers/ideapad_acpi/VPC2004:00/conservation_mode"'
@@ -19,7 +17,7 @@ alias checkp 'cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor'
 
 # System controls
 alias bon 'sudo systemctl restart bluetooth.service'
-alias bc 'bluetoothctl connect 41:42:E8:67:6B:66'
+alias bac 'bluetoothctl connect 41:42:E8:67:6B:66'
 alias mon 'sudo systemctl enable mysqld'
 alias moff 'sudo systemctl disable mysqld'
 
