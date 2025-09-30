@@ -30,7 +30,7 @@ CORE_PKGS=(
   brightnessctl bluez bluez-utils iwd
   starship eza ripgrep fd jq
   swww nemo nemo-fileroller
-  ruby-fusuma ruby-fusuma-plugin-sendkey ffmpeg mako wireguard-tools
+  ffmpeg mako wireguard-tools
   vlc vlc-plugins-all mission-center gnome-keyring ufw systemd-resolvconf
 )
 
@@ -50,6 +50,7 @@ GAMING_PKGS=(
 AUR_PKGS=(
   ironbar-git rar ncdu tor-browser-bin 
   hyprshot cliphist wlogout wallust xdotool eog visual-studio-code-bin
+  ruby-fusuma ruby-fusuma-plugin-sendkey
 )
 
 FONTS_PKGS=(
