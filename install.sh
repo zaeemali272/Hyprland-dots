@@ -3,6 +3,19 @@
 # Safe, idempotent, modular, resumable
 set -euo pipefail
 
+
+#============================#
+#        ENTRY POINT         #
+#============================#
+SKIPPED=0
+EXTRAS=0
+GAMING=0
+NO_FONTS=0
+NO_THEMES=0
+NO_ICONS=0
+STAGE="all"
+
+
 #============================#
 #         CONFIG             #
 #============================#
@@ -315,59 +328,58 @@ setup_icons() {
 #   CPU GOVERNOR AUTO-SWITCH #
 #============================#
 setup_cpu_governor() {
-  log "⚡ Setting up CPU governor auto-switch (AC vs Battery)"
+log "⚡ Setting up CPU governor auto-switch (AC vs Battery)"
 
-  # Install the script
-  cat <<'EOF' | sudo tee /usr/local/bin/set-governor.sh >/dev/null
+# Script to set governor
+
+cat <<'EOF' | sudo tee /usr/local/bin/set-governor.sh >/dev/null
 #!/bin/sh
-
 STATUS=$(cat /sys/class/power_supply/BAT*/status 2>/dev/null)
 
 if echo "$STATUS" | grep -Eq "Charging|Not charging"; then
-  AC_ON=1
+AC_ON=1
 else
-  AC_ON=0
+AC_ON=0
 fi
 
 AVAILABLE=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors 2>/dev/null)
 
 if echo "$AVAILABLE" | grep -qw performance; then
-  PERF="performance"
+PERF="performance"
 else
-  PERF=$(echo "$AVAILABLE" | awk '{print $1}')
+PERF=$(echo "$AVAILABLE" | awk '{print $1}')
 fi
 
 if echo "$AVAILABLE" | grep -qw powersave; then
-  SAVE="powersave"
+SAVE="powersave"
 else
-  SAVE="$PERF"
+SAVE="$PERF"
 fi
 
 for c in /sys/devices/system/cpu/cpu[0-9]*; do
-  if [ -f "$c/cpufreq/scaling_governor" ]; then
-    if [ "$AC_ON" = "1" ]; then
-      echo "$PERF" > "$c/cpufreq/scaling_governor"
-      logger "Governor set to $PERF (AC connected: $STATUS)"
-    else
-      echo "$SAVE" > "$c/cpufreq/scaling_governor"
-      logger "Governor set to $SAVE (on battery: $STATUS)"
-    fi
-  fi
+if [ -f "$c/cpufreq/scaling_governor" ]; then
+if [ "$AC_ON" = "1" ]; then
+echo "$PERF" > "$c/cpufreq/scaling_governor"
+logger "Governor set to $PERF (AC connected: $STATUS)"
+else
+echo "$SAVE" > "$c/cpufreq/scaling_governor"
+logger "Governor set to $SAVE (on battery: $STATUS)"
+fi
+fi
 done
 EOF
 
-  sudo chmod +x /usr/local/bin/set-governor.sh
+sudo chmod +x /usr/local/bin/set-governor.sh
 
-  # Install udev rules to react to power events
-  cat <<'EOF' | sudo tee /etc/udev/rules.d/99-governor.rules >/dev/null
-ACTION=="change", SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="1", \
-  RUN+="/usr/local/bin/set-governor.sh"
-ACTION=="change", SUBSYSTEM=="power_supply", ENV{POWER_SUPPLY_ONLINE}=="0", \
-  RUN+="/usr/local/bin/set-governor.sh"
+# Udev rules
+
+cat <<'EOF' | sudo tee /etc/udev/rules.d/99-governor.rules >/dev/null
+ACTION=="change", SUBSYSTEM=="power_supply", RUN+="/usr/local/bin/set-governor.sh"
 EOF
 
-  # Install systemd unit to ensure it runs at boot
-  cat <<'EOF' | sudo tee /etc/systemd/system/set-governor.service >/dev/null
+# Systemd unit
+
+cat <<'EOF' | sudo tee /etc/systemd/system/set-governor.service >/dev/null
 [Unit]
 Description=Set CPU governor based on AC or Battery
 After=basic.target
@@ -379,12 +391,13 @@ ExecStart=/usr/local/bin/set-governor.sh
 
 [Install]
 WantedBy=multi-user.target
+EOF
 
+# Enable and run once
 
-  sudo systemctl enable set-governor.service
-
-  # Run once right now
-  sudo /usr/local/bin/set-governor.sh
+sudo systemctl daemon-reload
+sudo systemctl enable set-governor.service
+sudo /usr/local/bin/set-governor.sh
 }
 
 #============================#
@@ -458,17 +471,6 @@ set_default_terminal() {
   fi
   safe_run xdg-mime default kitty.desktop x-scheme-handler/terminal "Setting Kitty as terminal in xdg-mime"
 }
-
-#============================#
-#        ENTRY POINT         #
-#============================#
-SKIPPED=0
-EXTRAS=0
-GAMING=0
-NO_FONTS=0
-NO_THEMES=0
-NO_ICONS=0
-STAGE="all"
 
 print_help() {
   cat <<EOF
