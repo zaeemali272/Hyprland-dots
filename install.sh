@@ -30,7 +30,7 @@ CORE_PKGS=(
   brightnessctl bluez bluez-utils iwd
   starship eza ripgrep fd jq
   swww nemo nemo-fileroller nano
-  ffmpeg mako gnome-text-editor
+  ffmpeg mako gnome-text-editor gst-libav gst-plugins-good gst-plugins-bad
   vlc vlc-plugins-all mission-center gnome-keyring python-gobject
 )
 
