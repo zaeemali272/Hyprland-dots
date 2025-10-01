@@ -554,8 +554,8 @@ done
 case $STAGE in
   pkgs)      stage_pkgs ;;
   dotfiles)  stage_dotfiles ;;
-  services)  stage_services; optimize_bootloader; set_default_terminal ;;
-  all)       stage_pkgs; stage_dotfiles; stage_services ;;
+  services)  stage_services ;;
+  all)       stage_pkgs; stage_dotfiles; stage_services; optimize_bootloader; set_default_terminal ;;
 esac
 
 if [[ $SKIPPED -eq 1 ]]; then
