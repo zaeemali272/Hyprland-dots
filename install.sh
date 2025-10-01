@@ -29,7 +29,7 @@ CORE_PKGS=(
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
   brightnessctl bluez bluez-utils iwd
   starship eza ripgrep fd jq
-  swww nemo nemo-fileroller nano
+  swww nemo nemo-fileroller nano glances
   ffmpeg mako gnome-text-editor gst-libav gst-plugins-good gst-plugins-bad
   vlc vlc-plugins-all mission-center gnome-keyring python-gobject
 )
@@ -50,7 +50,7 @@ GAMING_PKGS=(
 AUR_PKGS=(
   ironbar-git rar ncdu zen-browser-bin
   hyprshot cliphist wlogout wallust xdotool eog visual-studio-code-bin
-  ruby-fusuma ruby-fusuma-plugin-sendkey
+  ruby-fusuma ruby-fusuma-plugin-sendkey freedownloadmanager
 )
 
 FONTS_PKGS=(
@@ -85,7 +85,7 @@ THEME_AUR_PKGS=(
 #============================#
 #         HELPERS            #
 #============================#
-log()    { echo -e "\e[1;32m[INFO]\e[0m $*"; }
+log()    { ;; }
 warn()   { echo -e "\e[1;33m[WARN]\e[0m $*"; }
 error()  { echo -e "\e[1;31m[ERR ]\e[0m $*" >&2; }
 prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
