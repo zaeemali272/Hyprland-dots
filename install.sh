@@ -29,9 +29,9 @@ CORE_PKGS=(
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
   brightnessctl bluez bluez-utils iwd
   starship eza ripgrep fd jq
-  swww nemo nemo-fileroller
-  ffmpeg mako wireguard-tools
-  vlc vlc-plugins-all mission-center gnome-keyring ufw systemd-resolvconf
+  swww nemo nemo-fileroller nano
+  ffmpeg mako gnome-text-editor
+  vlc vlc-plugins-all mission-center gnome-keyring python-gobject
 )
 
 EXTRA_PKGS=(
@@ -39,7 +39,7 @@ EXTRA_PKGS=(
 )
 EXTRA_AUR_PKGS=(
   youtube-music-bin
-  zen-browser-bin
+  tor-browser-bin
   gallery-dl
 )
 
@@ -48,7 +48,7 @@ GAMING_PKGS=(
 )
 
 AUR_PKGS=(
-  ironbar-git rar ncdu tor-browser-bin 
+  ironbar-git rar ncdu zen-browser-bin
   hyprshot cliphist wlogout wallust xdotool eog visual-studio-code-bin
   ruby-fusuma ruby-fusuma-plugin-sendkey
 )
