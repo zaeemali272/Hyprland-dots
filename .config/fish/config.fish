@@ -16,4 +16,4 @@ set -Ux GTK_ICON_THEME OneUi-Dark
 
 set -U fish_user_paths $HOME/.local/bin $fish_user_paths
 
-status is-interactive; and fnm env --use-on-cd | source
+
