@@ -8,8 +8,8 @@ BT_CACHE="/tmp/bt_battery.cache"
 LP=""
 
 # Detect battery and AC paths safely
-BAT_PATH=$(find /sys/class/power_supply/ -maxdepth 1 -type d -name 'BAT*' | head -n1 | xargs -r basename)
-AC_PATH=$(find /sys/class/power_supply/ -maxdepth 1 -type d -regex '.*/\(AC\|ADP\|ACAD\)*' | head -n1 | xargs -r basename)
+BAT_PATH=$(ls -1 /sys/class/power_supply/ 2>/dev/null | grep -E '^BAT' | head -n1)
+AC_PATH=$(ls -1 /sys/class/power_supply/ 2>/dev/null | grep -E '^(AC|ACAD|ADP)' | head -n1)
 
 if [[ -n "$BAT_PATH" && -d "/sys/class/power_supply/$BAT_PATH" ]]; then
     PERC=$(<"/sys/class/power_supply/$BAT_PATH/capacity")
