@@ -26,12 +26,12 @@ default-timeout=2000
 
 [urgency=low]
 default-timeout=2000
-progress-color=over #D4531F
+progress-color=over #D45E2E
 
 [urgency=normal]
 default-timeout=2000
-progress-color=over #9C1A1A
+progress-color=over #9C2626
 
 [urgency=critical]
 default-timeout=2000
-progress-color=over #711884
+progress-color=over #732384

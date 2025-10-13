@@ -31,11 +31,14 @@ if [[ -n "$BAT_PATH" && -d "/sys/class/power_supply/$BAT_PATH" ]]; then
         elif ((PERC >= 10)); then ICON="󰁽"
         else ICON="󰁼"; fi
 
-        if [[ "$STATE" =~ ([Cc]harging|[Ff]ull) ]]; then
-            LP="󰂄 $PERC%"
-        else
-            LP="$ICON $PERC%"
-        fi
+        if [[ "$STATE" =~ [Cc]harging ]]; then
+	    LP="󰂄 $PERC%"   # Charging
+	elif [[ "$STATE" =~ [Ff]ull ]]; then
+	    LP="󰁹 $PERC%"   # Full (solid battery, no bolt)
+	else
+	    LP="$ICON $PERC%"  # Normal discharging
+	fi
+
     fi
 else
     # UPower fallback safely
