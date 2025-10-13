@@ -83,7 +83,7 @@ label {
 .clock_date { color: @accent; }
 
 /* Zscroll */
-.zscroll { color: @font5; box-shadow: rgba(0, 0, 0, 0.25) 2px 2px 5px 2px; }
+.zscroll { color: @font5;}
 
 /* Workspaces */
 .workspaces {
