@@ -1,0 +1,17 @@
+Autorun Prompt
+Visual Studio Code - URL Handler
+wheelmap.org
+OpenStreetMap
+scrcpy (console)
+Google Maps
+Qt V4L2 video capture utility
+Qt V4L2 test Utility
+KTelnetService
+Avahi Zeroconf Browser
+Avahi SSH Server Browser
+Avahi VNC Server Browser
+Cloudflare Zero Trust
+Keyboard Layout
+Wine Windows Program Loader
+winhlp32
+hh

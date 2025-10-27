@@ -3,7 +3,6 @@
 # Author: Zaeem + ChatGPT (2025)
 
 import gi
-
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GLib, Gdk
 import subprocess, json, re, threading, time
@@ -65,7 +64,6 @@ def get_connected_ssid():
 
         for line in out.splitlines():
             line = line.strip()
-            # Match "State" and "Connected network" even if spacing is weird
             if re.search(r"^State\s", line, re.IGNORECASE):
                 state = line.split()[-1].lower()
             elif re.search(r"^Connected\s+network\s", line, re.IGNORECASE):
@@ -215,7 +213,6 @@ class IronWiFi(Gtk.Window):
         vbox.set_margin_end(8)
         self.add(vbox)
 
-        # Header — Interface + Connected SSID
         header = Gtk.Box(spacing=8)
         self.iface_label = Gtk.Label()
         self.iface_label.set_xalign(0)
@@ -225,7 +222,6 @@ class IronWiFi(Gtk.Window):
         header.pack_end(self.refresh_btn, False, False, 0)
         vbox.pack_start(header, False, False, 0)
 
-        # Tree
         self.store = Gtk.ListStore(str, str)
         self.tree = Gtk.TreeView(model=self.store)
         self.tree.set_headers_visible(False)
@@ -254,7 +250,6 @@ class IronWiFi(Gtk.Window):
         self.start_scan()
         GLib.timeout_add_seconds(DEF_REFRESH, self.start_scan)
 
-    # --- Main scanning ---
     def start_scan(self, *_):
         if self._scanning:
             return
@@ -269,18 +264,28 @@ class IronWiFi(Gtk.Window):
     def _on_scan_done(self, nets):
         self.store.clear()
         current_ssid = get_connected_ssid() or ""
+
         for s, sec, _ in nets:
             is_connected = s.strip() == current_ssid.strip()
-            icon = "" if is_connected or s in saved_networks else ""
-            display_name = f"● {s}" if is_connected else s
-            # keep order same, just append
+            is_known = s in saved_networks
+
+            if is_connected and is_known:
+                icon = "󰤨"
+                display_name = f"● {s} (Known)"
+            elif is_connected and not is_known:
+                icon = "󰤪"
+                display_name = f"● {s} (Temp)"
+            elif not is_connected and is_known:
+                icon = ""
+                display_name = f"{s} (Saved)"
+            else:
+                icon = ""
+                display_name = s
+
             self.store.append([display_name, icon])
 
-        # ✅ Fix: Show connected SSID inline in header (always refreshed)
         if current_ssid:
-            self.iface_label.set_text(
-                f"Interface: {STATION}   |   Connected: {current_ssid}"
-            )
+            self.iface_label.set_text(f"Interface: {STATION}   |   Connected: {current_ssid}")
         else:
             self.iface_label.set_text(f"Interface: {STATION}   |   Connected: (none)")
 
@@ -292,7 +297,6 @@ class IronWiFi(Gtk.Window):
             self._action_bar = None
         return False
 
-    # --- Selection & Action Bar ---
     def on_selection_changed(self, selection):
         model, it = selection.get_selected()
         if not it:
@@ -311,7 +315,6 @@ class IronWiFi(Gtk.Window):
         parent = self.get_children()[0]
 
         if is_connected:
-            # Connected network — show Disconnect, Forget, Show Password
             self._action_bar = Gtk.Box(spacing=6)
             buttons = [
                 ("Disconnect", self.disconnect_selected),
@@ -319,7 +322,6 @@ class IronWiFi(Gtk.Window):
                 ("Show Password", self.show_password),
             ]
         elif is_known:
-            # Known but not connected — show Connect, Forget, Show Password
             self._action_bar = Gtk.Box(spacing=6)
             buttons = [
                 ("Connect", self.connect_selected),
@@ -327,19 +329,14 @@ class IronWiFi(Gtk.Window):
                 ("Show Password", self.show_password),
             ]
         else:
-            # Unknown — password entry + connect
             self._action_bar = Gtk.Box(spacing=6)
             entry = Gtk.Entry()
             entry.set_placeholder_text(f"Password for {ssid}")
             entry.set_visibility(False)
             show_btn = Gtk.Button(label="👁")
-            show_btn.connect(
-                "clicked", lambda *_: entry.set_visibility(not entry.get_visibility())
-            )
+            show_btn.connect("clicked", lambda *_: entry.set_visibility(not entry.get_visibility()))
             connect_btn = Gtk.Button(label="Connect")
-            connect_btn.connect(
-                "clicked", lambda *_: self._on_connect_click(ssid, entry)
-            )
+            connect_btn.connect("clicked", lambda *_: self._on_connect_click(ssid, entry))
             entry.connect("activate", lambda *_: self._on_connect_click(ssid, entry))
             self._action_bar.pack_start(entry, True, True, 0)
             self._action_bar.pack_start(show_btn, False, False, 0)
@@ -349,7 +346,6 @@ class IronWiFi(Gtk.Window):
             GLib.idle_add(entry.grab_focus)
             return
 
-        # Shared button logic for connected/known
         for text, cb in buttons:
             b = Gtk.Button(label=text)
             b.connect("clicked", lambda w, cb=cb, s=ssid: cb(s))
@@ -357,21 +353,14 @@ class IronWiFi(Gtk.Window):
         parent.pack_end(self._action_bar, False, False, 4)
         self._action_bar.show_all()
 
-    # --- Connect / Disconnect ---
     def connect_selected(self, ssid):
-        threading.Thread(
-            target=lambda: self._connect_with_lock(ssid, saved_networks.get(ssid)),
-            daemon=True,
-        ).start()
+        threading.Thread(target=lambda: self._connect_with_lock(ssid, saved_networks.get(ssid)), daemon=True).start()
 
     def disconnect_selected(self, ssid):
         threading.Thread(target=self._disconnect_with_lock, daemon=True).start()
 
     def forget_selected(self, ssid):
-        threading.Thread(
-            target=lambda: (forget_blocking(ssid), GLib.idle_add(self.start_scan)),
-            daemon=True,
-        ).start()
+        threading.Thread(target=lambda: (forget_blocking(ssid), GLib.idle_add(self.start_scan)), daemon=True).start()
 
     def show_password(self, ssid):
         pwd_txt = saved_networks.get(ssid, "")
@@ -390,9 +379,7 @@ class IronWiFi(Gtk.Window):
         pwd = entry.get_text().strip()
         if not pwd:
             return
-        threading.Thread(
-            target=lambda: self._connect_with_lock(ssid, pwd), daemon=True
-        ).start()
+        threading.Thread(target=lambda: self._connect_with_lock(ssid, pwd), daemon=True).start()
         if self._action_bar:
             self._action_bar.destroy()
             self._action_bar = None
@@ -410,7 +397,6 @@ class IronWiFi(Gtk.Window):
             disconnect_blocking()
             GLib.idle_add(self.start_scan)
 
-    # --- Window behavior ---
     def _on_enter(self, *_):
         if self._leave_close_id:
             GLib.source_remove(self._leave_close_id)
@@ -441,3 +427,4 @@ if __name__ == "__main__":
     app = IronWiFi()
     app.show_all()
     Gtk.main()
+

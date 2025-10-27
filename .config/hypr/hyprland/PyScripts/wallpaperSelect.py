@@ -48,6 +48,88 @@ def update_hyprlock_conf(new_path: str):
         print(f"✗ Failed to update hyprlock.conf: {e}")
 
 
+def get_active_border_color():
+    """
+    Reads the active border color from ~/.config/hypr/hyprland/colors.conf
+    Expected format: col.active_border = rgba(D4531FAA)
+    Returns a valid CSS rgba string, e.g. rgba(212,83,31,0.67)
+    """
+    colors_conf = os.path.expanduser("~/.config/hypr/hyprland/colors.conf")
+    if not os.path.isfile(colors_conf):
+        return "rgba(0, 0, 0, 0.8)"  # fallback color
+
+    with open(colors_conf, "r", encoding="utf-8") as f:
+        for line in f:
+            if "col.active_border" in line:
+                # Extract the rgba hex (like D4531FAA)
+                import re
+                match = re.search(r"rgba\(([\dA-Fa-f]{8})\)", line)
+                if not match:
+                    continue
+                hex_color = match.group(1)
+                # Convert hex RGBA -> rgba(r,g,b,a)
+                r = int(hex_color[0:2], 16)
+                g = int(hex_color[2:4], 16)
+                b = int(hex_color[4:6], 16)
+                a = round(int(hex_color[6:8], 16) / 255, 2)
+                return f"rgba({r}, {g}, {99}, {0.5})"
+    return "rgba(0, 0, 0, 0.8)"
+
+def generate_dynamic_colors():
+    """
+    Generate ~/.themes/color-palette.css from Wallust output.
+    Matches the user's exact desired format (base + RGBA variants).
+    """
+    import os, json
+
+    wallust_cache = os.path.expanduser("~/.cache/wallust/colors.json")
+    output_css = os.path.expanduser("~/.themes/color-palette.css")
+
+    if not os.path.isfile(wallust_cache):
+        print("✗ Wallust cache not found. Skipping dynamic color generation.")
+        return
+
+    try:
+        with open(wallust_cache, "r", encoding="utf-8") as f:
+            data = json.load(f)
+
+        colors = data.get("colors", {})
+        color_values = [colors.get(f"color{i}", "#000000") for i in range(7)]
+
+        def hex_to_rgb_tuple(hex_color):
+            hex_color = hex_color.strip("#")
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+            return r, g, b
+
+        # Get RGB values from normal color (color0)
+        r, g, b = hex_to_rgb_tuple(color_values[0])
+
+        css = []
+        css.append("/* ------------------- base colours --------------------------- */")
+        names = ["normal", "light", "dark", "lighter", "accent", "hover", "warning"]
+        for i, name in enumerate(names):
+            css.append(f"@define-color {name} {color_values[i]};")
+
+        css.append("")
+        css.append("/* ------------------- alpha variants of `normal` ---------- */")
+
+        alphas = [0.04, 0.08, 0.12, 0.16, 0.24, 0.2608, 0.2272, 0.3008, 0.3312, 0.3616]
+        for a in alphas:
+            suffix = str(a).replace("0.", "")
+            css.append(f"@define-color normal_a{suffix} rgba({r}, {g}, {b}, {a});")
+
+        os.makedirs(os.path.dirname(output_css), exist_ok=True)
+        with open(output_css, "w", encoding="utf-8") as f:
+            f.write("\n".join(css) + "\n")
+
+        print(f"✔ Generated GTK color palette → {output_css}")
+
+    except Exception as e:
+        print(f"✗ Failed to generate dynamic colors: {e}")
+
+
 class WallpaperSelector(Gtk.Window):
     def __init__(self):
         super().__init__(title="Wallpaper Selector")
@@ -82,29 +164,45 @@ class WallpaperSelector(Gtk.Window):
             ]
         )
 
-        css = b"""
-        scrollbar slider {
+                # Load accent color from Hyprland colors.conf
+        accent_color = get_active_border_color()
+
+        css = f"""
+        scrollbar slider {{
             min-width: 3px;
             min-height: 3px;
-            background-color: #000;
-        }
-        scrollbar {
+            background-color: {accent_color};
+            margin: 0px;
+            padding: 0px;
+        }}
+        scrollbar {{
             background-color: transparent;
-        }
+        }}
+        
+        image {{
+            border-radius: 5px;
+            border: 2px solid black;
+            margin: 0px;
+            padding: 0px;
+        }}
 
-        *:focus {
-            border: 0.5px solid rgba(0, 0, 0, 0.8);
-            background-color: rgba(0, 0, 0, 0.7);
-            border-radius: 2px;
+        *:focus {{
+            border: 3px solid {accent_color};
+            border-radius: 5px;
             transition: 100ms ease-in-out;
-        }
+            margin: 0px;
+            padding: 0px;
+            box-shadow: 0 0 20px {accent_color};
+        }}
 
-        *:hover {
-            border: 2px solid rgba(0, 0, 0, 0.6);
-            background-color: rgba(0, 0, 0, 0.15);
+        *:hover {{
+            border: 2px solid {accent_color};
             border-radius: 8px;
-        }
-        """
+            margin: 0px;
+            padding: 0px;
+        }}
+        """.encode("utf-8")
+
 
         style_provider = Gtk.CssProvider()
         style_provider.load_from_data(css)
@@ -346,6 +444,7 @@ class WallpaperSelector(Gtk.Window):
                 ],
                 check=True,
             )
+            generate_dynamic_colors()
         except Exception as e:
             print(f"✗ Wallust failed: {e}")
 
@@ -353,7 +452,7 @@ class WallpaperSelector(Gtk.Window):
         for service in ("ironbar", "mako"):
             try:
                 subprocess.run(["pkill", service])
-                subprocess.Popen(
+                subprocess.Popen(        
                     [service],
                     stdout=subprocess.DEVNULL,
                     stderr=subprocess.DEVNULL,

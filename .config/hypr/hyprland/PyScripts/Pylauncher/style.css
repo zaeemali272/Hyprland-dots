@@ -1,0 +1,12 @@
+#launcher-window {
+    background-color: rgba(25, 25, 25, 0.8);
+    border-radius: 16px;
+    padding: 6px;
+    color: white;
+}
+
+button {
+    border-radius: 8px;
+    padding: 6px;
+    background-color: rgba(0, 0, 0, 0);
+}
