@@ -138,7 +138,7 @@ safe_run() {
 
 run_scripts() {
     local scripts_dir="$DOTS_DIR/Scripts"
-    local target="$1"
+    local target="${1:-}"
 
     if [[ ! -d "$scripts_dir" ]]; then
         warn "Scripts directory not found at $scripts_dir. Skipping..."

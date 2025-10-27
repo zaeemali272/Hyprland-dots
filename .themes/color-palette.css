@@ -1,0 +1,14 @@
+/* ------------------- base colours --------------------------- */
+@define-color normal   #EBC104;   
+@define-color light    #EBC104;   
+@define-color dark     #EBC104;   
+@define-color lighter  #EBC104;   
+@define-color accent   #EBC104;   
+@define-color hover    #EBC104;   
+@define-color warning  #EBC104;   
+
+@define-color normal_a12 rgba(0, 0, 0, 0.35);
+@define-color normal_a16 rgba(0, 0, 0, 0.50);
+@define-color normal_a24 rgba(0, 0, 0, 0.60);
+@define-color normal_a26 rgba(0, 0, 0, 0.75);
+@define-color normal_a30 rgba(0, 0, 0, 0.90);
