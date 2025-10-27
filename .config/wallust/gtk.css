@@ -1,0 +1,12 @@
+@define-color accent_color {{color1}};
+@define-color foreground_color {{foreground}};
+
+window, dialog {
+    color: @foreground_color;
+}
+
+button {
+    color: @foreground_color;
+    border-radius: 6px;
+}
+

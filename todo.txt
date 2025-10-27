@@ -1,2 +1,4 @@
-gsettings set org.cinnamon.desktop.default-applications.terminal exec kitty
+enable --now bluetooth
+add auto changes to the fdm it is located in .local/share/Softdeluxe/Free Download Manager/settings.ini
+and also add the accepted tos for warp located in .local/share/warp
 

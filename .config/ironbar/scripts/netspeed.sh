@@ -1,12 +1,14 @@
 #!/usr/bin/env bash
 # ~/.config/ironbar/scripts/netspeed.sh
-# Shows netspeed (download/upload) depending on toggle
+# Shows accurate netspeed (download/upload) with proper timing
 
 MODE_FILE="/tmp/.netspeed_mode"
 [[ -f "$MODE_FILE" ]] || echo "down" > "$MODE_FILE"
 MODE=$(<"$MODE_FILE")
 
-IFACE=$(ip route get 1.1.1.1 | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1);exit}}')
+# Get active interface
+IFACE=$(ip route get 1.1.1.1 2>/dev/null | awk '{for(i=1;i<=NF;i++) if($i=="dev"){print $(i+1);exit}}')
+[[ -n "$IFACE" ]] || exit 0
 
 if [[ "$MODE" == "down" ]]; then
     STAT_FILE="/sys/class/net/$IFACE/statistics/rx_bytes"
@@ -20,21 +22,36 @@ fi
 
 [[ -r "$STAT_FILE" ]] || exit 0
 
-NOW=$(<"$STAT_FILE")
-PREV=0
-[[ -f "$PREV_FILE" ]] && PREV=$(<"$PREV_FILE")
-echo "$NOW" > "$PREV_FILE"
+NOW_BYTES=$(<"$STAT_FILE")
+NOW_TIME=$(date +%s.%N)
 
-# Handle rollover
-if (( NOW < PREV )); then
-    DELTA=$(( (NOW + (1<<63)*2) - PREV )) # 64-bit rollover safe
-else
-    DELTA=$(( NOW - PREV ))
+PREV_BYTES=0
+PREV_TIME=$NOW_TIME
+if [[ -f "$PREV_FILE" ]]; then
+    read -r PREV_BYTES PREV_TIME < "$PREV_FILE"
 fi
 
-# Bytes → bits per second → Mbps
-MBPS=$(( DELTA * 8 / 1000000 ))
+# Save current stats
+echo "$NOW_BYTES $NOW_TIME" > "$PREV_FILE"
 
-# Keep it 2-digit padded like your original
+# Handle rollover
+if (( NOW_BYTES < PREV_BYTES )); then
+    DELTA_BYTES=$(( (NOW_BYTES + (1<<63)*2) - PREV_BYTES ))
+else
+    DELTA_BYTES=$(( NOW_BYTES - PREV_BYTES ))
+fi
+
+# Time delta in seconds (float)
+DELTA_TIME=$(awk "BEGIN {print $NOW_TIME - $PREV_TIME}")
+
+# Avoid division by zero
+if (( $(awk "BEGIN {print ($DELTA_TIME <= 0)}") )); then
+    echo "$ICON 00 Mb/s"
+    exit 0
+fi
+
+# Bits per second → Mbps
+MBPS=$(awk "BEGIN {printf \"%.0f\", ($DELTA_BYTES * 8) / (1000000 * $DELTA_TIME)}")
+
 printf "%s %02d Mb/s\n" "$ICON" "$MBPS"
 

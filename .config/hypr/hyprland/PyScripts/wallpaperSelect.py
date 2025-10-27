@@ -359,6 +359,29 @@ class WallpaperSelector(Gtk.Window):
                     stderr=subprocess.DEVNULL,
                     preexec_fn=os.setpgrp,
                 )
+                # Reload other apps after Wallust
+                reload_commands = [
+                    ["killall", "-USR1", "kitty"],  # reload Kitty config
+                    ["fuzzel", "--reload"],  # reload Fuzzel (if supported)
+                    [
+                        "pkill",
+                        "-USR1",
+                        "nemo",
+                    ],  # not all apps support reload, may need restart
+                ]
+
+                for cmd in reload_commands:
+                    try:
+                        subprocess.run(cmd, check=False)
+                    except Exception as e:
+                        print(f"✗ Failed to run {cmd}: {e}")
+
+                # Optional: restart GTK theme cache
+                subprocess.run(
+                    ["gtk-update-icon-cache", "-f", "-t", "~/.local/share/icons"],
+                    check=False,
+                )
+
                 print(f"✔ {service.capitalize()} restarted with new colors")
             except Exception as e:
                 print(f"✗ {service} failed to restart: {e}")
