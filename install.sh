@@ -20,18 +20,21 @@ STAGE="all"
 #         CONFIG             #
 #============================#
 DOTS_DIR="$(pwd)"
+STATE_FILE="$HOME/.install_sh_state"
 BACKUP_DIR="$HOME/.dotfiles_backup"
 BACKUP_SUFFIX=".bak.$(date +%Y%m%d%H%M%S)"
+
+
 
 CORE_PKGS=(
   base base-devel git fish wget curl unzip zip rsync
   hyprland hyprlock hypridle kitty fuzzel
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
-  brightnessctl bluez bluez-utils iwd
-  starship eza ripgrep fd jq
-  swww nemo nemo-fileroller nano glances
+  brightnessctl bluez bluez-utils iwd xdg-user-dirs
+  starship eza ripgrep fd jq polkit-gnome tumbler ffmpegthumbnailer
+  swww nemo nemo-fileroller nano glances kdeconnect
   ffmpeg mako gnome-text-editor gst-libav gst-plugins-good gst-plugins-bad
-  vlc vlc-plugins-all mission-center gnome-keyring python-gobject python-pillow python-pydbus
+  vlc vlc-plugins-all wf-recorder mission-center gnome-keyring python-gobject python-pillow python-pydbus playerctl
 )
 
 EXTRA_PKGS=(
@@ -85,10 +88,31 @@ THEME_AUR_PKGS=(
 #============================#
 #         HELPERS            #
 #============================#
-log()    { ;; }
+log() { echo -e "\e[1;32m[OK]\e[0m $*"; }
 warn()   { echo -e "\e[1;33m[WARN]\e[0m $*"; }
 error()  { echo -e "\e[1;31m[ERR ]\e[0m $*" >&2; }
 prompt() { read -rp "[?] $1 [y/N]: " r; [[ $r =~ ^[Yy]$ ]]; }
+
+# Load previously run functions
+declare -A RUN_STATE
+if [[ -f "$STATE_FILE" ]]; then
+    while IFS='=' read -r key val; do
+        RUN_STATE["$key"]="$val"
+    done < "$STATE_FILE"
+fi
+
+# Helper to mark a function as done
+mark_done() {
+    local func="$1"
+    RUN_STATE["$func"]=1
+    echo "$func=1" >> "$STATE_FILE"
+}
+
+# Helper to check if function ran
+has_run() {
+    local func="$1"
+    [[ "${RUN_STATE[$func]:-0}" -eq 1 ]]
+}
 
 safe_run() {
   local desc="${*: -1}"
@@ -112,13 +136,49 @@ safe_run() {
   done
 }
 
+run_scripts() {
+    local scripts_dir="$DOTS_DIR/Scripts"
+    local target="$1"
+
+    if [[ ! -d "$scripts_dir" ]]; then
+        warn "Scripts directory not found at $scripts_dir. Skipping..."
+        return
+    fi
+
+    if [[ -n "$target" ]]; then
+        local script="$scripts_dir/$target.sh"
+        if [[ -f "$script" ]]; then
+            chmod +x "$script"
+            safe_run bash "$script" "Running script: $target.sh"
+        else
+            warn "Script '$target.sh' not found in $scripts_dir"
+        fi
+        return
+    fi
+
+    echo "📝 Running all scripts in $scripts_dir…"
+    for script in "$scripts_dir"/*.sh; do
+        [[ -f "$script" ]] || continue
+        chmod +x "$script"
+        safe_run bash "$script" "Running script: $(basename "$script")"
+    done
+}
+
 #============================#
 #  PRE-NETWORK FIX           #
 #============================#
 pre_network_fix() {
-  log "💾 Installing nano and fixing /etc/resolv.conf"
-  sudo pacman -S --needed --noconfirm nano
-  echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf >/dev/null
+    if has_run "pre_network_fix"; then
+        log "⏭️ pre_network_fix already executed; skipping."
+        return
+    fi
+
+    log "💾 Installing nano and fixing /etc/resolv.conf"
+    sudo pacman -S --needed --noconfirm nano
+    grep -qE '8\.8\.8\.8|1\.1\.1\.1' /etc/resolv.conf || \
+        echo -e "nameserver 8.8.8.8\nnameserver 1.1.1.1" | sudo tee /etc/resolv.conf
+
+    mark_done "pre_network_fix"
 }
 
 #============================#
@@ -153,8 +213,6 @@ setup_ethernet_dhcp() {
     fi
 
     safe_run sudo systemctl enable --now systemd-networkd "Enabling systemd-networkd"
-    safe_run sudo systemctl enable --now systemd-resolved "Enabling systemd-resolved"
-    safe_run sudo ln -sf /run/systemd/resolve/stub-resolv.conf /etc/resolv.conf "Linking resolv.conf"
   else
     warn "No Ethernet interface found; cannot setup DHCP automatically"
   fi
@@ -168,19 +226,61 @@ system_prep() {
   if ! pacman -Q reflector &>/dev/null; then
     safe_run sudo pacman -S --needed --noconfirm reflector "Installing reflector"
   fi
-  safe_run sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist "Optimizing mirrors with reflector"
+  safe_run sudo reflector --latest 20 --protocol https --sort rate --save /etc/pacman.d/mirrorlist "Optimizing mirrors with reflector" || true
 }
 
 #============================#
-#   PACMAN & AUR INSTALLER   #
+#   PACMAN INSTALLER (ROBUST)#
 #============================#
 install_pkgs() {
-  sudo pacman -S --needed --noconfirm "$@"
+    local pkgs=("$@")
+    local batch_size=15
+    local total=${#pkgs[@]}
+
+    for ((i=0; i<total; i+=batch_size)); do
+        local chunk=("${pkgs[@]:i:batch_size}")
+        retry_pacman "${chunk[@]}"
+    done
+}
+
+retry_pacman() {
+    local packages=("$@")
+    local max_attempts=3
+    local attempt=1
+    local delay=5
+
+    while (( attempt <= max_attempts )); do
+        log "📦 Installing (attempt $attempt/$max_attempts): ${packages[*]}"
+        if sudo pacman -Sy --needed --noconfirm --noprogressbar "${packages[@]}"; then
+            log "✅ Successfully installed: ${packages[*]}"
+            return 0
+        else
+            warn "⚠️ Attempt $attempt failed for: ${packages[*]}"
+            if (( attempt == max_attempts )); then
+                warn "💡 Re-syncing mirrors and retrying one last time..."
+                sudo pacman -Syy --noconfirm
+                sleep 3
+            fi
+            ((attempt++))
+            sleep $delay
+            ((delay+=5))
+        fi
+    done
+
+    error "❌ Failed to install after $max_attempts attempts: ${packages[*]}"
+    return 1
 }
 
 ensure_yay() {
   if ! command -v yay &>/dev/null; then
-    safe_run bash -c 'tmpdir=$(mktemp -d); git clone https://aur.archlinux.org/yay.git "$tmpdir" && pushd "$tmpdir" && makepkg -si --noconfirm && popd && rm -rf "$tmpdir"' "Installing yay (AUR helper)"
+    safe_run bash -c '
+      tmpdir=$(mktemp -d) &&
+      git clone https://aur.archlinux.org/yay.git "$tmpdir" &&
+      pushd "$tmpdir" &&
+      makepkg -si --noconfirm &&
+      popd &&
+      rm -rf "$tmpdir"
+    ' "Installing yay (AUR helper)"
   else
     log "👍 yay already installed."
   fi
@@ -192,60 +292,80 @@ update_yay() {
 }
 
 install_aur() {
-  local pkgs=("$@")
-  local virt
-  virt=$(systemd-detect-virt || true)
+    local pkgs=("$@")
+    local virt
+    virt=$(systemd-detect-virt || true)
+    export MAKEFLAGS="-j$(nproc)"
+    export PKGEXT='.pkg.tar.zst'
 
-  if [[ "$virt" == "none" ]]; then
-    log "🏗️ Bare metal detected – using yay for AUR packages."
-    ensure_yay
-    # skip integrity checks, fully non-interactive
-    safe_run yay -S --needed --noconfirm --mflags "--skipinteg --noprogressbar" "${pkgs[@]}" \
-      "Installing AUR packages: ${pkgs[*]}"
-  else
-    log "💻 VM detected ($virt) – building AUR packages sequentially."
-    safe_run sudo pacman -S --needed --noconfirm git base-devel "Installing build tools for AUR"
-    for pkg in "${pkgs[@]}"; do
-      safe_run bash -c "
-        tmpdir=\$(mktemp -d) &&
-        git clone https://aur.archlinux.org/$pkg.git \$tmpdir &&
-        cd \$tmpdir &&
-        makepkg -si --noconfirm &&
-        cd - &&
-        rm -rf \$tmpdir
-      " "Building AUR package: $pkg"
-    done
-  fi
+    if [[ "$virt" == "none" ]]; then
+        log "🏗️ Bare metal detected – using yay for AUR packages."
+        ensure_yay
+        safe_run yay -S --needed --noconfirm --mflags "--skipinteg --noprogressbar" "${pkgs[@]}" \
+            "Installing AUR packages: ${pkgs[*]}"
+    else
+        log "💻 VM detected ($virt) – building AUR packages carefully."
+        # Ensure base-devel installed
+        missing=()
+        for pkg in base-devel git; do
+            if ! pacman -Q "$pkg" &>/dev/null; then
+                missing+=("$pkg")
+            fi
+        done
+        if [[ ${#missing[@]} -gt 0 ]]; then
+            safe_run sudo pacman -S --needed --noconfirm "${missing[@]}" "Installing missing build dependencies"
+        fi
+
+        for pkg in "${pkgs[@]}"; do
+            safe_run bash -c "
+                tmpdir=\$(mktemp -d) &&
+                git clone https://aur.archlinux.org/$pkg.git \$tmpdir &&
+                cd \$tmpdir &&
+                makepkg -si --noconfirm &&
+                cd - &&
+                rm -rf \$tmpdir
+            " "Building AUR package: $pkg"
+        done
+    fi
 }
-
 
 #============================#
 #        DOTFILES SYNC       #
 #============================#
 sync_dotfiles() {
-  safe_run rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
-    --exclude ".git" \
-    --exclude "README.md" \
-    --exclude "Install.sh" \
-    "$DOTS_DIR"/.config/ "$HOME/.config/" \
-    "Syncing dotfiles to ~/.config"
+    if has_run "sync_dotfiles"; then
+        log "⏭️ sync_dotfiles already executed; skipping."
+        return
+    fi
 
-  if [[ -d "$DOTS_DIR/.local" ]]; then
+    # Sync .config
     safe_run rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
-      "$DOTS_DIR/.local/" "$HOME/.local/" \
-      "Syncing local files to ~/.local"
-  fi
+        --exclude ".git" \
+        --exclude "README.md" \
+        --exclude "Install.sh" \
+        "$DOTS_DIR"/.config/ "$HOME/.config/" \
+        "Syncing dotfiles to ~/.config"
 
-  mkdir -p "$HOME/Pictures"
-  log "📁 Ensured $HOME/Pictures exists"
+    # Sync .local if exists
+    if [[ -d "$DOTS_DIR/.local" ]]; then
+        safe_run rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
+            "$DOTS_DIR/.local/" "$HOME/.local/" \
+            "Syncing local files to ~/.local"
+    fi
 
-  if [[ -d "$DOTS_DIR/Pictures" ]]; then
-    safe_run rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
-      "$DOTS_DIR/Pictures/" "$HOME/Pictures/" \
-      "Syncing Pictures folder"
-  fi
+    # Ensure Pictures exists
+    mkdir -p "$HOME/Pictures"
+    log "📁 Ensured $HOME/Pictures exists"
+
+    # Sync Pictures if exists
+    if [[ -d "$DOTS_DIR/Pictures" ]]; then
+        safe_run rsync -avh --backup --suffix="$BACKUP_SUFFIX" \
+            "$DOTS_DIR/Pictures/" "$HOME/Pictures/" \
+            "Syncing Pictures folder"
+    fi
+
+    mark_done "sync_dotfiles"
 }
-
 
 #============================#
 #     SHELL CONFIG           #
@@ -302,26 +422,109 @@ setup_autologin() {
 }
 
 install_fusuma() {
+
   if groups "$USER" | grep -qw input; then
     log "✅ $USER is already in the input group"
   else
     safe_run sudo gpasswd -a "$USER" input "Adding $USER to input group"
-    log "ℹ️ Please log out and back in (or reboot) for input group changes to apply."
+   # log "ℹ️ Please log out and back in (or reboot) for input group changes to apply."
   fi
 }
 
+#============================#
+#  XDG USER DIRS (NEMO FIX)  #
+#============================#
+setup_xdg_dirs() {
+    if has_run "setup_xdg_dirs"; then
+        log "⏭️ setup_xdg_dirs already executed; skipping."
+        return
+    fi
 
+    log "📁 Ensuring XDG user directories and Nemo bookmarks are correct…"
+
+    local REQUIRED=(DOCUMENTS DOWNLOAD PICTURES VIDEOS)
+    local XDG_FILE="$HOME/.config/user-dirs.dirs"
+    local BOOKMARKS="$HOME/.config/gtk-3.0/bookmarks"
+
+    # Ensure xdg-user-dirs installed
+    if ! command -v xdg-user-dirs-update >/dev/null 2>&1; then
+        sudo pacman -S --needed --noconfirm xdg-user-dirs
+    fi
+
+    mkdir -p "$(dirname "$XDG_FILE")"
+
+    # Update user-dirs.dirs file
+    local TMP
+    TMP="$(mktemp)"
+    if [ -f "$XDG_FILE" ]; then
+        grep -vE 'XDG_(DOCUMENTS|DOWNLOAD|PICTURES|VIDEOS)_DIR=' "$XDG_FILE" > "$TMP" || true
+    else
+        echo "# created by setup_xdg_dirs on $(date --iso-8601=seconds)" > "$TMP"
+    fi
+
+    cat >> "$TMP" <<EOF
+XDG_DOCUMENTS_DIR="$HOME/Documents"
+XDG_DOWNLOAD_DIR="$HOME/Downloads"
+XDG_PICTURES_DIR="$HOME/Pictures"
+XDG_VIDEOS_DIR="$HOME/Videos"
+EOF
+
+    mv "$TMP" "$XDG_FILE"
+    chmod 644 "$XDG_FILE"
+
+    # Create required directories
+    for d in "${REQUIRED[@]}"; do
+        local path
+        path="$(xdg-user-dir "$d" 2>/dev/null || true)"
+        [[ -z "$path" ]] && case "$d" in
+            DOCUMENTS) path="$HOME/Documents" ;;
+            DOWNLOAD)  path="$HOME/Downloads" ;;
+            PICTURES)  path="$HOME/Pictures" ;;
+            VIDEOS)    path="$HOME/Videos" ;;
+        esac
+        mkdir -p "$path"
+    done
+
+    # Clean Nemo bookmarks
+    if [ -f "$BOOKMARKS" ]; then
+        local backup="${BOOKMARKS}.bak.$(date +%s)"
+        cp "$BOOKMARKS" "$backup"
+
+        awk -v home="$HOME" '
+        BEGIN {IGNORECASE=1}
+        !/^file:\/\/'"$HOME"'\/(Documents|Downloads|Pictures|Videos)(\/)?$/ { print }
+        ' "$BOOKMARKS" > "${BOOKMARKS}.tmp"
+
+        mv "${BOOKMARKS}.tmp" "$BOOKMARKS"
+        log "✅ Cleaned duplicates from $BOOKMARKS (backup at $backup)"
+    fi
+
+    # Update XDG dirs and restart Nemo if running
+    xdg-user-dirs-update
+    if pgrep nemo >/dev/null 2>&1; then
+        nemo --quit
+        sleep 1
+        nohup nemo >/dev/null 2>&1 &
+    fi
+
+    log "✅ XDG dirs updated and cleaned for Nemo."
+    mark_done "setup_xdg_dirs"
+}
 
 setup_icons() {
-  if [[ $NO_ICONS -eq 0 ]] && pacman -Q illogical-impulse-oneui4-icons-git &>/dev/null; then
-    if command -v gsettings &>/dev/null; then
-      safe_run gsettings set org.gnome.desktop.interface icon-theme "OneUI-dark" \
-        "Setting GNOME icon theme to OneUI-dark"
+  if [[ $NO_ICONS -eq 0 ]]; then
+    if pacman -Q illogical-impulse-oneui4-icons-git &>/dev/null; then
+      if command -v gsettings &>/dev/null; then
+        safe_run gsettings set org.gnome.desktop.interface icon-theme "OneUI-dark" \
+          "Setting GNOME icon theme to OneUI-dark"
+      else
+        warn "gsettings not found – skipping icon theme setup"
+      fi
     else
-      warn "gsettings not found – skipping icon theme setup"
+      warn "Icon package not installed – skipping icon setup"
     fi
   else
-    log "⏭️ Skipping icon setup (--no-icons or package missing)"
+    log "⏭️ Skipping icon setup (--no-icons)"
   fi
 }
 
@@ -329,44 +532,55 @@ setup_icons() {
 #   CPU GOVERNOR AUTO-SWITCH #
 #============================#
 setup_cpu_governor() {
+if has_run "setup_cpu_governor"; then
+  log "⏭️ setup_cpu_governor already executed; skipping."
+  return
+fi
 log "⚡ Setting up CPU governor auto-switch (AC vs Battery)"
 
 # Script to set governor
 
 cat <<'EOF' | sudo tee /usr/local/bin/set-governor.sh >/dev/null
 #!/bin/sh
-STATUS=$(cat /sys/class/power_supply/BAT*/status 2>/dev/null)
+# Reliable CPU governor auto-switch (handles "Full" + fast AC plug/unplug)
 
-if echo "$STATUS" | grep -Eq "Charging|Not charging"; then
-AC_ON=1
-else
+# --- Detect AC power state ---
 AC_ON=0
-fi
+for AC in /sys/class/power_supply/AC*/online /sys/class/power_supply/ADP*/online; do
+    if [ -f "$AC" ]; then
+        if grep -q 1 "$AC"; then
+            AC_ON=1
+            break
+        fi
+    fi
+done
 
+# --- Detect available governors ---
 AVAILABLE=$(cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_available_governors 2>/dev/null)
 
 if echo "$AVAILABLE" | grep -qw performance; then
-PERF="performance"
+    PERF="performance"
 else
-PERF=$(echo "$AVAILABLE" | awk '{print $1}')
+    PERF=$(echo "$AVAILABLE" | awk '{print $1}')
 fi
 
 if echo "$AVAILABLE" | grep -qw powersave; then
-SAVE="powersave"
+    SAVE="powersave"
 else
-SAVE="$PERF"
+    SAVE="$PERF"
 fi
 
+# --- Apply governor per CPU ---
 for c in /sys/devices/system/cpu/cpu[0-9]*; do
-if [ -f "$c/cpufreq/scaling_governor" ]; then
-if [ "$AC_ON" = "1" ]; then
-echo "$PERF" > "$c/cpufreq/scaling_governor"
-logger "Governor set to $PERF (AC connected: $STATUS)"
-else
-echo "$SAVE" > "$c/cpufreq/scaling_governor"
-logger "Governor set to $SAVE (on battery: $STATUS)"
-fi
-fi
+    if [ -f "$c/cpufreq/scaling_governor" ]; then
+        if [ "$AC_ON" = "1" ]; then
+            echo "$PERF" > "$c/cpufreq/scaling_governor"
+            logger "Governor set to $PERF (AC connected)"
+        else
+            echo "$SAVE" > "$c/cpufreq/scaling_governor"
+            logger "Governor set to $SAVE (on battery)"
+        fi
+    fi
 done
 EOF
 
@@ -399,6 +613,7 @@ EOF
 sudo systemctl daemon-reload
 sudo systemctl enable set-governor.service
 sudo /usr/local/bin/set-governor.sh
+mark_done "setup_cpu_governor"
 }
 
 #============================#
@@ -443,6 +658,7 @@ stage_pkgs() {
 
 stage_dotfiles() {
   safe_run sync_dotfiles "Syncing dotfiles"
+  safe_run setup_xdg_dirs "Fixing XDG user directories for Nemo"
   safe_run set_fish_shell "Configuring fish shell"
 }
 
@@ -458,11 +674,49 @@ stage_services() {
 #   BOOTLOADER OPTIMIZATION  #
 #============================#
 optimize_bootloader() {
-  if grep -q '^timeout' /boot/loader/loader.conf; then
-    sudo sed -i 's/^timeout.*/timeout 0/' /boot/loader/loader.conf
-  else
-    echo "timeout 0" | sudo tee -a /boot/loader/loader.conf >/dev/null
-  fi
+    log "⚡ Optimizing bootloader (timeout + quiet boot)"
+
+    # Ensure systemd-boot is present
+    if [[ ! -d /boot/loader/entries ]]; then
+        warn "Systemd-boot not detected — skipping boot optimization."
+        return
+    fi
+
+    # 1️⃣ Instant boot: set timeout=0
+    if [[ -f /boot/loader/loader.conf ]]; then
+        safe_run sudo sed -i '/^timeout/d' /boot/loader/loader.conf "Removing existing timeout lines"
+        echo "timeout 0" | sudo tee -a /boot/loader/loader.conf >/dev/null
+        log "⏱️ Set boot timeout to 0"
+    else
+        warn "loader.conf not found, skipping timeout config."
+    fi
+
+    # 2️⃣ Find main entry (skip fallback)
+    local entry_file
+    entry_file=$(find /boot/loader/entries/ -type f -name "*.conf" ! -iname "*fallback*" | head -n 1)
+
+    if [[ -z "$entry_file" ]]; then
+        warn "No non-fallback loader entry found. Skipping quiet boot optimization."
+        return
+    fi
+
+    log "📝 Editing boot entry: $entry_file"
+
+    # 3️⃣ Remove old flags to avoid duplicates
+    sudo sed -i -E \
+        -e 's/\bquiet\b//g' \
+        -e 's/\bsplash\b//g' \
+        -e 's/\bloglevel=[^ ]*//g' \
+        -e 's/\brd\.udev\.log_priority=[^ ]*//g' \
+        -e 's/\brd\.systemd\.show_status=[^ ]*//g' \
+        -e 's/\bvt\.global_cursor_default=[^ ]*//g' \
+        "$entry_file"
+
+    # 4️⃣ Append clean boot options
+    sudo sed -i -E "s|^(options\s+.*)|\1 quiet splash loglevel=3 udev.log_priority=3 systemd.show_status=auto rd.udev.log_priority=3 rd.systemd.show_status=false vt.global_cursor_default=0|" \
+        "$entry_file"
+
+    log "✅ Bootloader optimized (quiet, splash, clean, instant)"
 }
 
 set_default_terminal() {
@@ -481,6 +735,7 @@ Stages:
   pkgs        Install packages (core, fonts, themes, icons, extras, gaming)
   dotfiles    Sync dotfiles and configure shell
   services    Configure system/user services, autologin, bootloader, terminal
+  scripts     Run additional scripts in ./Scripts/
   all         Run everything (default)
 
 Options:
@@ -493,23 +748,27 @@ Options:
   -h, --help         Show this help message
 
 Examples:
-  $0 pkgs -e          Install pkgs + extras
-  $0 dotfiles -f -t   Sync dotfiles but skip fonts and themes
-  $0 -eg              Install all with extras + gaming
-  $0 -fti             Run all but skip fonts, themes, and icons
+  $0 pkgs -e             Install pkgs + extras
+  $0 dotfiles -f -t      Sync dotfiles but skip fonts and themes
+  $0 scripts             Run all scripts in ./Scripts/
+  $0 -eg                 Install all with extras + gaming
+  $0 -fti                Run all but skip fonts, themes, and icons
 EOF
 }
 
+# Must run as normal user
 if [[ $EUID -eq 0 ]]; then
   error "Run as user, not root."
   exit 1
 fi
 
+# Keep sudo alive
 sudo -v
 ( while true; do sudo -n true; sleep 60; done ) &
 SUDO_KEEPALIVE_PID=$!
 trap 'kill $SUDO_KEEPALIVE_PID 2>/dev/null || true' EXIT
 
+# Parse options + stages
 while [[ $# -gt 0 ]]; do
   case $1 in
     # Long flags
@@ -529,7 +788,7 @@ while [[ $# -gt 0 ]]; do
     -t) NO_THEMES=1 ;;
     -i) NO_ICONS=1 ;;
     -h) print_help; exit 0 ;;
-    -[aegfti]*) # Combined short flags like -egti
+    -[aegfti]*) # combined short flags like -egti
       for ((i=1; i<${#1}; i++)); do
         case "${1:$i:1}" in
           a) STAGE="all" ;;
@@ -545,17 +804,29 @@ while [[ $# -gt 0 ]]; do
       ;;
 
     # Stages
-    pkgs|dotfiles|services|all) STAGE=$1 ;;
-    *) error "Unknown option: $1"; exit 1 ;;
+    pkgs|dotfiles|services|scripts|all) STAGE=$1 ;;
+    *) error "Unknown option or stage: $1"; exit 1 ;;
   esac
   shift
 done
 
+# Execute stage
 case $STAGE in
   pkgs)      stage_pkgs ;;
   dotfiles)  stage_dotfiles ;;
   services)  stage_services ;;
-  all)       stage_pkgs; stage_dotfiles; stage_services; optimize_bootloader; set_default_terminal ;;
+  scripts)   
+      # Pass optional second argument as specific script
+      run_scripts "${1:-}"
+      ;;
+  all)       
+      stage_pkgs
+      run_scripts
+      stage_dotfiles
+      stage_services
+      optimize_bootloader
+      set_default_terminal
+      ;;
 esac
 
 if [[ $SKIPPED -eq 1 ]]; then
