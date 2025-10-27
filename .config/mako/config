@@ -1,8 +1,8 @@
 # Appearance
-background-color=#00000099
+background-color=#000000BB
 text-color=#E1CCC4
 border-radius=14
-padding=10
+padding=7
 
 # Icons
 max-icon-size=64
@@ -10,28 +10,28 @@ icons=1
 font=JetBrainsMono Nerd Font 11  # Nerd Font for proper icon support
 
 # Behavior
-max-history=3
-max-visible=3
+max-history=2
+max-visible=2
 output=*
 actions=1
 
 sort=-time
-width=370
+width=360
 height=100
-border-size=2
-border-color=#010101
+border-size=4
+border-color=#000000BB
 
 # Notification timeouts
 default-timeout=2000
 
 [urgency=low]
 default-timeout=2000
-progress-color=over #D45E2E
+progress-color=over #D4531F
 
 [urgency=normal]
 default-timeout=2000
-progress-color=over #9C2626
+progress-color=over #9C1A1A
 
 [urgency=critical]
 default-timeout=2000
-progress-color=over #732384
+progress-color=over #711884
