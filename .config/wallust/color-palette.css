@@ -1,0 +1,8 @@
+/* ------------------- base colours --------------------------- */
+@define-color normal   {{ colors[5] }};   
+@define-color light    {{ colors[5] }};   
+@define-color dark     {{ colors[5] }};   
+@define-color lighter  {{ colors[5] }};   
+@define-color accent   {{ colors[5] }};   
+@define-color hover    {{ colors[5] }};   
+@define-color warning  {{ colors[5] }};   
