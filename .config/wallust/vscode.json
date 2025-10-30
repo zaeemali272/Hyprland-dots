@@ -2,8 +2,6 @@
   "name": "Wallust Theme",
   "type": "dark",
   "colors": {
-    "editor.background": "{{background}}",
-    "editor.foreground": "{{foreground}}",
     "activityBar.background": "{{color0}}",
     "sideBar.background": "{{color1}}",
     "titleBar.activeBackground": "{{color2}}"

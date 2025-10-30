@@ -4,6 +4,7 @@ import os
 import gi
 import subprocess
 import time
+import json
 
 gi.require_version("Gtk", "3.0")
 from gi.repository import Gtk, GdkPixbuf, GLib, Gdk
@@ -12,6 +13,8 @@ WALLPAPER_DIR = os.path.expanduser("~/Pictures/Wallpapers")
 THUMB_DIR = os.path.expanduser("~/.cache/wallpaper_thumbs")
 WALLUST_CONFIG_DIR = os.path.expanduser("~/.config/wallust")
 HYPLOCK_CONF = os.path.expanduser("~/.config/hypr/hyprlock.conf")
+WALLUST_JSON = os.path.expanduser("~/.cache/wallust/colors.json")
+COLOR_PALETTE_FILE = os.path.expanduser("~/.config/wallust/color-palette.css")
 
 
 def update_hyprlock_conf(new_path: str):
@@ -77,58 +80,65 @@ def get_active_border_color():
 
 def generate_dynamic_colors():
     """
-    Generate ~/.themes/color-palette.css from Wallust output.
-    Matches the user's exact desired format (base + RGBA variants).
+    Reads the hex color from ~/.themes/color-palette.css (from wallust output)
+    and regenerates the file with RGBA alpha variants for GTK/ironbar integration.
     """
-    import os, json
-
-    wallust_cache = os.path.expanduser("~/.cache/wallust/colors.json")
-    output_css = os.path.expanduser("~/.themes/color-palette.css")
-
-    if not os.path.isfile(wallust_cache):
-        print("✗ Wallust cache not found. Skipping dynamic color generation.")
-        return
+    COLOR_PALETTE_FILE = os.path.expanduser("~/.themes/color-palette.css")
 
     try:
-        with open(wallust_cache, "r", encoding="utf-8") as f:
-            data = json.load(f)
+        if not os.path.exists(COLOR_PALETTE_FILE):
+            print("✗ color-palette.css not found.")
+            return
 
-        colors = data.get("colors", {})
-        color_values = [colors.get(f"color{i}", "#000000") for i in range(7)]
+        with open(COLOR_PALETTE_FILE, "r", encoding="utf-8") as f:
+            content = f.read()
 
-        def hex_to_rgb_tuple(hex_color):
-            hex_color = hex_color.strip("#")
-            r = int(hex_color[0:2], 16)
-            g = int(hex_color[2:4], 16)
-            b = int(hex_color[4:6], 16)
-            return r, g, b
+        import re
+        # Try to match a color hex (e.g., #AABBCC or AABBCC)
+        match = re.search(r"#?([A-Fa-f0-9]{6})", content)
+        if not match:
+            print("✗ No valid hex color found in color-palette.css")
+            return
 
-        # Get RGB values from normal color (color0)
-        r, g, b = hex_to_rgb_tuple(color_values[0])
+        hex_color = match.group(1)
+        if not hex_color.startswith("#"):
+            hex_color = "#" + hex_color
 
-        css = []
-        css.append("/* ------------------- base colours --------------------------- */")
-        names = ["normal", "light", "dark", "lighter", "accent", "hover", "warning"]
-        for i, name in enumerate(names):
-            css.append(f"@define-color {name} {color_values[i]};")
+        # Convert hex → RGB tuple
+        def hex_to_rgb(hex_color):
+            hex_color = hex_color.lstrip("#")
+            return tuple(int(hex_color[i:i+2], 16) for i in (0, 2, 4))
 
-        css.append("")
-        css.append("/* ------------------- alpha variants of `normal` ---------- */")
+        r, g, b = hex_to_rgb(hex_color)
 
-        alphas = [0.04, 0.08, 0.12, 0.16, 0.24, 0.2608, 0.2272, 0.3008, 0.3312, 0.3616]
-        for a in alphas:
-            suffix = str(a).replace("0.", "")
-            css.append(f"@define-color normal_a{suffix} rgba({r}, {g}, {b}, {a});")
+        # Build final CSS
+        css = f"""/* ------------------- base colours --------------------------- */
+@define-color normal   {hex_color};
+@define-color light    {hex_color};
+@define-color dark     {hex_color};
+@define-color lighter  {hex_color};
+@define-color accent   {hex_color};
+@define-color hover    {hex_color};
+@define-color warning  {hex_color};
 
-        os.makedirs(os.path.dirname(output_css), exist_ok=True)
-        with open(output_css, "w", encoding="utf-8") as f:
-            f.write("\n".join(css) + "\n")
+@define-color normal_a3 rgba({r}, {g}, {b}, 0.03);
+@define-color normal_a6 rgba({r}, {g}, {b}, 0.06);
+@define-color normal_a8 rgba({r}, {g}, {b}, 0.08);
+@define-color normal_a12 rgba({r}, {g}, {b}, 0.12);
+@define-color normal_a16 rgba({r}, {g}, {b}, 0.16);
+@define-color normal_a24 rgba({r}, {g}, {b}, 0.24);
+@define-color normal_a26 rgba({r}, {g}, {b}, 0.26);
+@define-color normal_a30 rgba({r}, {g}, {b}, 0.30);
+"""
 
-        print(f"✔ Generated GTK color palette → {output_css}")
+        # Overwrite the same file
+        with open(COLOR_PALETTE_FILE, "w", encoding="utf-8") as f:
+            f.write(css)
+
+        print(f"✅ Updated {COLOR_PALETTE_FILE} with {hex_color} → rgba({r},{g},{b},...)")
 
     except Exception as e:
         print(f"✗ Failed to generate dynamic colors: {e}")
-
 
 class WallpaperSelector(Gtk.Window):
     def __init__(self):
@@ -431,7 +441,6 @@ class WallpaperSelector(Gtk.Window):
         ) as f:
             f.write(path)
         update_hyprlock_conf(path.strip())
-
         try:
             subprocess.run(
                 [
@@ -444,9 +453,16 @@ class WallpaperSelector(Gtk.Window):
                 ],
                 check=True,
             )
+
+            # Wait for Wallust to finish writing the template
+            time.sleep(0.5)
+
+            # Now replace placeholders with real colors
             generate_dynamic_colors()
+
         except Exception as e:
             print(f"✗ Wallust failed: {e}")
+
 
         time.sleep(0.5)
         for service in ("ironbar", "mako"):

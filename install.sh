@@ -165,6 +165,35 @@ run_scripts() {
 }
 
 #============================#
+#       USER PROMPT          #
+#============================#
+
+echo "🚀 Arch Post-Install Script"
+echo "=========================="
+echo "1) Run full installation (packages + dotfiles + services)"
+echo "2) Only copy configuration files (.config, .local, Pictures, .themes)"
+read -rp "Choose an option [1/2]: " USER_CHOICE
+
+if [[ "$USER_CHOICE" == "2" ]]; then
+    echo "📁 Copying only configuration files..."
+    rsync -avh --exclude ".git" --exclude "README.md" --exclude "Install.sh" \
+        "$DOTS_DIR/.config/" "$HOME/.config/"
+    if [[ -d "$DOTS_DIR/.local" ]]; then
+        rsync -avh "$DOTS_DIR/.local/" "$HOME/.local/"
+    fi
+    if [[ -d "$DOTS_DIR/Pictures" ]]; then
+        mkdir -p "$HOME/Pictures"
+        rsync -avh "$DOTS_DIR/Pictures/" "$HOME/Pictures/"
+    fi
+    if [[ -d "$DOTS_DIR/.themes" ]]; then
+        mkdir -p "$HOME/.themes"
+        rsync -avh "$DOTS_DIR/.themes/" "$HOME/.themes/"
+    fi
+    echo "✅ Files copied successfully. Exiting."
+    exit 0
+fi
+
+#============================#
 #  PRE-NETWORK FIX           #
 #============================#
 pre_network_fix() {
@@ -629,13 +658,18 @@ stage_pkgs() {
   else
     log "⏭️ Skipping fonts (--no-fonts)"
   fi
-
+  
   if [[ $NO_THEMES -eq 0 ]]; then
-    safe_run install_pkgs "${THEME_PKGS[@]}" "Installing themes"
-    [[ ${#THEME_AUR_PKGS[@]} -gt 0 ]] && safe_run install_aur "${THEME_AUR_PKGS[@]}" "Installing AUR themes"
+    if [[ -d "$DOTS_DIR/.themes" ]]; then
+        safe_run bash -c "mkdir -p \"$HOME/.themes\" && rsync -avh \"$DOTS_DIR/.themes/\" \"$HOME/.themes/\"" \
+            "Copying local themes to ~/.themes"
+    else
+        warn ".themes directory not found in repository — skipping theme copy"
+    fi
   else
     log "⏭️ Skipping themes (--no-themes)"
   fi
+
   
   if [[ $NO_ICONS -eq 0 ]]; then
     [[ ${#ICON_AUR_PKGS[@]} -gt 0 ]] && safe_run install_aur "${ICON_AUR_PKGS[@]}" "Installing icon AUR packages"

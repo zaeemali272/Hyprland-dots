@@ -13,7 +13,6 @@ threshold = 20
 hyprland = { template = "colors.conf", target = "~/.config/hypr/hyprland/colors.conf" }
 ironbar  = { template = "ironbar.template.toml", target = "~/.config/ironbar/ironbar_dynamic_colors.css" }
 mako     = { template = "mako.conf", target = "~/.config/mako/config" }
-gtk      = { template = "gtk.css", target = "~/.config/gtk-3.0/gtk.css" }
 kitty    = { template = "kitty.conf", target = "~/.config/kitty/current-theme.conf" }
-fuzzel   = { template = "fuzzel.ini", target = "~/.config/fuzzel/fuzzel.ini" }
+gtk      = { template = "color-palette.css", target ="~/.themes/color-palette.css" }
 vscode   = { template = "vscode.json", target = "~/.config/Code/User/wallust-theme.json" }
