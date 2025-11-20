@@ -1,6 +1,6 @@
 # Appearance
 background-color=#000000BB
-text-color=#E1CCC4
+text-color=#D4D2CD
 border-radius=14
 padding=7
 
@@ -26,12 +26,12 @@ default-timeout=2000
 
 [urgency=low]
 default-timeout=2000
-progress-color=over #D4531F
+progress-color=over #B98E22
 
 [urgency=normal]
 default-timeout=2000
-progress-color=over #9C1A1A
+progress-color=over #91851B
 
 [urgency=critical]
 default-timeout=2000
-progress-color=over #711884
+progress-color=over #617917

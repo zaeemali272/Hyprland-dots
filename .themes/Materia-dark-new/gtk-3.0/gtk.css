@@ -99,7 +99,7 @@ button:active {
 }
 
 .gtkstyle-fallback:active {
-  background-color: black;
+  background-color: #bb6c64;
 }
 
 .gtkstyle-fallback:disabled {

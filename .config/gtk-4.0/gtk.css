@@ -3,9 +3,9 @@
 * Generated with Matugen
 */
 
-@define-color accent_color #bec9c8;
-@define-color accent_fg_color #283232;
-@define-color accent_bg_color #bec9c8;
+@define-color accent_color #ff8537;
+@define-color accent_fg_color #871742;
+@define-color accent_bg_color #711884;
 @define-color window_bg_color #131313;
 @define-color window_fg_color #e4e2e1;
 @define-color headerbar_bg_color #131313;
@@ -21,8 +21,14 @@
 @define-color sidebar_border_color @window_bg_color;
 @define-color sidebar_backdrop_color @window_bg_color;
 
+* {
+  accent-color: #ff8537 !important;
+}
 
-.menu, .menu.popup, menu, menuitem {
+.menu,
+.menu.popup,
+menu,
+menuitem {
   background-color: rgba(30, 30, 30, 0.9);
   color: #c0caf5;
   border-radius: 14px;
@@ -33,4 +39,3 @@ menuitem:hover {
   background-color: #44475a;
   color: #7dcfff;
 }
-
