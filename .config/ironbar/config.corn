@@ -116,7 +116,7 @@ let {
         label = "{{watch:2000:~/.config/ironbar/scripts/netspeed.sh}}"
         tooltip = "{{watch:5000:~/.config/ironbar/scripts/current_wifi.sh}}"
         tooltip_class = "tooltip-solid"
-        on_click_left  = "exec ~/.config/hypr/hyprland/PyScripts/ironwifi.py"
+        on_click_left  = "exec iwgtk"
         on_click_right = "exec kitty --hold -e speedtest"
         on_click_middle = "~/.config/ironbar/scripts/netspeed_toggle.sh"
       }
@@ -141,7 +141,7 @@ let {
 in {
   name     = "main"
   position = "top"
-  height   = 26
+  height   = 24
   margin = [0 4 4 5]
   start    = $start
   center   = $center

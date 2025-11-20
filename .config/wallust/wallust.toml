@@ -6,7 +6,7 @@ palette = "dark"
 check_contrast = true
 saturation = 80
 # alpha = 100
-lighten= 60
+lighten= 100
 threshold = 20
 
 [templates]

@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
-import gi, os, json, sys
+import gi, os, json, sys, fnmatch
 gi.require_version("Gtk", "3.0")
-from gi.repository import Gtk, Gio, GdkPixbuf, Gdk, GLib
+from gi.repository import Gtk, Gio, GdkPixbuf, Gdk, GLib, Pango
 
 # ---------------- SINGLE INSTANCE CHECK ---------------- #
 LOCK_FILE = "/tmp/pylauncher.lock"
 
 if os.path.exists(LOCK_FILE):
-    # If already running, close existing instance
     try:
         with open(LOCK_FILE) as f:
             pid = int(f.read().strip())
@@ -17,7 +16,6 @@ if os.path.exists(LOCK_FILE):
     os.remove(LOCK_FILE)
     sys.exit(0)
 
-# Write our PID
 with open(LOCK_FILE, "w") as f:
     f.write(str(os.getpid()))
 
@@ -38,31 +36,34 @@ HIDE_NO_ICON_APPS = CONFIG.get("hide_no_icon_apps", True)
 WINDOW_WIDTH = CONFIG.get("window_width", 900)
 WINDOW_HEIGHT = CONFIG.get("window_height", 600)
 
+# Read hidden patterns
 if os.path.exists(HIDE_APPS_FILE):
     with open(HIDE_APPS_FILE) as f:
-        HIDDEN_APPS = {line.strip().lower() for line in f if line.strip()}
+        HIDDEN_PATTERNS = [line.strip().lower() for line in f if line.strip()]
 else:
-    HIDDEN_APPS = set()
+    HIDDEN_PATTERNS = []
+
+def is_hidden_app(name):
+    """Check if the given app name matches any pattern in hide_apps.txt"""
+    lname = name.lower()
+    for pattern in HIDDEN_PATTERNS:
+        if fnmatch.fnmatch(lname, pattern):
+            return True
+    return False
 
 
 # ---------------- MAIN CLASS ---------------- #
 class AppLauncher(Gtk.Window):
     def __init__(self):
         super().__init__(title="Launcher")
-
-        # --- set WM_CLASS for Hyprland ---
         self.set_wmclass("launcher", "launcher")
-
-        # --- window setup ---
         self.set_default_size(WINDOW_WIDTH, WINDOW_HEIGHT)
         self.set_border_width(0)
         self.set_focus_on_map(False)
         self.set_name("launcher-window")
 
-        # --- auto-close when focus lost ---
         self.connect("focus-out-event", self.on_focus_out)
 
-        # --- layout setup ---
         self.main_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=0)
         self.add(self.main_box)
 
@@ -71,21 +72,17 @@ class AppLauncher(Gtk.Window):
             getattr(self.content_box, f"set_margin_{side}")(10)
         self.main_box.pack_start(self.content_box, True, True, 0)
 
-        # --- favorites ---
         self.fav_box = Gtk.Box(orientation=Gtk.Orientation.HORIZONTAL, spacing=CONFIG.get("apps_spacing", 8))
         self.content_box.pack_start(self.fav_box, False, False, 0)
         self.load_favorites()
 
-        # --- search bar ---
         self.search_visible_setting = CONFIG.get("show_search", True)
         self.search = Gtk.SearchEntry()
         self.search.set_size_request(-1, CONFIG.get("search_height", 36))
         self.search.connect("search-changed", self.on_search)
         self.search.connect("focus-out-event", self.on_search_focus_out)
-        self.search.set_visible(True)
         self.content_box.pack_start(self.search, False, False, 0)
 
-        # --- app grid ---
         self.scrolled = Gtk.ScrolledWindow()
         self.scrolled.set_shadow_type(Gtk.ShadowType.NONE)
         self.scrolled.set_policy(Gtk.PolicyType.NEVER, Gtk.PolicyType.AUTOMATIC)
@@ -93,19 +90,24 @@ class AppLauncher(Gtk.Window):
 
         self.flow = Gtk.FlowBox()
         self.flow.set_valign(Gtk.Align.START)
+        self.flow.set_halign(Gtk.Align.CENTER)
         self.flow.set_max_children_per_line(100)
         self.flow.set_selection_mode(Gtk.SelectionMode.NONE)
-        self.flow.set_homogeneous(False)
-        self.flow.set_row_spacing(CONFIG.get("apps_spacing", 8))
-        self.flow.set_column_spacing(CONFIG.get("apps_spacing", 8))
+        self.flow.set_homogeneous(True)
+        self.flow.set_row_spacing(CONFIG.get("apps_spacing", 12))
+        self.flow.set_column_spacing(CONFIG.get("apps_spacing", 12))
+        self.flow.set_min_children_per_line(1)
+        self.flow.set_activate_on_single_click(True)
         self.scrolled.add(self.flow)
 
-        # --- load apps ---
         self.app_buttons = []
         self.first_visible_app = None
+
         self.load_apps()
 
-        # --- signals ---
+        self.flow.set_filter_func(self.filter_func, None)
+        self.flow.show_all()
+
         self.connect("map-event", self.on_window_mapped)
         self.connect("key-press-event", self.on_window_key_press)
         self.connect("destroy", self.cleanup)
@@ -113,19 +115,16 @@ class AppLauncher(Gtk.Window):
         if not self.search_visible_setting:
             GLib.idle_add(self.search.hide)
 
-    # ---------------- CLEANUP ---------------- #
     def cleanup(self, *args):
         try:
             os.remove(LOCK_FILE)
         except Exception:
             pass
 
-    # ---------------- CLOSE ON FOCUS LOST ---------------- #
     def on_focus_out(self, *args):
         Gtk.main_quit()
         return True
 
-    # ---------------- WINDOW FOCUS FIX ---------------- #
     def on_window_mapped(self, *args):
         GLib.idle_add(self.force_focus_clear)
         return False
@@ -138,92 +137,120 @@ class AppLauncher(Gtk.Window):
     # ---------------- LOAD APPS ---------------- #
     def load_apps(self):
         theme = Gtk.IconTheme.get_default()
-        seen_ids = set()
+        seen = set()
         kdeconnect_main = False
 
-        for app in Gio.AppInfo.get_all():
-            label = app.get_name()
-            exe = (app.get_executable() or "").lower()
-            app_id = app.get_id()
+        app_dirs = [
+            os.path.expanduser("~/.local/share/applications"),
+            "/usr/share/applications",
+            "/var/lib/flatpak/exports/share/applications",
+        ]
 
-            if not label or label.lower() in HIDDEN_APPS:
+        desktop_files = []
+        for d in app_dirs:
+            if os.path.isdir(d):
+                for f in os.listdir(d):
+                    if f.endswith(".desktop"):
+                        desktop_files.append(os.path.join(d, f))
+
+        for f in desktop_files:
+            try:
+                app = Gio.DesktopAppInfo.new_from_filename(f)
+                if not app:
+                    continue
+            except Exception:
                 continue
 
-            # KDE Connect filter
-            if "kdeconnect" in exe or "kde connect" in (label.lower()):
+            label = app.get_name()
+            exe = (app.get_executable() or "").lower()
+            if not label:
+                continue
+
+            is_hidden = is_hidden_app(label)
+
+            if "kdeconnect" in exe or "kde connect" in label.lower():
                 if "sms" in exe or "indicator" in exe:
                     continue
                 if kdeconnect_main:
                     continue
                 kdeconnect_main = True
 
-            if app_id in seen_ids:
+            if any(x in f for x in ("/var/lib/flatpak/", "/snap/", "wine/Programs/")):
                 continue
-            seen_ids.add(app_id)
+
+            key = (label.lower().strip(), exe.replace("/usr/bin/", "").replace("/bin/", "").strip())
+            if key in seen:
+                continue
+            seen.add(key)
 
             img = self.get_app_icon(app, theme)
             if HIDE_NO_ICON_APPS and img is None:
                 continue
+
             btn = self.add_app_button(app, label, img)
+            btn.is_hidden = is_hidden
             self.app_buttons.append((label.lower(), btn))
 
-    # ---------------- FAVORITES ---------------- #
     def load_favorites(self):
         theme = Gtk.IconTheme.get_default()
         seen = set()
-        kdeconnect_main = False
-
         for f in CONFIG.get("favorites", []):
             paths = [
                 os.path.join("/usr/share/applications", f),
                 os.path.join(os.path.expanduser("~/.local/share/applications"), f),
             ]
-            app = None
-            for p in paths:
-                if os.path.exists(p):
-                    app = Gio.DesktopAppInfo.new_from_filename(p)
-                    break
+            app = next((Gio.DesktopAppInfo.new_from_filename(p) for p in paths if os.path.exists(p)), None)
             if not app:
                 continue
-
             label = app.get_name()
-            exe = (app.get_executable() or "").lower()
-            if label.lower() in HIDDEN_APPS:
-                continue
-            if "kdeconnect" in exe or "kde connect" in (label.lower()):
-                if "sms" in exe or "indicator" in exe:
-                    continue
-                if kdeconnect_main:
-                    continue
-                kdeconnect_main = True
-            if label in seen:
+            if not label or is_hidden_app(label) or label in seen:
                 continue
             seen.add(label)
+
             img = self.get_app_icon(app, theme)
             if HIDE_NO_ICON_APPS and img is None:
                 continue
+
             btn = self.create_app_button(app, label, img)
             self.fav_box.pack_start(btn, False, False, 0)
 
-    # ---------------- BUTTON CREATION ---------------- #
     def create_app_button(self, app, label, img):
         btn = Gtk.Button()
         btn.set_relief(Gtk.ReliefStyle.NONE)
+        btn.set_halign(Gtk.Align.CENTER)
+        btn.set_valign(Gtk.Align.CENTER)
         btn.set_size_request(
-            CONFIG.get("icon_size", 64) + CONFIG.get("apps_padding", 8) * 2,
-            CONFIG.get("icon_size", 64) + CONFIG.get("apps_padding", 8) * 2 +
+            CONFIG.get("icon_size", 72) + CONFIG.get("apps_padding", 10) * 2,
+            CONFIG.get("icon_size", 72) + CONFIG.get("apps_padding", 10) * 2 +
             (CONFIG.get("font_size", 12) if CONFIG.get("show_labels", True) else 0)
         )
         btn.connect("clicked", lambda w, a=app: self.launch_and_close(a))
         btn.app_ref = app
 
-        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=2)
+        # container inside button
+        box = Gtk.Box(orientation=Gtk.Orientation.VERTICAL, spacing=4)
+        box.set_halign(Gtk.Align.CENTER)
+        box.set_valign(Gtk.Align.CENTER)
+        box.set_hexpand(True)
+        box.set_vexpand(True)
+
+        # icon
         if img:
             box.pack_start(img, True, True, 0)
+
+        # label
         if CONFIG.get("show_labels", True):
             lbl = Gtk.Label(label=label)
             lbl.set_justify(Gtk.Justification.CENTER)
+            lbl.set_ellipsize(Pango.EllipsizeMode.END)
+            lbl.set_max_width_chars(18)
+            lbl.set_lines(2)
+            lbl.set_line_wrap(True)
+            lbl.set_line_wrap_mode(Pango.WrapMode.WORD_CHAR)
+            lbl.set_halign(Gtk.Align.CENTER)
+            lbl.set_valign(Gtk.Align.CENTER)
             box.pack_start(lbl, False, False, 0)
+
         btn.add(box)
         return btn
 
@@ -236,7 +263,6 @@ class AppLauncher(Gtk.Window):
         self.flow.add(btn)
         return btn
 
-    # ---------------- ICON HANDLING ---------------- #
     def get_app_icon(self, app, theme):
         icon = app.get_icon()
         if isinstance(icon, Gio.ThemedIcon):
@@ -259,55 +285,67 @@ class AppLauncher(Gtk.Window):
                     pass
         return None
 
-    # ---------------- SEARCH ---------------- #
-    def clear_search_and_reset(self):
-        self.search.set_text("")
-        self.on_search(self.search)
+    def filter_func(self, child, data):
+        btn = child.get_child()
+        query = self.search.get_text().lower().strip()
 
-    def clear_and_hide_search(self):
-        self.clear_search_and_reset()
-        self.search.hide()
-        self.set_focus(None)
+        if hasattr(btn, "is_hidden") and btn.is_hidden and not query:
+            return False
+
+        if not query:
+            return True
+
+        for label, b in self.app_buttons:
+            if b is btn:
+                return query in label
+        return False
 
     def on_search(self, widget):
-        query = widget.get_text().lower()
+        self.flow.invalidate_filter()
+        GLib.idle_add(self._update_first_visible_after_filter)
+
+    def _update_first_visible_after_filter(self):
         self.first_visible_app = None
-        if query == "":
-            for _, btn in self.app_buttons:
-                btn.show()
-            return
-        for label, btn in self.app_buttons:
-            visible = query in label
-            btn.set_visible(visible)
-            if visible and self.first_visible_app is None:
-                self.first_visible_app = btn
+        for child in self.flow.get_children():
+            if child.get_visible():
+                self.first_visible_app = child.get_child()
+                break
+        return False
 
     def on_search_focus_out(self, widget, event):
         Gtk.main_quit()
         return False
 
-    # ---------------- KEY EVENTS ---------------- #
     def on_window_key_press(self, widget, event):
         keyname = Gdk.keyval_name(event.keyval)
         if not keyname:
             return False
+
         if keyname == "Escape":
             Gtk.main_quit()
             return True
+
         if keyname == "Return":
             if self.first_visible_app and self.first_visible_app.get_visible():
                 self.first_visible_app.app_ref.launch([], None)
                 Gtk.main_quit()
                 return True
+
         if len(keyname) == 1 and keyname.isprintable():
             if not self.search_visible_setting and not self.search.get_visible():
                 self.search.show()
+            if self.search.is_focus():
+                return False
+            code = Gdk.keyval_to_unicode(event.keyval)
+            ch = chr(code) if code and code != 0 else None
+            if ch:
+                cur = self.search.get_text()
+                self.search.set_text(cur + ch)
+                self.search.set_position(len(cur) + 1)
+                self.on_search(self.search)
             self.search.grab_focus()
-            current = self.search.get_text()
-            self.search.set_text(current + keyname)
-            self.search.set_position(len(current) + 1)
-            self.on_search(self.search)
             return True
+
         return False
 
 
@@ -322,3 +360,4 @@ win = AppLauncher()
 win.connect("destroy", Gtk.main_quit)
 win.show_all()
 Gtk.main()
+

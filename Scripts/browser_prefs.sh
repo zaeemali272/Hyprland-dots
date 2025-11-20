@@ -61,8 +61,7 @@ ZEN_LAYOUT=$(cat <<'EOF'
       "home-button",
       "forward-button",
       "urlbar-container",
-      "bookmarks-menu-button",
-      "unified-extensions-button"
+      "bookmarks-menu-button"
     ],
     "toolbar-menubar": ["menubar-items"],
     "TabsToolbar": ["tabbrowser-tabs"],
@@ -113,6 +112,7 @@ if [ -f "$ZEN_DIR/profiles.ini" ]; then
         echo 'user_pref("zen.view.compact.enable-at-startup", true);' >> "$userjs"
         echo 'user_pref("zen.view.compact.hide-toolbar", true);' >> "$userjs"
         echo 'user_pref("zen.view.sidebar-expanded", false);' >> "$userjs"
+        echo 'user_pref("widget.wayland.popups.use-native", false);' >> "$userjs"
 
         merge_ui_state "$prefs_file" "$userjs" "$ZEN_LAYOUT"
 

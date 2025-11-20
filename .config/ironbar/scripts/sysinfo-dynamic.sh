@@ -7,7 +7,7 @@ temp=$(sensors | awk '/Package id 0:/ {print int($4)}' | tr -d '+°C')
 label="  ${cpu}%"
 
 if (( mem > 50 )); then
-  label+=" |   ${mem}%"
+  label+=" |   ${mem}%"
 fi
 
 if (( temp > 65 )); then

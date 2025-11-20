@@ -1,36 +1,25 @@
-/*
-* GTK Colors
-* Generated with Matugen
-*/
-
-@define-color accent_color #bec9c8;
-@define-color accent_fg_color #283232;
-@define-color accent_bg_color #bec9c8;
-@define-color window_bg_color #131313;
-@define-color window_fg_color #e4e2e1;
-@define-color headerbar_bg_color #131313;
-@define-color headerbar_fg_color #e4e2e1;
-@define-color popover_bg_color #131313;
-@define-color popover_fg_color #e4e2e1;
-@define-color view_bg_color #131313;
-@define-color view_fg_color #e4e2e1;
-@define-color card_bg_color #131313;
-@define-color card_fg_color #e4e2e1;
-@define-color sidebar_bg_color @window_bg_color;
-@define-color sidebar_fg_color @window_fg_color;
-@define-color sidebar_border_color @window_bg_color;
-@define-color sidebar_backdrop_color @window_bg_color;
-
-
-.menu, .menu.popup, menu, menuitem {
-  background-color: rgba(30, 30, 30, 0.9);
-  color: #c0caf5;
-  border-radius: 14px;
-  padding: 5px;
+* {
+    accent-color: #ff8537 !important;
+}
+/* Entry selection background */
+.nemo-window .nemo-window-pane widget.entry:selected {
+    background-color: #711884 !important;
 }
 
-menuitem:hover {
-  background-color: #44475a;
-  color: #7dcfff;
+/* Treeview disk full color */
+.places-treeview {
+    -NemoPlacesTreeView-disk-full-fg-color: #00000A !important;
 }
+
+/* Buttons and selection highlights */
+.button, .view .selection {
+    background-color: #00000A !important;
+}
+.button:hover {
+    background-color: #871742 !important;
+}
+
+/* Theme-defined selection colors */
+@define-color theme_selected_bg_color #00000A !important;
+@define-color theme_unfocused_selected_bg_color #00000A !important;
 

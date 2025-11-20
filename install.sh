@@ -34,7 +34,10 @@ CORE_PKGS=(
   starship eza ripgrep fd jq polkit-gnome tumbler ffmpegthumbnailer
   swww nemo nemo-fileroller nano glances kdeconnect
   ffmpeg mako gnome-text-editor gst-libav gst-plugins-good gst-plugins-bad
-  vlc vlc-plugins-all wf-recorder mission-center gnome-keyring python-gobject python-pillow python-pydbus playerctl
+  vlc vlc-plugins-all wf-recorder mission-center gnome-keyring python-gobject 
+  python-pillow python-pydbus playerctl xdg-desktop-portal-hyprland qt6-declarative 
+  qt6-base qt6-tools pipewire pipewire-pulse xdg-desktop-portal 
+  xdg-desktop-portal-hyprland
 )
 
 EXTRA_PKGS=(

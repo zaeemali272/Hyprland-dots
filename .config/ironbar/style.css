@@ -1,6 +1,6 @@
 @import url("ironbar_dynamic_colors.css");
 
-@define-color bg rgba(0, 0, 0, 0.9);
+@define-color bg rgba(0, 0, 0, 0.8);
 
 label {
   font-family: "Inter", "CaskaydiaCove Nerd Font", sans-serif;
@@ -9,15 +9,15 @@ label {
 }
 
 .background {
-   background-color: transparent;
+  background-color: transparent;
   /*
    for full black bar
    background-color: @bg;
    border-radius: 15px; */
 }
 
-.tooltip-solid {
-  background-color: @bg;
+.popup {
+  background-color: @bg !important;
   opacity: 0.85;
   border-radius: 10px;
   padding: 6px 10px;
@@ -37,15 +37,22 @@ label {
 .workspaces {
   background-color: @bg;
   opacity: 0.95;
-  border-radius: 13px;
+  border-radius: 20px;
   transition: 0.2s ease-in-out;
   padding: 0 10px;
   margin: 0 2.5px;
+
 }
 
 /* Tray */
-.widget-tray { color: @font6; }
-.widget-tray * { background-color: transparent; padding: 0 1px; }
+.widget-tray {
+  color: @font6;
+}
+
+.widget-tray * {
+  background-color: transparent;
+  padding: 0 1px;
+}
 
 /* UPSM */
 .ultra_power_saving {
@@ -53,7 +60,7 @@ label {
   font-size: 16px;
 }
 
-.waydroid{
+.waydroid {
   font-size: 20px;
   padding: 0 0px 0 9px;
   background-color: @bg;
@@ -64,26 +71,53 @@ label {
 }
 
 /* Warp */
-.warp { padding: 0 11.9px 0 7px; font-size: 16px; }
+.warp {
+  padding: 0 11.9px 0 7px;
+  font-size: 16px;
+}
 
 /* Wlogout */
-.wlogout { font-size: 17px; color: @font0; }
-.wlogout:hover { color: @accent; }
+.wlogout {
+  font-size: 17px;
+  color: @font0;
+}
+
+.wlogout:hover {
+  color: @accent;
+}
 
 /* Sysinfo */
-.sysinfo-dynamic { color: @font3; }
+.sysinfo-dynamic {
+  color: @font3;
+}
 
 /* Netspeed / Battery / Volume */
-.netspeed { color: @font4; }
-.combinedBattery { color: @font1; }
-.volume { color: @font2; }
+.netspeed {
+  color: @font4;
+}
+
+.combinedBattery {
+  color: @font1;
+}
+
+.volume {
+  color: @font2;
+}
 
 /* Clock */
-.clock { font-family: "CaskaydiaCove Nerd Font"; color: @font6; }
-.clock_date { color: @accent; }
+.clock {
+  font-family: "CaskaydiaCove Nerd Font";
+  color: @font6;
+}
+
+.clock_date {
+  color: @accent;
+}
 
 /* Zscroll */
-.zscroll { color: @font5;}
+.zscroll {
+  color: @font5;
+}
 
 /* Workspaces */
 .workspaces {
@@ -110,8 +144,8 @@ label {
 }
 
 .workspaces button:hover {
-  background: rgba(125, 207, 255, 0.3); /* semi-transparent accent */
+  background: rgba(125, 207, 255, 0.3);
+  /* semi-transparent accent */
   color: @font6;
   opacity: 0.85;
 }
-
