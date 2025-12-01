@@ -26,9 +26,11 @@ fi
 echo "Cleaning /tmp..."
 sudo rm -rf /tmp/*
 
-# 6. Clear journal logs older than 2 weeks
-echo "Cleaning old journal logs..."
-sudo journalctl --vacuum-time=2weeks
+# 6. Clear journal logs
+echo "Wiping ALL systemd journals..."
+sudo journalctl --vacuum-size=0
+sudo rm -rf /var/log/journal/*
+sudo systemctl restart systemd-journald
 
 # 7. Optional: clean browser cache if using Firefox/Chrome
 echo "Cleaning Zen Browser cache..."

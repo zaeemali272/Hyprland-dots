@@ -32,7 +32,7 @@ CORE_PKGS=(
   pipewire pipewire-alsa pipewire-pulse pipewire-jack wireplumber pavucontrol
   brightnessctl bluez bluez-utils iwd xdg-user-dirs
   starship eza ripgrep fd jq polkit-gnome tumbler ffmpegthumbnailer
-  swww nemo nemo-fileroller nano glances kdeconnect
+  swww nemo nemo-fileroller nano glances
   ffmpeg mako gnome-text-editor gst-libav gst-plugins-good gst-plugins-bad
   vlc vlc-plugins-all wf-recorder mission-center gnome-keyring python-gobject 
   python-pillow python-pydbus playerctl xdg-desktop-portal-hyprland qt6-declarative 
@@ -41,7 +41,7 @@ CORE_PKGS=(
 )
 
 EXTRA_PKGS=(
-  yt-dlp gallery-dl
+  yt-dlp kdeconnect
 )
 EXTRA_AUR_PKGS=(
   youtube-music-bin
