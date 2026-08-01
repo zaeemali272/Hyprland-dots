@@ -1,7 +1,0 @@
-[Unit]
-Description=Battery Low Notification
-
-[Service]
-ExecStart=[Service]
-ExecStart=/home/%u/.local/bin/battery_check.sh
-
