@@ -62,6 +62,14 @@ create_bind("CTRL + SUPER + R", hl.dsp.exec_cmd("pkill quickshell && quickshell 
 create_bind("CTRL + ESCAPE", hl.dsp.exec_cmd("pkill quickshell || quickshell -d"), release)
 create_bind("ALT + ESCAPE", hl.dsp.exec_cmd("hyprctl reload"), release)
 
+-- Zenith-shell
+create_bind("CTRL + SUPER + T", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh wallpaper || zenith wallpaper"), release)
+create_bind("SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh dashboard || zenith dashboard"), release)
+create_bind("CTRL + SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh pomodoro || zenith pomodoro"), release)
+create_bind("CTRL + SUPER + S", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh volume || zenith volume"), release)
+create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh close || zenith close"), release)
+create_bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh power || zenith power"), release)
+
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
     create_bind(vars.kbGoToWs .. " + " .. key, fn.wsaction("focus", "", i))
