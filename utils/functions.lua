@@ -203,7 +203,7 @@ end
 local function load_toggle_config()
     local config = default_config()
 
-    local user_file = io.open(config_dir .. "/caelestia/cli.json", "r")
+    local user_file = io.open(config_dir .. "/hypr/cli.json", "r") or io.open(config_dir .. "/zenith/cli.json", "r")
     if not user_file then
         return config
     end

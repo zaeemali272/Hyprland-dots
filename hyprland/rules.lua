@@ -133,7 +133,7 @@ tagged_rule(float_tag, {
 }, "title")
 
 
--- Sized floaters (Custom & Caelestia dimensions)
+-- Sized floaters (Custom & Zenith dimensions)
 tagged_rule(float_35_16_tag, { "org.gnome.FileRoller" }, "class")
 tagged_rule(float_45_45_tag, { "blueberry\\.py", "pavucontrol|org.pulseaudio.pavucontrol|com.saivert.pwvucontrol", "nm-connection-editor" }, "class")
 tagged_rule(float_50_55_tag, { "Wallpaper Selector" }, "title")
@@ -302,5 +302,5 @@ hl.layer_rule({ match = { namespace = "(notifications|osd)" }, ignore_alpha = 0.
 hl.layer_rule({ match = { namespace = "gtk4-layer-shell" }, animation = "noanim" })
 
 -- Shell
-hl.layer_rule({ match = { namespace = "caelestia-(border-exclusion|area-picker)" }, no_anim = true })
-hl.layer_rule({ match = { namespace = "caelestia-(drawers|background)" }, animation = "fade" })
+hl.layer_rule({ match = { namespace = "(zenith|quickshell)-(border-exclusion|area-picker)" }, no_anim = true })
+hl.layer_rule({ match = { namespace = "(zenith|quickshell)-(drawers|background)" }, animation = "fade" })

@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
+set -euo pipefail
+
 for cmd in "$@"; do
-    # Strip arguments to find the executable binary
-    binary="${cmd%% *}"
+    # Extract executable binary name (first word)
+    read -r binary _ <<< "$cmd"
     if command -v "$binary" >/dev/null 2>&1; then
-        eval "$cmd" &
+        nohup $cmd >/dev/null 2>&1 &
         exit 0
     fi
 done
+
 exit 1
