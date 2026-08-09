@@ -27,8 +27,9 @@ hl.on("hyprland.start", function()
     -- Forward bluetooth media commands to MPRIS
     hl.exec_cmd("mpris-proxy")
 
-    -- Start shell
+    -- Start shell & super tap listener
     hl.exec_cmd("quickshell -d")
+    hl.exec_cmd("pkill -f super_tap.py; python3 ~/.config/hypr/hyprland/scripts/super_tap.py &")
 end)
 
 -- Resizer listeners
