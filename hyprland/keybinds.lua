@@ -58,6 +58,7 @@ create_bind("ALT + ESCAPE", hl.dsp.exec_cmd("hyprctl reload"), release)
 -- Zenith-shell
 create_bind("CTRL + SUPER + T", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh wallpaper || zenith wallpaper"), release)
 create_bind("SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh dashboard || zenith dashboard"), release)
+create_bind("SUPER + SHIFT + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh ai || zenith ai"), release)
 create_bind("CTRL + SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh pomodoro || zenith pomodoro"), release)
 create_bind("CTRL + SUPER + S", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh volume || zenith volume"), release)
 create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh close || zenith close"), release)
