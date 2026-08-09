@@ -6,6 +6,7 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("dbus-update-activation-environment --all --systemd WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd("systemctl --user import-environment WAYLAND_DISPLAY XDG_CURRENT_DESKTOP")
     hl.exec_cmd("systemctl --user start hyprland-session.target")
+    hl.exec_cmd("systemctl --user restart xdg-desktop-portal-hyprland xdg-desktop-portal")
 
     -- Keyring and auth (NixOS-safe fallback)
     hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
