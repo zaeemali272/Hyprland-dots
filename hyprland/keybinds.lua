@@ -56,16 +56,16 @@ create_bind("CTRL + ESCAPE", hl.dsp.exec_cmd("pkill quickshell || quickshell -d"
 create_bind("ALT + ESCAPE", hl.dsp.exec_cmd("hyprctl reload"), release)
 
 -- Zenith-shell
-create_bind("CTRL + SUPER + T", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh wallpaper || zenith wallpaper"), release)
-create_bind("SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh dashboard || zenith dashboard"), release)
-create_bind("SUPER + SHIFT + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh ai || zenith ai"), release)
-create_bind("CTRL + SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh pomodoro || zenith pomodoro"), release)
-create_bind("CTRL + SUPER + S", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh volume || zenith volume"), release)
-create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh close || zenith close"), release)
-create_bind("SUPER + V", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh clipboard || zenith clipboard"), release)
-create_bind("SUPER + PERIOD", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh emoji || zenith emoji"), release)
-create_bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh power || zenith power"), release)
-create_bind(vars.kbLauncher, hl.dsp.exec_cmd("$HOME/.config/quickshell/launch.sh launcher"), release)
+create_bind("CTRL + SUPER + T", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh wallpaper || zenith wallpaper"))
+create_bind("SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh dashboard || zenith dashboard"))
+create_bind("SUPER + SHIFT + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh ai || zenith ai"))
+create_bind("CTRL + SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh pomodoro || zenith pomodoro"))
+create_bind("CTRL + SUPER + S", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh volume || zenith volume"))
+create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh close || zenith close"))
+create_bind("SUPER + V", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh clipboard || zenith clipboard"))
+create_bind("SUPER + PERIOD", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh emoji || zenith emoji"))
+create_bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh power || zenith power"))
+create_bind(vars.kbLauncher, hl.dsp.exec_cmd("$HOME/.config/quickshell/launch.sh launcher"))
 
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
