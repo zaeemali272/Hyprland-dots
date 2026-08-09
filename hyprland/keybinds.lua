@@ -1,4 +1,4 @@
-local vars = require("variables")
+ local vars = require("variables")
 local fn   = require("utils.functions")
 
 -- Flags
@@ -42,13 +42,6 @@ end
 
 -- Launcher toggle (Opens if closed, closes/kills if open)
 local launcher_default = normalise_keybind("SUPER + SUPER_L")
-create_bind(
-    { vars.kbLauncher, "SUPER + SUPER_L" },
-    hl.dsp.exec_cmd("~/.config/quickshell/launch.sh cmd Overview"),
-    function(key)
-        return normalise_keybind(key) == launcher_default and release or nil
-    end
-)
 
 create_bind(vars.kbLock, hl.dsp.exec_cmd("$HOME/.config/hyprlock/scripts/hyprlock.sh"), locked)
 
@@ -68,7 +61,10 @@ create_bind("SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh dashboa
 create_bind("CTRL + SUPER + A", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh pomodoro || zenith pomodoro"), release)
 create_bind("CTRL + SUPER + S", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh volume || zenith volume"), release)
 create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh close || zenith close"), release)
+create_bind("SUPER + V", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh clipboard || zenith clipboard"), release)
+create_bind("SUPER + PERIOD", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh emoji || zenith emoji"), release)
 create_bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh power || zenith power"), release)
+create_bind(vars.kbLauncher, hl.dsp.exec_cmd("$HOME/.config/quickshell/launch.sh launcher"), release)
 
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
@@ -153,7 +149,7 @@ create_bind(vars.kbBrowser, hl.dsp.exec_cmd(vars.browser))
 create_bind(vars.kbEditor, hl.dsp.exec_cmd(vars.editor))
 create_bind(vars.kbFileExplorer, hl.dsp.exec_cmd(vars.fileExplorer))
 create_bind(vars.kbAudioSettings, hl.dsp.exec_cmd(vars.audioSettings))
-create_bind("SUPER + X", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'zeditor' 'gnome-text-editor'"))
+create_bind("SUPER + SHIFT + X", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'zeditor' 'gnome-text-editor'"))
 create_bind("CTRL + SHIFT + Escape", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/launch_first_available.sh 'missioncenter' 'btop'"))
 
 -- Utilities

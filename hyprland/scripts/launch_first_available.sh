@@ -2,10 +2,10 @@
 set -euo pipefail
 
 for cmd in "$@"; do
-    # Extract executable binary name (first word)
+    # Extract binary executable name
     read -r binary _ <<< "$cmd"
     if command -v "$binary" >/dev/null 2>&1; then
-        nohup $cmd >/dev/null 2>&1 &
+        nohup bash -c "$cmd" >/dev/null 2>&1 &
         exit 0
     fi
 done
