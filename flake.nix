@@ -37,6 +37,11 @@
         {
           options.programs.hyprland-dots = {
             enable = lib.mkEnableOption "Hyprland dotfiles and packages";
+            package = lib.mkOption {
+              type = lib.types.package;
+              default = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
+              description = "The hyprland-dots package to use.";
+            };
           };
 
           config = lib.mkIf cfg.enable {
@@ -74,7 +79,7 @@
             };
 
             # Link dotfiles into ~/.config/hypr
-            xdg.configFile."hypr".source = ./.;
+            xdg.configFile."hypr".source = "${cfg.package}/share/hyprland-dots";
           };
         };
     };
