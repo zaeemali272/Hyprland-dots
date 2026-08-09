@@ -46,7 +46,6 @@
               hyprlock
               hyprpicker
               hyprshot
-              hyprlauncher
               grim
               slurp
               wl-screenrec
