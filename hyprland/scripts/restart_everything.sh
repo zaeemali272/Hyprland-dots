@@ -16,7 +16,7 @@ fi
 
 # Restart user-space audio services cleanly if systemctl exists
 if command -v systemctl >/dev/null 2>&1; then
-    systemctl --user restart pipewire wireplumber 2>/dev/null || true
+    systemctl --user restart pipewire wireplumber xdg-desktop-portal-hyprland xdg-desktop-portal 2>/dev/null || true
 fi
 
 # Reload Hyprland configuration and state
