@@ -41,7 +41,7 @@ local function create_bind(keybinds, action, flags)
 end
 
 -- Launcher toggle (Opens if closed, closes/kills if open)
-local launcher_default = normalise_keybind("SUPER + SUPER_L")
+-- local launcher_default = normalise_keybind("SUPER + SUPER_L")
 
 create_bind(vars.kbLock, hl.dsp.exec_cmd("$HOME/.config/hyprlock/scripts/hyprlock.sh"), locked)
 
@@ -65,7 +65,7 @@ create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh 
 create_bind("SUPER + V", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh clipboard || zenith clipboard"))
 create_bind("SUPER + PERIOD", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh emoji || zenith emoji"))
 create_bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh power || zenith power"))
-create_bind("SUPER + SUPER_L", hl.dsp.exec_cmd("$HOME/.config/quickshell/launch.sh launcher"))
+create_bind("SUPER + SUPER_L", hl.dsp.exec_cmd("$HOME/.config/quickshell/launch.sh launcher"), { locked = true, release = true })
 
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
