@@ -37,6 +37,16 @@
         {
           options.programs.hyprland-dots = {
             enable = lib.mkEnableOption "Hyprland dotfiles and packages";
+            devMode = lib.mkOption {
+              type = lib.types.bool;
+              default = true;
+              description = "Use live out-of-store symlink for real-time hot reloading during development.";
+            };
+            devPath = lib.mkOption {
+              type = lib.types.str;
+              default = "/home/zaeem/zenith/Hyprland-dots";
+              description = "Path to local Hyprland-dots repo for live reloading.";
+            };
             package = lib.mkOption {
               type = lib.types.package;
               default = self.packages.${pkgs.stdenv.hostPlatform.system}.default;
@@ -78,9 +88,12 @@
               systemd.enable = true;
             };
 
-            # Link dotfiles into ~/.config/hypr
-            xdg.configFile."hypr".source = "${cfg.package}/share/hyprland-dots";
+            # Link dotfiles into ~/.config/hypr (Out-of-store live symlink when devMode is enabled)
+            xdg.configFile."hypr".source = if cfg.devMode
+              then config.lib.file.mkOutOfStoreSymlink cfg.devPath
+              else "${cfg.package}/share/hyprland-dots";
           };
         };
+
     };
 }
