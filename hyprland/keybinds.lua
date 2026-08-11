@@ -1,4 +1,4 @@
- local vars = require("variables")
+local vars = require("variables")
 local fn   = require("utils.functions")
 
 -- Flags
@@ -30,20 +30,59 @@ local function flatten_keybinds(keybinds, keys)
     return keys
 end
 
+local function mark_combo_cmd()
+    os.execute("~/.config/quickshell/scripts/super_launcher.sh mark_combo 2>/dev/null &")
+end
+
 local function create_bind(keybinds, action, flags)
     local get_flags = type(flags) == "function" and flags or function()
         return flags
     end
 
     for _, key in ipairs(flatten_keybinds(keybinds)) do
-        hl.bind(key, action, get_flags(key))
+        local norm = normalise_keybind(key)
+        local is_super_combo = norm:find("super", 1, true) and not (norm == "super_l" or norm == "super")
+
+        if is_super_combo then
+            if type(action) == "table" then
+                if action.dispatcher == "exec" then
+                    local new_action = {
+                        dispatcher = "exec",
+                        args = "~/.config/quickshell/scripts/super_launcher.sh mark_combo; " .. tostring(action.args or "")
+                    }
+                    hl.bind(key, new_action, get_flags(key))
+                else
+                    local target_action = action
+                    hl.bind(key, function(...)
+                        mark_combo_cmd()
+                        return hl.dispatch(target_action)
+                    end, get_flags(key))
+                end
+            elseif type(action) == "function" then
+                local orig = action
+                hl.bind(key, function(...)
+                    mark_combo_cmd()
+                    return orig(...)
+                end, get_flags(key))
+            else
+                hl.bind(key, function(...)
+                    mark_combo_cmd()
+                    return hl.dispatch(action)
+                end, get_flags(key))
+            end
+        else
+            hl.bind(key, action, get_flags(key))
+        end
     end
 end
 
--- Launcher toggle (Opens if closed, closes/kills if open)
--- local launcher_default = normalise_keybind("SUPER + SUPER_L")
-
+-- Launcher toggle (Opens on single SUPER_L release)
 create_bind(vars.kbLock, hl.dsp.exec_cmd("$HOME/.config/hyprlock/scripts/hyprlock.sh"), locked)
+
+-- Launcher
+create_bind("SUPER_L", hl.dsp.exec_cmd("~/.config/quickshell/scripts/super_launcher.sh press"))
+create_bind("SUPER_L", hl.dsp.exec_cmd("~/.config/quickshell/scripts/super_launcher.sh release"), release)
+create_bind(vars.kbLauncher, hl.dsp.exec_cmd("~/.config/quickshell/launch.sh launcher || zenith launcher"))
 
 -- Restore lock
 create_bind(vars.kbRestoreLock, function()
@@ -65,7 +104,6 @@ create_bind("CTRL + SUPER + C", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh 
 create_bind("SUPER + V", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh clipboard || zenith clipboard"))
 create_bind("SUPER + PERIOD", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh emoji || zenith emoji"))
 create_bind("CTRL + ALT + DELETE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh power || zenith power"))
-create_bind("SUPER_L", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh launcher || zenith launcher"), { locked = true, release = true })
 
 for i = 1, 10 do
     local key = i % 10 -- 10 maps to key 0
