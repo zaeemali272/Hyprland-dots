@@ -75,9 +75,11 @@
               tesseract
             ];
 
-            systemd.user.targets.hyprland-session.Unit.Wants = [
-              "xdg-desktop-autostart.target"
-            ];
+            systemd.user.targets.hyprland-session.Unit = {
+              BindsTo = [ "graphical-session.target" ];
+              Wants = [ "graphical-session-pre.target" "xdg-desktop-autostart.target" ];
+              After = [ "graphical-session-pre.target" ];
+            };
 
             wayland.windowManager.hyprland = {
               enable = true;
