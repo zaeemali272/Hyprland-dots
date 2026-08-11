@@ -86,7 +86,11 @@
               configType = "hyprlang";
               xwayland.enable = true;
               systemd.enable = true;
+              extraConfig = lib.mkForce null;
             };
+
+            # Disable individual hyprland.conf generation to prevent collision with full hypr directory link
+            xdg.configFile."hypr/hyprland.conf".enable = false;
 
             # Link dotfiles into ~/.config/hypr (Out-of-store live symlink when devMode is enabled)
             xdg.configFile."hypr".source = if cfg.devMode
@@ -94,6 +98,7 @@
               else "${cfg.package}/share/hyprland-dots";
           };
         };
+
 
     };
 }
