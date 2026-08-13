@@ -49,7 +49,7 @@ return {
 
     -- Misc
     volumeStep                 = 10,
-    volumeMax                  = 200,
+    volumeMax                  = 150,
     cursorTheme                = "bibata-cursors",
     cursorSize                 = 24,
     sleepGestureCmd            = "systemctl suspend-then-hibernate",
