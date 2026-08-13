@@ -82,7 +82,6 @@ create_bind(vars.kbLock, hl.dsp.exec_cmd("$HOME/.config/hyprlock/scripts/hyprloc
 -- Launcher
 create_bind("SUPER_L", hl.dsp.exec_cmd("~/.config/quickshell/scripts/super_launcher.sh press"))
 create_bind("SUPER_L", hl.dsp.exec_cmd("~/.config/quickshell/scripts/super_launcher.sh release"), release)
-create_bind(vars.kbLauncher, hl.dsp.exec_cmd("~/.config/quickshell/launch.sh launcher || zenith launcher"))
 
 -- Restore lock
 create_bind(vars.kbRestoreLock, function()
