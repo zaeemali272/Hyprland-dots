@@ -23,5 +23,10 @@ hl.config({
 
     cursor = {
         hotspot_padding = 1,
+        no_hardware_cursors = true,
+    },
+
+    xwayland = {
+        force_zero_scaling = true,
     },
 })
