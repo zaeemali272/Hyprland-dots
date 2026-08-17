@@ -1,4 +1,12 @@
-local scheme = require("scheme.current")
+-- scheme.current is generated from the wallpaper at runtime and is gitignored,
+-- so it is absent on a fresh clone and may fail to be seeded at all when
+-- ~/.config/hypr is read-only (a Home Manager / nix-store symlink, for one).
+-- Falling back to the committed default keeps Hyprland starting instead of
+-- refusing the whole config over a missing generated file.
+local ok, scheme = pcall(require, "scheme.current")
+if not ok or type(scheme) ~= "table" then
+    scheme = require("scheme.default")
+end
 
 return {
     ------------------
