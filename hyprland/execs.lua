@@ -9,13 +9,18 @@ hl.on("hyprland.start", function()
     hl.exec_cmd("systemctl --user restart xdg-desktop-portal-hyprland xdg-desktop-portal")
 
     -- Keyring and auth (NixOS-safe fallback)
-    hl.exec_cmd("gnome-keyring-daemon --start --components=secrets")
+    -- Guarded: these are optional, and an exec that always fails is noise in
+    -- the log on every single login. gnome-keyring is not installed on this
+    -- machine, so nothing was providing a secret store.
+    hl.exec_cmd("command -v gnome-keyring-daemon >/dev/null && gnome-keyring-daemon --start --components=secrets")
     hl.exec_cmd("hyprpolkitagent || /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1 || polkit-kde-authentication-agent-1")
 
     -- Wallpapers and launcher
-    hl.exec_cmd("aww || awww-daemon || awww")
-    hl.exec_cmd("sleep 0.5 && (aww restore || awww restore)")
-    hl.exec_cmd("hyprlauncher -d")
+    -- The first name in this chain, "aww", does not exist anywhere; the daemon
+    -- is awww-daemon. Kept last as a fallback rather than first as a failure.
+    hl.exec_cmd("awww-daemon || awww || aww")
+    hl.exec_cmd("sleep 0.5 && (awww restore || aww restore)")
+    hl.exec_cmd("command -v hyprlauncher >/dev/null && hyprlauncher -d")
 
     -- Clipboard history
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
@@ -29,7 +34,19 @@ hl.on("hyprland.start", function()
 
     -- Start shell & super tap listener
     hl.exec_cmd("quickshell -d")
-    hl.exec_cmd("pkill -f super_tap.py; python3 ~/.config/hypr/hyprland/scripts/super_tap.py &")
+    -- super_tap.py is deliberately not started.
+    --
+    -- It is a second Super-tap detector: it reads /dev/input/event* directly and
+    -- opens the launcher, while keybinds.lua already binds SUPER_L to
+    -- super_launcher.sh press/release for exactly the same purpose. With both
+    -- running a single tap fires twice -- open, then immediately close -- which
+    -- looks like the launcher refusing to open.
+    --
+    -- It also accumulated: "pkill; start &" races with itself, and two copies
+    -- were found running at once, each holding every input device open.
+    --
+    -- Re-enable this only if you also remove the SUPER_L binds in keybinds.lua.
+    -- hl.exec_cmd("pkill -f super_tap.py; python3 ~/.config/hypr/hyprland/scripts/super_tap.py &")
 end)
 
 -- Resizer listeners
