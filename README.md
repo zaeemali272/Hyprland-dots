@@ -4,6 +4,45 @@ A modern, highly modular, Lua-powered **Hyprland** desktop configuration environ
 
 ---
 
+## ⚠️ Requirements
+
+### The Super key needs the `input` group
+
+Tapping **Super** on its own opens the launcher. That is detected by
+`hyprland/scripts/super_tap.py`, which reads `/dev/input/event*` directly —
+Hyprland cannot bind a bare modifier reliably, so there is no way around
+reading the device.
+
+That requires membership of the `input` group:
+
+```bash
+sudo usermod -aG input $USER    # then log out and back in
+```
+
+**NixOS users:** already handled — `zenith-nixos` puts `input` in
+`users.users.<you>.extraGroups`.
+
+**Everyone else** (Arch, Fedora, Debian…) has to run the command above. Without
+it the listener starts, cannot read a single device, and exits — so the Super
+tap silently does nothing while *every other keybind works normally*. That
+combination is the signature of this problem.
+
+Check it:
+
+```bash
+pgrep -af super_tap.py                    # should be running
+id -nG | tr ' ' '\n' | grep -x input      # should print: input
+```
+
+If the launcher still will not open, `zenith-shell` ships a diagnostic that
+checks every link in the chain:
+
+```bash
+~/.config/quickshell/scripts/diagnose_launcher.sh
+```
+
+---
+
 ## 📸 Key Features
 
 - **⚡ Lua-Driven Configuration**: Modular Lua architecture (`hyprland.lua`, `variables.lua`, `hyprland/*.lua`) backed by standard `hyprland.conf` compatibility.
