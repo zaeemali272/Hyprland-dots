@@ -15,8 +15,7 @@ hl.on("hyprland.start", function()
     -- Wallpapers and launcher
     hl.exec_cmd("aww || awww-daemon || awww")
     hl.exec_cmd("sleep 0.5 && (aww restore || awww restore)")
-    hl.exec_cmd("hyprlauncher -d")
-
+            
     -- Clipboard history
     hl.exec_cmd("wl-paste --type text --watch cliphist store")
     hl.exec_cmd("wl-paste --type image --watch cliphist store")
