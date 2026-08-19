@@ -77,14 +77,7 @@ local function create_bind(keybinds, action, flags)
 end
 
 -- Launcher toggle (Opens on single SUPER_L release)
--- Lock. This pointed at $HOME/.config/hyprlock/scripts/hyprlock.sh, which is
--- not shipped by this repository and does not exist -- so the lock key did
--- nothing at all. hyprlock is what actually locks, and hyprlock.conf lives here.
--- The wrapper script is still honoured if someone has one.
-create_bind(vars.kbLock, hl.dsp.exec_cmd(
-    "[ -x $HOME/.config/hyprlock/scripts/hyprlock.sh ] "
-    .. "&& $HOME/.config/hyprlock/scripts/hyprlock.sh "
-    .. "|| hyprlock --immediate-render --no-fade-in"), locked)
+create_bind(vars.kbLock, hl.dsp.exec_cmd("$HOME/.config/hyprlock/scripts/hyprlock.sh"), locked)
 
 -- Launcher
 create_bind("SUPER_L", hl.dsp.exec_cmd("~/.config/quickshell/scripts/super_launcher.sh press"))
@@ -252,10 +245,7 @@ create_bind("SUPER + XF86PowerOff", hl.dsp.exec_cmd("systemctl poweroff"), locke
 
 -- Clipboard and emoji picker
 create_bind({ vars.kbClipboard, "SUPER + V" }, hl.dsp.exec_cmd("pkill fuzzel || anyrun --plugins libclipboard.so"))
--- Emoji. fuzzel-emoji.sh was never shipped either; the shell has had its own
--- emoji picker for a while, which is what the other zenith binds below use.
-create_bind({ vars.kbEmoji, "SUPER + PERIOD" }, hl.dsp.exec_cmd(
-    "~/.config/quickshell/launch.sh emoji || zenith emoji"))
+create_bind({ vars.kbEmoji, "SUPER + PERIOD" }, hl.dsp.exec_cmd("pkill fuzzel || ~/.config/hypr/hyprland/scripts/fuzzel-emoji.sh copy"))
 
 -- Testing Notifications
 create_bind(
