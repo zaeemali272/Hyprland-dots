@@ -1,4 +1,4 @@
-local scheme = require("scheme.current")
+local scheme = require("scheme_loader")
 local vars   = require("variables")
 
 hl.config({
