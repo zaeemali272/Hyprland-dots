@@ -29,7 +29,28 @@ hl.on("hyprland.start", function()
 
     -- Start shell & super tap listener
     hl.exec_cmd("quickshell -d")
-    hl.exec_cmd("pkill -f super_tap.py; python3 ~/.config/hypr/hyprland/scripts/super_tap.py &")
+    -- Super-tap listener.
+    --
+    -- Three things were wrong with "pkill -f super_tap.py; python3 ... &":
+    --
+    --   1. pkill -f matches the command line of the shell running this very
+    --      command, because that line contains "super_tap.py". It could kill
+    --      itself before python started. The [s]uper form is a regex that does
+    --      not match the literal text of its own command line.
+    --   2. ~ is not expanded by every shell in this position; $HOME always is.
+    --   3. Nothing kept it alive if the launching shell went away.
+    --
+    -- It also needs read access to /dev/input/event*, which means membership of
+    -- the "input" group. NixOS grants it in the system configuration; on Arch
+    -- and most other distributions you have to:
+    --
+    --     sudo usermod -aG input $USER    # then log out and back in
+    --
+    -- Without it the process starts, cannot read a single device, and exits --
+    -- so the Super tap silently does nothing while every other keybind works.
+    hl.exec_cmd("pgrep -f '[s]uper_tap[.]py' >/dev/null 2>&1 || "
+        .. "setsid python3 \"$HOME/.config/hypr/hyprland/scripts/super_tap.py\" "
+        .. ">/dev/null 2>&1 &")
 end)
 
 -- Resizer listeners
