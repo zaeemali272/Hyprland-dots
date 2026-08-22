@@ -13,6 +13,7 @@ hl.env("QT_QPA_PLATFORM", "wayland;xcb")
 hl.env("SDL_VIDEODRIVER", "wayland,x11,windows")
 hl.env("CLUTTER_BACKEND", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
+hl.env("MOZ_WEBRENDER", "1")
 hl.env("ELECTRON_OZONE_PLATFORM_HINT", "auto")
 
 -- XDG specifications
