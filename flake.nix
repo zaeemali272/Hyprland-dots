@@ -58,7 +58,6 @@
             home.packages = with pkgs; [
               awww
               grimblast
-              hyprlock
               hyprpicker
               hyprshot
               grim
