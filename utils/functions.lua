@@ -1,6 +1,7 @@
 local home       = os.getenv("HOME")
 local config_dir = os.getenv("XDG_CONFIG_HOME") or (home .. "/.config")
 local json       = require("utils.json")
+local vars       = require("variables")
 
 ------------------------------------------------------------------------
 ---- Workspace Actions & Resizing --------------------------------------
@@ -98,6 +99,19 @@ end
 ---- App Toggles & JSON Config Handling --------------------------------
 ------------------------------------------------------------------------
 
+-- The configured terminal, launched with a window class and title the rules
+-- can match. Flags differ per emulator; anything unknown gets kitty's, since
+-- that is what variables.lua ships with.
+local function terminal_command(app_class, cmd)
+    local term = vars.terminal or "kitty"
+    if term == "foot" then
+        return { "foot", "-a", app_class, "-T", app_class, cmd }
+    elseif term == "alacritty" then
+        return { "alacritty", "--class", app_class, "--title", app_class, "-e", cmd }
+    end
+    return { term, "--class", app_class, "--title", app_class, cmd }
+end
+
 local function default_config()
     return {
         communication = {
@@ -117,7 +131,7 @@ local function default_config()
             btop = {
                 enable  = true,
                 match   = { { class = "btop", title = "btop", workspace = { name = "special:sysmon" } } },
-                command = { "foot", "-a", "btop", "-T", "btop", "fish", "-C", "exec btop" },
+                command = terminal_command("btop", "btop"),
             },
         },
         todo = {

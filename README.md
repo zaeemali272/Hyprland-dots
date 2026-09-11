@@ -6,13 +6,15 @@ A modern, highly modular, Lua-powered **Hyprland** desktop configuration environ
 
 ## ⌨️ Super Key Launcher
 
-Tapping **Super** on its own opens the desktop launcher. This is handled natively via Hyprland's keybindings (`SUPER_L`) and `super_launcher.sh`, which tracks key combinations so that pressing Super as a modifier for key shortcuts (such as `Super + A`) does not accidentally open the launcher.
+Tapping **Super** on its own opens the desktop launcher; holding it as a
+modifier (`Super + A`, `Super + drag`, ...) does not. This is done entirely in
+`hyprland/keybinds.lua`: the `SUPER_L` press and release binds and every
+`SUPER + <key>` bind share a little Lua state, and a clean tap dispatches the
+shell's native global shortcut `zenith:launcher`. Nothing is forked per
+keystroke.
 
-If the launcher does not open, `zenith-shell` ships a diagnostic script that checks every link in the chain:
-
-```bash
-~/.config/quickshell/scripts/diagnose_launcher.sh
-```
+All other shell surfaces are reached the same way (`hl.dsp.global("zenith:…")`);
+`~/.config/quickshell/launch.sh` is only the terminal/scripting CLI.
 
 ---
 
@@ -23,7 +25,7 @@ If the launcher does not open, `zenith-shell` ships a diagnostic script that che
 - **🏷️ Intelligent Window & Layer Rules**: Automated tagging system (`opaque`, `float`, `browser`, `terminal`, `projects`, `game`, `im`, `settings`, `music_player`, `system_monitor`, etc.) with customizable window opacities, auto-centering, and workspace placement.
 - **⌨️ Ergonomic Keybindings**: Full set of keybindings for window tiling, floating, sizing, group tabs, workspaces, scratchpads, hardware OSD, screenshots, recording, and app launching.
 - **🤌 Rich Touchpad Gestures**: Horizontal 4-finger workspace navigation, vertical 3-finger gesture volume and brightness control, 3-finger horizontal track skipping, and 3-finger pinch to play/pause.
-- **🛠️ Utility Integration**: Built-in scripts for screen recording (`wl-screenrec` / `gpu-screen-recorder`), screenshot capture (`hyprshot`), OSD notifications (`osd.sh`), cursor zoom (`zoom.sh`), and OCR text extraction.
+- **🛠️ Utility Integration**: Built-in scripts for screen recording (`wl-screenrec` / `gpu-screen-recorder`), screenshot capture (`hyprshot`), OSD notifications (`osd.sh`), cursor zoom (pure Lua), and OCR text extraction (`ocr.sh`).
 
 ---
 
@@ -31,11 +33,11 @@ If the launcher does not open, `zenith-shell` ships a diagnostic script that che
 
 ```
 ~/.config/hypr/
-├── hyprland.conf             # Bootstrap Hyprland config file (native rules, binds & fallbacks)
+├── hyprland.conf             # One line: sources hyprland.lua
+├── check.sh                  # Syntax + live checks (./check.sh --live)
 ├── hyprland.lua              # Main Lua entrypoint initializing modules and path bindings
 ├── variables.lua             # Centralized settings, application defaults & keybinding map
 ├── hyprlauncher.conf         # Configuration for Hyprlauncher app menu
-├── hyprlock.conf             # Hyprlock screen locker styling & layout
 ├── hyprtoolkit.conf          # Hyprtoolkit styling parameters
 │
 ├── hyprland/                 # Core Lua configuration modules
@@ -51,13 +53,12 @@ If the launcher does not open, `zenith-shell` ships a diagnostic script that che
 │   ├── misc.lua             # Miscellaneous Hyprland engine settings & background color
 │   ├── rules.lua            # Window tags, floating sizes, opacity rules, layer rules
 │   └── scripts/             # Utility shell scripts
-│       ├── fuzzel-emoji.sh   # Emoji selector script
 │       ├── launch_first_available.sh # Helper script to launch available binary
 │       ├── osd.sh            # On-screen display for Volume & Brightness
+│       ├── ocr.sh            # Select a region, copy its text (tesseract)
 │       ├── record.sh         # Screen recording helper (region, window, sound)
 │       ├── restart_everything.sh # Daemon and shell restart script
-│       ├── screenshot.sh     # Hyprshot screenshot helper
-│       └── zoom.sh           # Cursor zoom factor adjuster
+│       └── screenshot.sh     # Hyprshot screenshot helper
 │
 ├── scheme/                   # Color scheme definitions
 │   ├── current.lua           # Active color scheme palette
@@ -147,23 +148,26 @@ If the launcher does not open, `zenith-shell` ships a diagnostic script that che
 | `Super + Shift + S` / `Print Region` | **Area Screenshot** | Select region to capture |
 | `Alt + Print` | **Window Screenshot** | Capture active window |
 | `Super + Alt + R` | **Record Region** | Screen record selected region |
-| `Ctrl + Alt + R` | **Record Display** | Fullscreen display recording |
-| `Super + Shift + ALT + R` | **Record All** | Fullscreen multi-monitor recording |
+| `Ctrl + Alt + R` | **Record Display** | Active display, no audio |
+| `Super + Shift + R` | **Record + Sound** | Active display with system audio |
+| `Super + Shift + Alt + R` | **Record + Mic** | Active display with microphone |
 | `Super + Shift + C` | **Color Picker** | Inspect color code under cursor (`hyprpicker`) |
 | `Super + V` | **Clipboard** | View clipboard history manager (`cliphist`) |
 | `Super + Period (.)` | **Emoji Picker** | Open emoji selector menu |
 | `Super + Shift + T` | **OCR Text Capture** | Grab text from region to clipboard via Tesseract |
-| `Super + Equal (=)` | **Zoom In** | Zoom screen in under cursor |
-| `Super + Minus (-)` | **Zoom Out** | Zoom screen out |
+| `Super + Alt + Equal (=)` | **Zoom In** | Zoom screen in under cursor |
+| `Super + Alt + Minus (-)` | **Zoom Out** | Zoom screen out |
+| `Super + Alt + Backspace` | **Zoom Reset** | Back to 1:1 |
 
 ---
 
 ### ⚙️ System & Power Management
 | Keybinding | Action | Description |
 | :--- | :--- | :--- |
-| `Super + L` / `Super + Escape` | **Lock Screen** | Lock display via `hyprlock` |
+| `Super + L` | **Lock Screen** | Zenith session lock (`zenith:lock`); idle-locks after 5 min |
 | `Alt + Escape` | **Reload Hyprland** | Trigger instant Hyprland configuration reload |
-| `Ctrl + Super + R` | **Restart Shell** | Kill and restart Quickshell daemon & Hyprland |
+| `Ctrl + Super + R` | **Restart Shell** | Restart the Quickshell daemon |
+| `Ctrl + Super + I` | **Shell Settings** | Open the Zenith settings window |
 | `Ctrl + Escape` | **Toggle Shell** | Toggle Quickshell visibility |
 | `Ctrl + Alt + Delete` | **Power Menu** | Open session/power shutdown menu |
 | `Super + Shift + L` | **Suspend System** | Put machine to sleep |
@@ -201,6 +205,6 @@ You can easily override options without editing core files:
 ## 📦 Required Dependencies
 
 - **WM**: `hyprland`
-- **Shell & UI**: `quickshell` (or Zenith shell setup), `hyprlock`, `hyprlauncher`
-- **Utilities**: `hyprpicker`, `wl-clipboard`, `cliphist`, `playerctl`, `wpctl`, `brightnessctl`, `hyprshot`, `slurp`, `grim`, `tesseract`, `fuzzel`
+- **Shell & UI**: `quickshell` (Zenith shell, which includes the lock screen), `hyprlauncher`
+- **Utilities**: `hyprpicker`, `wl-clipboard`, `cliphist`, `playerctl`, `wpctl`, `brightnessctl`, `hyprshot`, `slurp`, `grim`, `tesseract`
 - **Recording**: `gpu-screen-recorder` / `wl-screenrec`
