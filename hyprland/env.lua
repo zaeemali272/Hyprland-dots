@@ -10,7 +10,7 @@ hl.env("XCURSOR_SIZE", vars.cursorSize)
 -- Toolkit backends
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
-hl.env("SDL_VIDEODRIVER", "wayland,x11,windows")
+-- hl.env("SDL_VIDEODRIVER", "wayland,x11,windows") -- Disabled: SDL does not accept comma-separated lists
 hl.env("CLUTTER_BACKEND", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
 hl.env("MOZ_WEBRENDER", "1")

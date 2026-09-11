@@ -50,7 +50,7 @@ return {
     -- Misc
     volumeStep                 = 10,
     volumeMax                  = 150,
-    cursorTheme                = "bibata-cursors",
+    cursorTheme                = "Bibata-Modern-Classic", -- keep in sync with zenith-nixos modules/home/theme.nix
     cursorSize                 = 24,
     sleepGestureCmd            = "systemctl suspend-then-hibernate",
 
@@ -101,6 +101,7 @@ return {
     kbWindowBorderedFullscreen = "SUPER + ALT + F",
     kbToggleWindowFloating     = "SUPER + ALT + Space",
     kbCloseWindow              = "SUPER + Q",
+    kbKillWindow               = "SUPER + SHIFT + ALT + Q",
 
     -- Special workspaces toggles
     kbSpecialWs                = "SUPER + S",
@@ -115,15 +116,22 @@ return {
     kbEditor                   = "SUPER + C",
     kbFileExplorer             = "SUPER + E",
     kbAudioSettings            = "CTRL + ALT + V",
+    kbTextEditor               = "SUPER + SHIFT + X",
 
     -- Utilities
     kbScreenshot               = "Print",
+    kbScreenshotWindow         = "ALT + Print",
     kbScreenshotFreeze         = "SUPER + SHIFT + S",
     kbScreenshotRegion         = "SUPER + SHIFT + ALT + S",
-    kbRecord                   = "CTRL + ALT + R",
-    kbRecordSound              = "SUPER + ALT + R",
-    kbRecordRegion             = "SUPER + SHIFT + ALT + R",
+    kbRecord                   = "CTRL + ALT + R",          -- active monitor, no audio
+    kbRecordSound              = "SUPER + SHIFT + R",       -- active monitor + system audio
+    kbRecordMic                = "SUPER + SHIFT + ALT + R", -- active monitor + microphone
+    kbRecordRegion             = "SUPER + ALT + R",         -- select a region
+    kbOcr                      = "SUPER + SHIFT + T",       -- select a region, copy its text
     kbColorPicker              = "SUPER + SHIFT + C",
+    kbZoomIn                   = "SUPER + ALT + Equal",
+    kbZoomOut                  = "SUPER + ALT + Minus",
+    kbZoomReset                = "SUPER + ALT + Backspace",
 
     -- Media
     kbMediaToggle              = "CTRL + SUPER + Space",
@@ -132,18 +140,19 @@ return {
     kbMediaStop                = "CTRL + SUPER + Backspace",
     kbVolumeMute               = "SUPER + SHIFT + M",
 
-    -- Misc
+    -- Session
     kbSession                  = "CTRL + ALT + Delete",
-    kbShowSidebar              = "SUPER + N",
-    kbClearNotifs              = "CTRL + ALT + C",
-    kbShowPanels               = "SUPER + K",
     kbLock                     = "SUPER + L",
     kbRestoreLock              = "SUPER + ALT + L",
     kbSleep                    = "SUPER + SHIFT + L",
 
-    -- Clipboard and emoji picker
+    -- Zenith shell surfaces
+    kbDashboard                = "SUPER + A",
+    kbPomodoro                 = "CTRL + SUPER + A",
+    kbWallpaper                = "CTRL + SUPER + T",
+    kbVolumePanel              = "CTRL + SUPER + S",
+    kbCloseMenus               = "CTRL + SUPER + C",
+    kbShellSettings            = "CTRL + SUPER + I",
     kbClipboard                = "SUPER + V",
-    kbClipboardDel             = "SUPER + ALT + V",
-    kbClipboardPasteLatest     = "CTRL + SHIFT + ALT + V",
     kbEmoji                    = "SUPER + Period",
 }
