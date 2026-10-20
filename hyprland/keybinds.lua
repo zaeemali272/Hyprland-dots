@@ -59,35 +59,18 @@ end
 -- forked python3 twice per tap for a timestamp -- 100ms+ of latency on the
 -- most-used key on the keyboard. /proc/uptime is a monotonic clock readable
 -- without spawning anything.
-local super = { pressed_at = 0, combo = false }
-local SUPER_TAP_MAX_S = 0.6
-
-local function uptime()
-    local f = io.open("/proc/uptime", "r")
-    if not f then return 0 end
-    local t = f:read("*n") or 0
-    f:close()
-    return t
-end
-
-local function super_pressed()
-    super.pressed_at = uptime()
-    super.combo = false
-end
+local super = { combo = false }
 
 local function super_released()
-    local held = uptime() - super.pressed_at
-    local tapped = not super.combo and super.pressed_at > 0 and held <= SUPER_TAP_MAX_S
-    super.pressed_at = 0
-    super.combo = false
-    if tapped then
+    if not super.combo then
         hl.dispatch(zenith("launcher"))
     end
+    super.combo = false
 end
 
 local function is_super_combo(key)
     local norm = normalise_keybind(key)
-    return norm:find("super", 1, true) ~= nil and norm ~= "super_l" and norm ~= "super"
+    return norm:find("super", 1, true) ~= nil and norm ~= "super_l" and norm ~= "super_r" and norm ~= "super"
 end
 
 local function create_bind(keybinds, action, flags)
@@ -115,8 +98,7 @@ local function create_bind(keybinds, action, flags)
     end
 end
 
-create_bind("SUPER_L", super_pressed)
-create_bind("SUPER_L", super_released, release)
+create_bind({ "SUPER_L", "SUPER_R" }, super_released, release)
 
 ------------------------------------------------------------------------
 ---- Session & shell ----------------------------------------------------
