@@ -61,6 +61,10 @@ end
 -- without spawning anything.
 local super = { combo = false }
 
+local function super_pressed()
+    super.combo = false
+end
+
 local function super_released()
     if not super.combo then
         hl.dispatch(zenith("launcher"))
@@ -98,6 +102,7 @@ local function create_bind(keybinds, action, flags)
     end
 end
 
+create_bind({ "SUPER_L", "SUPER_R" }, super_pressed)
 create_bind({ "SUPER_L", "SUPER_R" }, super_released, release)
 
 ------------------------------------------------------------------------

@@ -11,13 +11,18 @@ hl.config({
     },
 })
 
-hl.gesture({ fingers = vars.workspaceSwipeFingers, direction = "horizontal", action = "workspace" })
+-- Helper to register gestures safely so config reloads never trip an uncaught Lua error
+local function safe_gesture(g)
+    pcall(hl.gesture, g)
+end
+
+safe_gesture({ fingers = vars.workspaceSwipeFingers, direction = "horizontal", action = "workspace" })
 
 -- 3-Finger Vertical Volume (Slightly faster rate)
 do
     local counter = 0
     local threshold = 6 -- Decreased threshold for a faster response
-    hl.gesture({
+    safe_gesture({
         fingers   = vars.gestureFingers,
         direction = "up",
         action    = {
@@ -38,7 +43,7 @@ end
 do
     local counter = 0
     local threshold = 6
-    hl.gesture({
+    safe_gesture({
         fingers   = vars.gestureFingers,
         direction = "down",
         action    = {
@@ -57,7 +62,7 @@ do
 end
 
 -- 3-Finger Horizontal (Media Track Control)
-hl.gesture({
+safe_gesture({
   fingers = vars.gestureFingers,
   direction = "right",
   action    = function()
@@ -65,7 +70,7 @@ hl.gesture({
   end,
 })
 
-hl.gesture({
+safe_gesture({
   fingers = vars.gestureFingers,
   direction = "left",
   action    = function()
@@ -77,7 +82,7 @@ hl.gesture({
 do
     local counter = 0
     local threshold = 6
-    hl.gesture({
+    safe_gesture({
         fingers   = vars.gestureFingers,
         direction = "up",
         mods      = "CTRL",
@@ -99,7 +104,7 @@ end
 do
     local counter = 0
     local threshold = 6
-    hl.gesture({
+    safe_gesture({
         fingers   = vars.gestureFingers,
         direction = "down",
         mods      = "CTRL",
@@ -119,7 +124,7 @@ do
 end
 
 -- More fingers (Special workspaces)
-hl.gesture({
+safe_gesture({
     fingers   = vars.gestureFingersMore,
     direction = "up",
     action    = function()
@@ -127,7 +132,7 @@ hl.gesture({
     end,
 })
 
-hl.gesture({
+safe_gesture({
     fingers   = vars.gestureFingersMore,
     direction = "down",
     action    = function()
@@ -136,7 +141,7 @@ hl.gesture({
 })
 
 -- 3-Finger Pinch (Play/Pause Toggle)
-hl.gesture({
+safe_gesture({
     fingers   = 3,
     direction = "pinch",
     action    = function()

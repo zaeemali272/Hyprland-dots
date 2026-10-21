@@ -58,18 +58,28 @@ hl.monitor({
     scale    = 1,
 })
 
+-- Safe loader so a failure in an individual subsystem (e.g. gestures or decorations)
+-- never aborts config loading and never leaves Hyprland in emergency mode without binds.
+local function safe_require(module)
+    local ok, err = pcall(require, module)
+    if not ok then
+        io.stderr:write("[Hyprland Lua] Error loading " .. module .. ": " .. tostring(err) .. "\n")
+    end
+    return ok
+end
+
 -- Configs
-require("hyprland.env")
-require("hyprland.general")
-require("hyprland.input")
-require("hyprland.misc")
-require("hyprland.animations")
-require("hyprland.decoration")
-require("hyprland.group")
-require("hyprland.execs")
-require("hyprland.rules")
-require("hyprland.gestures")
-require("hyprland.keybinds")
+safe_require("hyprland.env")
+safe_require("hyprland.general")
+safe_require("hyprland.input")
+safe_require("hyprland.misc")
+safe_require("hyprland.animations")
+safe_require("hyprland.decoration")
+safe_require("hyprland.group")
+safe_require("hyprland.execs")
+safe_require("hyprland.rules")
+safe_require("hyprland.gestures")
+safe_require("hyprland.keybinds")
 
 -- User configs
 -- maybe_create(home .. "/.config/hypr/hypr-user.lua")
