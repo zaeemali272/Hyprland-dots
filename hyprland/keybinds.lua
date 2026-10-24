@@ -112,17 +112,25 @@ create_bind({ "SUPER_L", "SUPER_R" }, super_released, release)
 -- The lock screen lives in the shell (zenith-shell/windows/lock), so locking
 -- is the same zero-fork global shortcut as every other surface.
 create_bind(vars.kbLock, zenith("lock"), locked)
-create_bind(vars.kbRestoreLock, hl.dsp.exec_cmd("~/.config/quickshell/launch.sh start"))
+create_bind(vars.kbRestoreLock, hl.dsp.exec_cmd("quickshell -d"))
 
 -- Restart the shell / toggle it / reload Hyprland
-create_bind("CTRL + SUPER + R", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh restart"), release)
-create_bind("CTRL + ESCAPE", hl.dsp.exec_cmd("~/.config/quickshell/launch.sh toggle"), release)
+create_bind("CTRL + SUPER + R", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/restart_everything.sh"), release)
+create_bind("CTRL + ESCAPE", zenith("close"), release)
 create_bind("ALT + ESCAPE", hl.dsp.exec_cmd("hyprctl reload"), release)
 
--- Zenith shell surfaces
+-- Zenith shell surfaces (all native compositor shortcuts, zero scripts)
+create_bind(vars.kbLauncher, zenith("launcher"))
 create_bind(vars.kbDashboard, zenith("dashboard"))
 create_bind(vars.kbWallpaper, zenith("wallpaper"))
 create_bind(vars.kbPomodoro, zenith("pomodoro"))
+create_bind(vars.kbRoadmap, zenith("roadmap"))
+create_bind(vars.kbMail, zenith("mail"))
+create_bind(vars.kbQuickSettings, zenith("quicksettings"))
+create_bind(vars.kbWifi, zenith("wifi"))
+create_bind(vars.kbBluetooth, zenith("bluetooth"))
+create_bind(vars.kbPowerProfile, zenith("powerprofile"))
+create_bind(vars.kbBattery, zenith("battery"))
 create_bind(vars.kbVolumePanel, zenith("volume"))
 create_bind(vars.kbCloseMenus, zenith("close"))
 create_bind(vars.kbClipboard, zenith("clipboard"))

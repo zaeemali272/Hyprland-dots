@@ -107,7 +107,7 @@ return {
     kbSpecialWs                = "SUPER + S",
     kbSystemMonitorWs          = "CTRL + SHIFT + Escape",
     kbMusicWs                  = "SUPER + M",
-    kbCommunicationWs          = "SUPER + D",
+    kbCommunicationWs          = "SUPER + ALT + D",
     kbTodoWs                   = "SUPER + R",
 
     -- Apps
@@ -147,7 +147,15 @@ return {
     kbSleep                    = "SUPER + SHIFT + L",
 
     -- Zenith shell surfaces
+    kbLauncher                 = { "SUPER + D", "SUPER + Space" },
     kbDashboard                = "SUPER + A",
+    kbQuickSettings            = "CTRL + SUPER + Q",
+    kbWifi                     = "CTRL + SUPER + W",
+    kbBluetooth                = "CTRL + SUPER + B",
+    kbPowerProfile             = "CTRL + SUPER + P",
+    kbBattery                  = "CTRL + SUPER + E",
+    kbRoadmap                  = "CTRL + SUPER + O",
+    kbMail                     = "CTRL + SUPER + M",
     kbPomodoro                 = "CTRL + SUPER + A",
     kbWallpaper                = "CTRL + SUPER + T",
     kbVolumePanel              = "CTRL + SUPER + S",
