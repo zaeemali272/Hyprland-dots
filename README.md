@@ -161,15 +161,29 @@ All other shell surfaces are reached the same way (`hl.dsp.global("zenith:…")`
 
 ---
 
-### ⚙️ System & Power Management
+### ⚙️ Zenith Shell Surfaces (Native Hyprland Global Shortcuts)
 | Keybinding | Action | Description |
 | :--- | :--- | :--- |
-| `Super + L` | **Lock Screen** | Zenith session lock (`zenith:lock`); idle-locks after 5 min |
-| `Alt + Escape` | **Reload Hyprland** | Trigger instant Hyprland configuration reload |
-| `Ctrl + Super + R` | **Restart Shell** | Restart the Quickshell daemon |
-| `Ctrl + Super + I` | **Shell Settings** | Open the Zenith settings window |
-| `Ctrl + Escape` | **Toggle Shell** | Toggle Quickshell visibility |
-| `Ctrl + Alt + Delete` | **Power Menu** | Open session/power shutdown menu |
+| `Super` / `Super + D` / `Super + Space` | **App Launcher** | Toggle Zenith Dynamic Island launcher (`zenith:launcher`) |
+| `Super + A` | **Dashboard** | Toggle Zenith overview dashboard (`zenith:dashboard`) |
+| `Ctrl + Super + Q` | **Quick Settings** | Toggle quick settings drawer (`zenith:quicksettings`) |
+| `Ctrl + Super + W` | **Wi-Fi** | Toggle Wi-Fi quick settings (`zenith:wifi`) |
+| `Ctrl + Super + B` | **Bluetooth** | Toggle Bluetooth quick settings (`zenith:bluetooth`) |
+| `Ctrl + Super + S` | **Volume Slider** | Toggle audio volume panel (`zenith:volume`) |
+| `Ctrl + Super + P` | **Power Profile** | Toggle power profile selector (`zenith:powerprofile`) |
+| `Ctrl + Super + E` | **Battery Status** | Toggle battery health panel (`zenith:battery`) |
+| `Ctrl + Super + A` | **Pomodoro** | Toggle Focus/Pomodoro tab (`zenith:pomodoro`) |
+| `Ctrl + Super + O` | **Roadmap** | Toggle Roadmap planner (`zenith:roadmap`) |
+| `Ctrl + Super + M` | **Mail** | Toggle Mail inbox tab (`zenith:mail`) |
+| `Ctrl + Super + T` | **Wallpaper** | Toggle wallpaper chooser (`zenith:wallpaper`) |
+| `Super + V` | **Clipboard** | Toggle clipboard history (`zenith:clipboard`) |
+| `Super + Period (.)` | **Emoji Picker** | Toggle emoji selector (`zenith:emoji`) |
+| `Ctrl + Super + I` | **Shell Settings** | Toggle Zenith shell settings (`zenith:settings`) |
+| `Ctrl + Super + C` / `Ctrl + Escape` | **Close All** | Close any open Zenith popup or menu (`zenith:close`) |
+| `Ctrl + Alt + Delete` / `XF86PowerOff` | **Power Menu** | Open session/power menu (`zenith:power`) |
+| `Super + L` | **Lock Screen** | Native session lock (`zenith:lock`); idle-locks after 5 min |
+| `Alt + Escape` | **Reload Hyprland** | Instant Hyprland config reload |
+| `Ctrl + Super + R` | **Restart Everything** | Clean restart of Quickshell, portals, daemons & compositor reload |
 | `Super + Shift + L` | **Suspend System** | Put machine to sleep |
 
 ---
