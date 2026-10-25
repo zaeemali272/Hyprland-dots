@@ -24,3 +24,12 @@ hl.config({
         error_position = 1
     }
 })
+
+-- Actively release unused heap memory back to the Linux kernel when windows close
+local trim = package.loadlib("libc.so.6", "malloc_trim")
+if trim then
+    hl.on("window.close", function()
+        trim(0)
+    end)
+end
+
