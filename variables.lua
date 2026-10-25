@@ -6,7 +6,7 @@ return {
     ------------------
 
     -- Apps
-    terminal                   = "kitty",
+    terminal                   = "kitty -1",
     browser                    = "zen",
     editor                     = "antigravity-ide",
     fileExplorer               = "thunar",
@@ -22,14 +22,14 @@ return {
     -- Blur
     blurEnabled                = true,
     blurSpecialWs              = false,
-    blurPopups                 = true,
-    blurInputMethods           = true,
+    blurPopups                 = false,
+    blurInputMethods           = false,
     blurSize                   = 8,
-    blurPasses                 = 2,
+    blurPasses                 = 1,
     blurXray                   = false,
 
     -- Shadow
-    shadowEnabled              = true,
+    shadowEnabled              = false,
     shadowRange                = 15,
     shadowRenderPower          = 4,
     shadowColour               = "rgba(" .. scheme.inversePrimary .. "10)",

@@ -10,6 +10,7 @@ hl.env("XCURSOR_SIZE", vars.cursorSize)
 -- Toolkit backends
 hl.env("GDK_BACKEND", "wayland,x11")
 hl.env("QT_QPA_PLATFORM", "wayland;xcb")
+hl.env("QSG_RHI_BACKEND", "opengl")
 -- hl.env("SDL_VIDEODRIVER", "wayland,x11,windows") -- Disabled: SDL does not accept comma-separated lists
 hl.env("CLUTTER_BACKEND", "wayland")
 hl.env("MOZ_ENABLE_WAYLAND", "1")
@@ -23,3 +24,8 @@ hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 
 -- Others
 hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
+
+-- Memory allocator optimizations (reduce heap fragmentation and release idle memory)
+hl.env("MALLOC_ARENA_MAX", "2")
+hl.env("MALLOC_TRIM_THRESHOLD_", "131072")
+
