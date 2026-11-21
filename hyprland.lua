@@ -58,6 +58,9 @@ hl.monitor({
     scale    = 1,
 })
 
+-- Persistent monitor configuration
+pcall(require, "monitors")
+
 -- Safe loader so a failure in an individual subsystem (e.g. gestures or decorations)
 -- never aborts config loading and never leaves Hyprland in emergency mode without binds.
 local function safe_require(module)

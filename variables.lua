@@ -96,7 +96,7 @@ return {
     kbCenterWindow             = "CTRL + SUPER + Backslash",
     kbNormalizeWindow          = "CTRL + SUPER + ALT + Backslash",
     kbWindowPip                = "SUPER + ALT + Backslash",
-    kbPinWindow                = "SUPER + P",
+    kbPinWindow                = "SUPER + ALT + P",
     kbWindowFullscreen         = "SUPER + F",
     kbWindowBorderedFullscreen = "SUPER + ALT + F",
     kbToggleWindowFloating     = "SUPER + ALT + Space",
@@ -161,6 +161,7 @@ return {
     kbVolumePanel              = "CTRL + SUPER + S",
     kbCloseMenus               = "CTRL + SUPER + C",
     kbShellSettings            = "CTRL + SUPER + I",
+    kbDisplay                  = { "SUPER + P", "XF86Display", "code:246" },
     kbClipboard                = "SUPER + V",
     kbEmoji                    = "SUPER + Period",
 }

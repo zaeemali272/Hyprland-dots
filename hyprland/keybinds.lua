@@ -137,7 +137,8 @@ create_bind(vars.kbClipboard, zenith("clipboard"))
 create_bind(vars.kbEmoji, zenith("emoji"))
 create_bind(vars.kbSession, zenith("power"))
 create_bind(vars.kbShellSettings, zenith("settings"))
-create_bind("XF86PowerOff", zenith("power"))
+create_bind(vars.kbDisplay, zenith("display"), locked)
+create_bind("XF86PowerOff", zenith("power"), locked)
 create_bind("SUPER + XF86PowerOff", hl.dsp.exec_cmd("systemctl poweroff"), locked)
 
 ------------------------------------------------------------------------

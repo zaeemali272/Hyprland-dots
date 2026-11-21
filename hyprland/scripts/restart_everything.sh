@@ -1,22 +1,34 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Graceful termination first (SIGTERM), fallback to SIGKILL
-pkill -15 -f "quickshell|aww" 2>/dev/null || true
-sleep 0.3
-pkill -9 -f "quickshell|aww" 2>/dev/null || true
-
-# Restart Quickshell in daemon mode & restore wallpaper service if available
-if command -v quickshell >/dev/null 2>&1; then
+# Restart Quickshell cleanly using its launch script if available
+if [ -x "$HOME/.config/quickshell/launch.sh" ]; then
+    "$HOME/.config/quickshell/launch.sh" restart >/dev/null 2>&1 || true
+elif command -v quickshell >/dev/null 2>&1; then
+    pkill -15 -f '^quickshell( |$)' 2>/dev/null || true
+    sleep 0.2
+    pkill -9 -f '^quickshell( |$)' 2>/dev/null || true
     nohup quickshell -d >/dev/null 2>&1 &
 fi
-if command -v aww >/dev/null 2>&1; then
-    nohup aww >/dev/null 2>&1 &
+
+# Ensure wallpaper daemon (awww) is active and current wallpaper is restored
+if command -v awww >/dev/null 2>&1; then
+    if ! awww query >/dev/null 2>&1; then
+        nohup awww-daemon >/dev/null 2>&1 &
+        sleep 0.3
+    fi
+    awww restore >/dev/null 2>&1 || true
+    if [ -f "$HOME/.config/current_wallpaper.txt" ]; then
+        current_wall="$(cat "$HOME/.config/current_wallpaper.txt" 2>/dev/null || true)"
+        if [ -n "$current_wall" ] && [ -f "$current_wall" ]; then
+            awww img --resize=crop "$current_wall" >/dev/null 2>&1 || true
+        fi
+    fi
 fi
 
-# Restart user-space audio services cleanly if systemctl exists
+# Restart desktop portal services cleanly if systemctl exists (preserving audio & Bluetooth connections)
 if command -v systemctl >/dev/null 2>&1; then
-    systemctl --user restart pipewire wireplumber xdg-desktop-portal-hyprland xdg-desktop-portal 2>/dev/null || true
+    systemctl --user restart xdg-desktop-portal-hyprland xdg-desktop-portal 2>/dev/null || true
 fi
 
 # Reload Hyprland configuration and state

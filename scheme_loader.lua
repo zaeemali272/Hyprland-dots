@@ -9,8 +9,15 @@
 -- entire Hyprland config down over a generated file. Everything goes through
 -- here instead, so the fallback lives in exactly one place and a new file
 -- cannot reintroduce the problem by requiring the wrong thing.
+local default_scheme = require("scheme.default")
 local ok, scheme = pcall(require, "scheme.current")
 if not ok or type(scheme) ~= "table" then
-    scheme = require("scheme.default")
+    return default_scheme
 end
+
+-- Fallback to default scheme for any missing keys in generated current scheme
+setmetatable(scheme, {
+    __index = default_scheme
+})
+
 return scheme

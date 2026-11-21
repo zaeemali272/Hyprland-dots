@@ -2,3 +2,7 @@
 # and seeded from scheme/default.lua by hyprland.lua when missing. Tracking it
 # means every wallpaper change shows up as a repo modification.
 scheme/current.lua
+
+# Generated at runtime by Zenith Shell DisplayService
+monitors.conf
+monitors.lua

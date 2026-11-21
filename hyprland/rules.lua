@@ -293,7 +293,7 @@ hl.layer_rule({ match = { namespace = "hyprpicker" }, animation = "fade" })
 hl.layer_rule({ match = { namespace = "logout_dialog" }, animation = "fade", blur = true })
 hl.layer_rule({ match = { namespace = "selection" }, animation = "fade" })
 hl.layer_rule({ match = { namespace = "wayfreeze" }, animation = "fade" })
-hl.layer_rule({ match = { namespace = "(launcher|zenith-dynamic-island-overlay)" }, animation = "popin 80%", blur = true, ignore_alpha = 0.5 })
+hl.layer_rule({ match = { namespace = "launcher" }, animation = "popin 80%", blur = true, ignore_alpha = 0.5 })
 
 -- Layer rules from your config
 hl.layer_rule({ match = { namespace = ".*" }, xray = true })
@@ -302,8 +302,8 @@ hl.layer_rule({ match = { namespace = "(gtk-layer-shell|notifications|osd)" }, b
 hl.layer_rule({ match = { namespace = "(notifications|osd)" }, ignore_alpha = 0.69 })
 hl.layer_rule({ match = { namespace = "gtk4-layer-shell" }, animation = "noanim" })
 
--- Zenith Shell surfaces
-hl.layer_rule({ match = { namespace = "(controlcenter|quicksettings|zenith-menu)" }, animation = "fade", blur = true, ignore_alpha = 0.5 })
+-- Zenith Shell surfaces (0-latency: custom fluid physics handled inside Quickshell)
+hl.layer_rule({ match = { namespace = "(controlcenter|quicksettings|zenith-menu|zenith-dynamic-island-overlay)" }, no_anim = true, blur = true, ignore_alpha = 0.5 })
 hl.layer_rule({ match = { namespace = "dismiss_overlay" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "(zenith|quickshell)-(border-exclusion|area-picker)" }, no_anim = true })
 hl.layer_rule({ match = { namespace = "(zenith|quickshell)-(drawers|background)" }, animation = "fade" })
