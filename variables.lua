@@ -13,6 +13,7 @@ return {
     audioSettings              = "pavucontrol",
 
     -- Touchpad
+    touchpadTapToClick         = true,
     touchpadDisableTyping      = true,
     touchpadScrollFactor       = 0.3,
     gestureFingers             = 3,

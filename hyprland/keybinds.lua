@@ -288,6 +288,7 @@ create_bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scri
 create_bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("~/.config/hypr/hyprland/scripts/osd.sh brightness down"), locked_repeating)
 
 create_bind(vars.kbSleep, hl.dsp.exec_cmd("systemctl suspend"), locked)
+create_bind("switch:on:Lid Switch", zenith("lock"), locked)
 
 ------------------------------------------------------------------------
 ---- Testing ------------------------------------------------------------
