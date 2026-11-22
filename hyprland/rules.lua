@@ -270,7 +270,7 @@ hl.window_rule({ match = { tag = "projects" }, opacity = "0.95 override 0.9 over
 hl.window_rule({ match = { tag = "im" }, opacity = "0.95 override 0.9 override" })
 hl.window_rule({ match = { tag = "multimedia" }, opacity = "0.9 override 0.8 override" })
 hl.window_rule({ match = { tag = "player" }, opacity = "1 override 1 override", idle_inhibit = "fullscreen" })
-hl.window_rule({ match = { tag = "file_manager" }, opacity = "0.95 override 0.92 override" })
+hl.window_rule({ match = { tag = "file_manager" }, opacity = "1 override 1 override" })
 hl.window_rule({ match = { tag = "settings" }, opacity = "0.95 override 0.9 override" })
 hl.window_rule({ match = { tag = "viewer" }, opacity = "0.95 override 0.9 override" })
 hl.window_rule({ match = { class = "^(gedit|org.gnome.TextEditor|mousepad)$" }, opacity = "0.95 override 0.9 override" })

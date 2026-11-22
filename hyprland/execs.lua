@@ -39,8 +39,8 @@ hl.on("hyprland.start", function()
     -- Forward bluetooth media buttons to MPRIS
     start_once("^mpris-proxy", "mpris-proxy")
 
-    -- NectarLink phone integration (start minimized in tray)
-    start_once("^nectarlink-desktop", "nectarlink-desktop --minimized")
+    -- NectarLink phone integration (start minimized in tray) [Disabled]
+    -- start_once("^nectarlink-desktop", "nectarlink-desktop --minimized")
 
     hl.exec_cmd("hyprctl setcursor " .. vars.cursorTheme .. " " .. vars.cursorSize)
 
