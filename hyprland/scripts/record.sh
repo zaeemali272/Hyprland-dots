@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-STATE_FILE="/tmp/recording-state"
+STATE_FILE="${XDG_RUNTIME_DIR:-/tmp}/recording-state-$UID"
 VIDEO_DIR="${XDG_VIDEOS_DIR:-$HOME/Videos}/Recordings"
 mkdir -p "$VIDEO_DIR"
 

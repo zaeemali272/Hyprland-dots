@@ -6,3 +6,12 @@ scheme/current.lua
 # Generated at runtime by Zenith Shell DisplayService
 monitors.conf
 monitors.lua
+
+# Nix / Home-manager runtime portal configuration
+xdph.conf
+
+# Nix build outputs
+result
+result-*
+*.log
+
