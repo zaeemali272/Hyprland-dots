@@ -33,8 +33,8 @@ hl.on("hyprland.start", function()
     start_once("^wl-paste --type text", "wl-paste --type text --watch cliphist store")
     start_once("^wl-paste --type image", "wl-paste --type image --watch cliphist store")
 
-    -- Night light
-    start_once("^gammastep", "gammastep")
+    -- Night light (hyprsunset for Hyprland CTM control, fallback to gammastep)
+    start_once("(^|/)hyprsunset", "hyprsunset --identity || gammastep")
 
     -- Forward bluetooth media buttons to MPRIS
     start_once("^mpris-proxy", "mpris-proxy")
