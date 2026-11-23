@@ -305,5 +305,6 @@ hl.layer_rule({ match = { namespace = "gtk4-layer-shell" }, animation = "noanim"
 -- Zenith Shell surfaces (0-latency: custom fluid physics handled inside Quickshell)
 hl.layer_rule({ match = { namespace = "(controlcenter|quicksettings|zenith-menu|zenith-dynamic-island-overlay)" }, no_anim = true, blur = true, ignore_alpha = 0.5 })
 hl.layer_rule({ match = { namespace = "dismiss_overlay" }, no_anim = true })
-hl.layer_rule({ match = { namespace = "(zenith|quickshell)-(border-exclusion|area-picker)" }, no_anim = true })
-hl.layer_rule({ match = { namespace = "(zenith|quickshell)-(drawers|background)" }, animation = "fade" })
+hl.layer_rule({ match = { namespace = "(zenith|quickshell|caelestia)-(border-exclusion|area-picker)" }, no_anim = true })
+hl.layer_rule({ match = { namespace = "(zenith|quickshell|caelestia)-(drawers|background)" }, animation = "fade" })
+hl.layer_rule({ match = { namespace = "caelestia-.*" }, blur = true, ignore_alpha = 0.5 })

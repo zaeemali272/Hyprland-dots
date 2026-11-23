@@ -1,8 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Restart Quickshell cleanly using its launch script if available
-if [ -x "$HOME/.config/quickshell/launch.sh" ]; then
+# Restart active shell cleanly
+if command -v zenith >/dev/null 2>&1; then
+    zenith shell restart >/dev/null 2>&1 || true
+elif [ -x "$HOME/.config/quickshell/launch.sh" ]; then
     "$HOME/.config/quickshell/launch.sh" restart >/dev/null 2>&1 || true
 elif command -v quickshell >/dev/null 2>&1; then
     pkill -15 -f '^quickshell( |$)' 2>/dev/null || true
