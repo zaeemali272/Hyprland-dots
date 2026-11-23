@@ -48,7 +48,7 @@ hl.on("hyprland.start", function()
     -- desktop before a password. The lock screen is part of the shell, so it
     -- has to wait for the shell's global shortcuts to appear.
     start_once("(^|/)(\\.?)(quickshell|caelestia-shell)(-wra)?( |$)", "zenith shell start")
-    hl.exec_cmd([[for _ in $(seq 1 20); do sleep 0.5; hyprctl globalshortcuts 2>/dev/null | grep -q zenith:lock && hyprctl dispatch 'hl.dsp.global("zenith:lock")' && break; done]])
+    hl.exec_cmd([[for _ in $(seq 1 20); do sleep 0.5; if hyprctl globalshortcuts 2>/dev/null | grep -E -q '(zenith|caelestia|quickshell):lock'; then active="$(cat ~/.config/zenith/active-shell 2>/dev/null || echo zenith)"; if [ "$active" = "caelestia" ]; then hyprctl dispatch 'hl.dsp.global("caelestia:lock")'; elif [ "$active" = "end-4" ]; then hyprctl dispatch 'hl.dsp.global("quickshell:lock")'; else hyprctl dispatch 'hl.dsp.global("zenith:lock")'; fi; break; fi; done]])
 end)
 
 -- Picture-in-picture windows: float, shrink to a corner, keep aspect ratio

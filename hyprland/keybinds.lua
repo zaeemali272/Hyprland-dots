@@ -31,16 +31,100 @@ local function flatten_keybinds(keybinds, keys)
 end
 
 ------------------------------------------------------------------------
----- Zenith shell -------------------------------------------------------
+---- Multi-Shell Dispatcher (Zenith, Caelestia, End-4) -----------------
 ------------------------------------------------------------------------
 
--- The shell registers Hyprland global shortcuts (appid "zenith"), so a
--- keybind reaches it through the compositor directly: no shell script, no
--- `quickshell ipc` client start-up, nothing forked per keypress.
---
--- launch.sh remains the CLI for scripts and terminals.
+-- The active shell registers Hyprland global shortcuts or IPC handlers.
+-- Keys are dynamically mapped to the currently active shell (stored in
+-- ~/.config/zenith/active-shell) so the keybinds remain identical across all shells.
+
+local shell_actions = {
+    zenith = {
+        launcher      = hl.dsp.global("zenith:launcher"),
+        dashboard     = hl.dsp.global("zenith:dashboard"),
+        power         = hl.dsp.global("zenith:power"),
+        lock          = hl.dsp.global("zenith:lock"),
+        quicksettings = hl.dsp.global("zenith:quicksettings"),
+        clipboard     = hl.dsp.global("zenith:clipboard"),
+        emoji         = hl.dsp.global("zenith:emoji"),
+        wallpaper     = hl.dsp.global("zenith:wallpaper"),
+        close         = hl.dsp.global("zenith:close"),
+        settings      = hl.dsp.global("zenith:settings"),
+        pomodoro      = hl.dsp.global("zenith:pomodoro"),
+        roadmap       = hl.dsp.global("zenith:roadmap"),
+        mail          = hl.dsp.global("zenith:mail"),
+        wifi          = hl.dsp.global("zenith:wifi"),
+        bluetooth     = hl.dsp.global("zenith:bluetooth"),
+        powerprofile  = hl.dsp.global("zenith:powerprofile"),
+        battery       = hl.dsp.global("zenith:battery"),
+        volume        = hl.dsp.global("zenith:volume"),
+        display       = hl.dsp.global("zenith:display"),
+    },
+    caelestia = {
+        launcher      = hl.dsp.global("caelestia:launcher"),
+        dashboard     = hl.dsp.global("caelestia:dashboard"),
+        power         = hl.dsp.global("caelestia:session"),
+        lock          = hl.dsp.global("caelestia:lock"),
+        quicksettings = hl.dsp.global("caelestia:sidebar"),
+        clipboard     = hl.dsp.exec_cmd("caelestia clipboard 2>/dev/null || cliphist list | fuzzel --dmenu | cliphist decode | wl-copy"),
+        emoji         = hl.dsp.exec_cmd("caelestia emoji 2>/dev/null || true"),
+        wallpaper     = hl.dsp.global("caelestia:nexus"),
+        close         = hl.dsp.global("caelestia:showall"),
+        settings      = hl.dsp.global("caelestia:nexus"),
+        pomodoro      = hl.dsp.global("caelestia:utilities"),
+        roadmap       = hl.dsp.global("caelestia:utilities"),
+        mail          = hl.dsp.global("caelestia:utilities"),
+        wifi          = hl.dsp.global("caelestia:sidebar"),
+        bluetooth     = hl.dsp.global("caelestia:sidebar"),
+        powerprofile  = hl.dsp.global("caelestia:sidebar"),
+        battery       = hl.dsp.global("caelestia:sidebar"),
+        volume        = hl.dsp.global("caelestia:sidebar"),
+        display       = hl.dsp.global("caelestia:nexus"),
+    },
+    ["end-4"] = {
+        launcher      = hl.dsp.global("quickshell:searchToggle"),
+        dashboard     = hl.dsp.global("quickshell:overviewWorkspacesToggle"),
+        power         = hl.dsp.global("quickshell:sessionToggle"),
+        lock          = hl.dsp.global("quickshell:lock"),
+        quicksettings = hl.dsp.global("quickshell:sidebarRightToggle"),
+        clipboard     = hl.dsp.global("quickshell:overviewClipboardToggle"),
+        emoji         = hl.dsp.global("quickshell:overviewEmojiToggle"),
+        wallpaper     = hl.dsp.global("quickshell:wallpaperSelectorToggle"),
+        close         = hl.dsp.exec_cmd("quickshell ipc call drawers close 2>/dev/null || true"),
+        settings      = hl.dsp.global("quickshell:sidebarLeftToggle"),
+        pomodoro      = hl.dsp.global("quickshell:sidebarRightToggle"),
+        roadmap       = hl.dsp.global("quickshell:sidebarRightToggle"),
+        mail          = hl.dsp.global("quickshell:sidebarRightToggle"),
+        wifi          = hl.dsp.global("quickshell:sidebarRightToggle"),
+        bluetooth     = hl.dsp.global("quickshell:sidebarRightToggle"),
+        powerprofile  = hl.dsp.global("quickshell:sidebarRightToggle"),
+        battery       = hl.dsp.global("quickshell:sidebarRightToggle"),
+        volume        = hl.dsp.global("quickshell:sidebarRightToggle"),
+        display       = hl.dsp.global("quickshell:sidebarLeftToggle"),
+    }
+}
+
+local function get_active_shell()
+    local path = os.getenv("HOME") .. "/.config/zenith/active-shell"
+    local f = io.open(path, "r")
+    if not f then return "zenith" end
+    local content = f:read("*l")
+    f:close()
+    if content and #content > 0 then
+        local s = content:gsub("%s+", "")
+        if shell_actions[s] then return s end
+    end
+    return "zenith"
+end
+
+local function shell_action(surface)
+    local active = get_active_shell()
+    local map = shell_actions[active] or shell_actions.zenith
+    return map[surface] or shell_actions.zenith[surface]
+end
+
 local function zenith(name)
-    return hl.dsp.global("zenith:" .. name)
+    return shell_action(name)
 end
 
 ------------------------------------------------------------------------
