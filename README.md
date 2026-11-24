@@ -1,30 +1,30 @@
 # 🌌 Hyprland Configuration System
 
-A modern, highly modular, Lua-powered **Hyprland** desktop configuration environment built for Wayland. It seamlessly integrates custom window rules, dynamic Material You design schemes, touchpad gesture controls, smooth bezier animations, OSD overlays, and full Zenith / Quickshell UI support.
+A modern, highly modular, Lua-powered **Hyprland** desktop configuration environment built for Wayland. It seamlessly integrates custom window rules, dynamic Material You design schemes, touchpad gesture controls, smooth bezier animations, OSD overlays, and unified multi-shell UI support across **Zenith Shell**, **Caelestia**, and **End-4**.
 
 ---
 
-## ⌨️ Super Key Launcher
+## 🐚 Multi-Shell Architecture & Unified Dispatch
 
-Tapping **Super** on its own opens the desktop launcher; holding it as a
-modifier (`Super + A`, `Super + drag`, ...) does not. This is done entirely in
-`hyprland/keybinds.lua`: the `SUPER_L` press and release binds and every
-`SUPER + <key>` bind share a little Lua state, and a clean tap dispatches the
-shell's native global shortcut `zenith:launcher`. Nothing is forked per
-keystroke.
+Hyprland-dots includes a dynamic shell abstraction layer. Keybindings and actions automatically dispatch to the currently active shell (tracked via `~/.config/zenith/active-shell`):
+- **Zenith Shell** (`zenith`): Native global shortcuts (`zenith:launcher`, `zenith:dashboard`, `zenith:quicksettings`, etc.).
+- **Caelestia Shell** (`caelestia`): Global shortcuts and CLI integrations (`caelestia:launcher`, `caelestia:sidebar`, `caelestia:nexus`, etc.).
+- **End-4 Shell** (`end-4`): Seamless shortcuts mapping (`quickshell:searchToggle`, `quickshell:overviewWorkspacesToggle`, etc.).
 
-All other shell surfaces are reached the same way (`hl.dsp.global("zenith:…")`);
-`~/.config/quickshell/launch.sh` is only the terminal/scripting CLI.
+### ⌨️ Super Key Launcher
+
+Tapping **Super** on its own opens the desktop launcher for the active shell; holding it as a modifier (`Super + A`, `Super + drag`, ...) does not. This is done entirely in `hyprland/keybinds.lua` using unified Lua state without forking extra background processes per keystroke.
 
 ---
 
 ## 📸 Key Features
 
 - **⚡ Lua-Driven Configuration**: Modular Lua architecture (`hyprland.lua`, `variables.lua`, `hyprland/*.lua`) backed by standard `hyprland.conf` compatibility.
-- **🎨 Dynamic Material Color System**: Dynamic theme palette support via `scheme/current.lua` and `scheme/default.lua`.
+- **🎨 Dynamic Material Color System**: Dynamic theme palette support via `scheme/current.lua` and `scheme/default.lua` synced with system wallpaper and shell themes.
 - **🏷️ Intelligent Window & Layer Rules**: Automated tagging system (`opaque`, `float`, `browser`, `terminal`, `projects`, `game`, `im`, `settings`, `music_player`, `system_monitor`, etc.) with customizable window opacities, auto-centering, and workspace placement.
 - **⌨️ Ergonomic Keybindings**: Full set of keybindings for window tiling, floating, sizing, group tabs, workspaces, scratchpads, hardware OSD, screenshots, recording, and app launching.
 - **🤌 Rich Touchpad Gestures**: Horizontal 4-finger workspace navigation, vertical 3-finger gesture volume and brightness control, 3-finger horizontal track skipping, and 3-finger pinch to play/pause.
+- **🌙 Native Hardware Night Light**: Direct hardware CTM (Color Transform Matrix) temperature control via `hyprsunset`.
 - **🛠️ Utility Integration**: Built-in scripts for screen recording (`wl-screenrec` / `gpu-screen-recorder`), screenshot capture (`hyprshot`), OSD notifications (`osd.sh`), cursor zoom (pure Lua), and OCR text extraction (`ocr.sh`).
 
 ---
@@ -37,22 +37,25 @@ All other shell surfaces are reached the same way (`hl.dsp.global("zenith:…")`
 ├── check.sh                  # Syntax + live checks (./check.sh --live)
 ├── hyprland.lua              # Main Lua entrypoint initializing modules and path bindings
 ├── variables.lua             # Centralized settings, application defaults & keybinding map
+├── monitors.lua              # Monitor resolution, scaling, and refresh rate definitions
+├── scheme_loader.lua         # Resilient color scheme parser and fallback handler
 ├── hyprlauncher.conf         # Configuration for Hyprlauncher app menu
 ├── hyprtoolkit.conf          # Hyprtoolkit styling parameters
+├── xdph.conf                 # XDG Desktop Portal Hyprland configuration
 │
 ├── hyprland/                 # Core Lua configuration modules
 │   ├── animations.lua        # Custom bezier curves and animation definitions
 │   ├── decoration.lua        # Rounding, blur, xray, and shadow configurations
 │   ├── env.lua               # System environment variables (Qt, GTK, Ozone, XDG)
-│   ├── execs.lua            # System autostart daemons, keyrings & window listeners
+│   ├── execs.lua             # System autostart daemons, keyrings & window listeners
 │   ├── general.lua           # Layout parameters, dwindle engine, borders & gaps
 │   ├── gestures.lua          # Multi-finger touchpad gestures and OSD handlers
-│   ├── group.lua            # Tabbed window group styling and fonts
-│   ├── input.lua            # Keyboard layout, repeat delay/rate, touchpad parameters
-│   ├── keybinds.lua          # Keybinding event handlers & dispatcher bindings
-│   ├── misc.lua             # Miscellaneous Hyprland engine settings & background color
-│   ├── rules.lua            # Window tags, floating sizes, opacity rules, layer rules
-│   └── scripts/             # Utility shell scripts
+│   ├── group.lua             # Tabbed window group styling and fonts
+│   ├── input.lua             # Keyboard layout, repeat delay/rate, touchpad parameters
+│   ├── keybinds.lua          # Dynamic multi-shell keybinding event handlers
+│   ├── misc.lua              # Miscellaneous Hyprland engine settings & background color
+│   ├── rules.lua             # Window tags, floating sizes, opacity rules, layer rules
+│   └── scripts/              # Utility shell scripts
 │       ├── launch_first_available.sh # Helper script to launch available binary
 │       ├── osd.sh            # On-screen display for Volume & Brightness
 │       ├── ocr.sh            # Select a region, copy its text (tesseract)
@@ -61,7 +64,7 @@ All other shell surfaces are reached the same way (`hl.dsp.global("zenith:…")`
 │       └── screenshot.sh     # Hyprshot screenshot helper
 │
 ├── scheme/                   # Color scheme definitions
-│   ├── current.lua           # Active color scheme palette
+│   ├── current.lua           # Active dynamic color scheme palette
 │   └── default.lua           # Default fallback color scheme palette
 │
 └── utils/                    # Utility Lua modules
@@ -161,30 +164,34 @@ All other shell surfaces are reached the same way (`hl.dsp.global("zenith:…")`
 
 ---
 
-### ⚙️ Zenith Shell Surfaces (Native Hyprland Global Shortcuts)
-| Keybinding | Action | Description |
-| :--- | :--- | :--- |
-| `Super` / `Super + D` / `Super + Space` | **App Launcher** | Toggle Zenith Dynamic Island launcher (`zenith:launcher`) |
-| `Super + A` | **Dashboard** | Toggle Zenith overview dashboard (`zenith:dashboard`) |
-| `Ctrl + Super + Q` | **Quick Settings** | Toggle quick settings drawer (`zenith:quicksettings`) |
-| `Ctrl + Super + W` | **Wi-Fi** | Toggle Wi-Fi quick settings (`zenith:wifi`) |
-| `Ctrl + Super + B` | **Bluetooth** | Toggle Bluetooth quick settings (`zenith:bluetooth`) |
-| `Ctrl + Super + S` | **Volume Slider** | Toggle audio volume panel (`zenith:volume`) |
-| `Ctrl + Super + P` | **Power Profile** | Toggle power profile selector (`zenith:powerprofile`) |
-| `Ctrl + Super + E` | **Battery Status** | Toggle battery health panel (`zenith:battery`) |
-| `Ctrl + Super + A` | **Pomodoro** | Toggle Focus/Pomodoro tab (`zenith:pomodoro`) |
-| `Ctrl + Super + O` | **Roadmap** | Toggle Roadmap planner (`zenith:roadmap`) |
-| `Ctrl + Super + M` | **Mail** | Toggle Mail inbox tab (`zenith:mail`) |
-| `Ctrl + Super + T` | **Wallpaper** | Toggle wallpaper chooser (`zenith:wallpaper`) |
-| `Super + V` | **Clipboard** | Toggle clipboard history (`zenith:clipboard`) |
-| `Super + Period (.)` | **Emoji Picker** | Toggle emoji selector (`zenith:emoji`) |
-| `Ctrl + Super + I` | **Shell Settings** | Toggle Zenith shell settings (`zenith:settings`) |
-| `Ctrl + Super + C` / `Ctrl + Escape` | **Close All** | Close any open Zenith popup or menu (`zenith:close`) |
-| `Ctrl + Alt + Delete` / `XF86PowerOff` | **Power Menu** | Open session/power menu (`zenith:power`) |
-| `Super + L` | **Lock Screen** | Native session lock (`zenith:lock`); idle-locks after 5 min |
-| `Alt + Escape` | **Reload Hyprland** | Instant Hyprland config reload |
-| `Ctrl + Super + R` | **Restart Everything** | Clean restart of Quickshell, portals, daemons & compositor reload |
-| `Super + Shift + L` | **Suspend System** | Put machine to sleep |
+### ⚙️ Multi-Shell Surfaces & Global Shortcuts (Zenith, Caelestia, End-4)
+
+Keybindings automatically dispatch to the active desktop shell (`zenith`, `caelestia`, or `end-4`):
+
+| Keybinding | Action | Zenith Shell Action | Caelestia / End-4 Action |
+| :--- | :--- | :--- | :--- |
+| `Super` / `Super + D` / `Super + Space` | **App Launcher** | `zenith:launcher` | `caelestia:launcher` / `quickshell:searchToggle` |
+| `Super + A` | **Dashboard** | `zenith:dashboard` | `caelestia:dashboard` / `quickshell:overviewWorkspacesToggle` |
+| `Ctrl + Super + Q` | **Quick Settings** | `zenith:quicksettings` | `caelestia:sidebar` |
+| `Ctrl + Super + W` | **Wi-Fi** | `zenith:wifi` | `caelestia:sidebar` (network tab) |
+| `Ctrl + Super + B` | **Bluetooth** | `zenith:bluetooth` | `caelestia:sidebar` (bluetooth tab) |
+| `Ctrl + Super + S` | **Volume Slider** | `zenith:volume` | `caelestia:sidebar` (volume panel) |
+| `Ctrl + Super + P` | **Power Profile** | `zenith:powerprofile` | `caelestia:sidebar` (power profile) |
+| `Ctrl + Super + E` | **Battery Status** | `zenith:battery` | `caelestia:sidebar` (battery health) |
+| `Ctrl + Super + A` | **Pomodoro** | `zenith:pomodoro` | `caelestia:utilities` |
+| `Ctrl + Super + O` | **Roadmap** | `zenith:roadmap` | `caelestia:utilities` |
+| `Ctrl + Super + M` | **Mail** | `zenith:mail` | `caelestia:utilities` |
+| `Ctrl + Super + T` | **Wallpaper** | `zenith:wallpaper` | `caelestia:nexus` (wallpaper) |
+| `Super + V` | **Clipboard** | `zenith:clipboard` | `caelestia clipboard` / cliphist fuzzel |
+| `Super + Period (.)` | **Emoji Picker** | `zenith:emoji` | `caelestia emoji` |
+| `Ctrl + Super + I` | **Shell Settings** | `zenith:settings` | `caelestia:nexus` |
+| `Super + Shift + P` | **Display Settings** | `zenith:display` | `caelestia:nexus` (display tab) |
+| `Ctrl + Super + C` / `Ctrl + Escape` | **Close All** | `zenith:close` | `caelestia:showall` |
+| `Ctrl + Alt + Delete` / `XF86PowerOff` | **Power Menu** | `zenith:power` | `caelestia:session` / `quickshell:sessionToggle` |
+| `Super + L` | **Lock Screen** | `zenith:lock` | `caelestia:lock` |
+| `Alt + Escape` | **Reload Hyprland** | Instant Hyprland config reload | Instant Hyprland config reload |
+| `Ctrl + Super + R` | **Restart Everything** | Clean restart of Quickshell, portals, daemons & compositor reload | Clean restart of active shell & daemons |
+| `Super + Shift + L` | **Suspend System** | Put machine to sleep | Put machine to sleep |
 
 ---
 
@@ -219,6 +226,7 @@ You can easily override options without editing core files:
 ## 📦 Required Dependencies
 
 - **WM**: `hyprland`
-- **Shell & UI**: `quickshell` (Zenith shell, which includes the lock screen), `hyprlauncher`
+- **Shell & UI**: `quickshell` (Zenith shell, which includes the lock screen), `hyprlauncher` (or `caelestia-shell` / `end4-shell`)
+- **Night Light**: `hyprsunset` (native hardware CTM temperature control)
 - **Utilities**: `hyprpicker`, `wl-clipboard`, `cliphist`, `playerctl`, `wpctl`, `brightnessctl`, `hyprshot`, `slurp`, `grim`, `tesseract`
 - **Recording**: `gpu-screen-recorder` / `wl-screenrec`
