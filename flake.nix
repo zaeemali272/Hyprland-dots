@@ -44,7 +44,7 @@
             };
             devPath = lib.mkOption {
               type = lib.types.str;
-              default = "/home/zaeem/zenith/Hyprland-dots";
+              default = "${config.home.homeDirectory}/zenith/Hyprland-dots";
               description = "Path to local Hyprland-dots repo for live reloading.";
             };
             package = lib.mkOption {

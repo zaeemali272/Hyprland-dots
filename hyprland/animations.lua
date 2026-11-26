@@ -4,11 +4,11 @@ hl.config({
     },
 })
 
--- Ultra-smooth, fast & responsive bezier curves
-hl.curve("fastDecel", { type = "bezier", points = { { 0.05, 0.9 }, { 0.1, 1.02 } } })
+-- Ultra-smooth, fast & responsive bezier curves (clamp end point to 1.0 to eliminate popin bounce hitch)
+hl.curve("fastDecel", { type = "bezier", points = { { 0.05, 0.9 }, { 0.1, 1.0 } } })
 hl.curve("fluidDecel", { type = "bezier", points = { { 0.1, 1.0 }, { 0.15, 1.0 } } })
 hl.curve("quickAccel", { type = "bezier", points = { { 0.3, 0.0 }, { 0.8, 0.15 } } })
-hl.curve("snappy", { type = "bezier", points = { { 0.2, 0.95 }, { 0.1, 1.02 } } })
+hl.curve("snappy", { type = "bezier", points = { { 0.2, 0.95 }, { 0.1, 1.0 } } })
 
 -- Fast, buttery smooth animation timings (2.0 = 200ms, 2.5 = 250ms)
 hl.animation({ leaf = "windowsIn", enabled = true, speed = 2.4, bezier = "fastDecel", style = "popin 88%" })

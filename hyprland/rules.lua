@@ -99,6 +99,8 @@ tagged_rule(opaque_tag, {
     "resolve|kdenlive|shotcut",               -- Video editors
     "blender|godot",                          -- 3D editors
     "(steam_app_(default|[0-9]+))|gamescope", -- Games
+    "[Zz]en.*|[Ff]irefox.*|[Cc]hrome.*|chromium.*|brave.*", -- Browsers
+    "vlc|mpv|totem|celluloid",                -- Media players
 }, "class")
 
 
@@ -264,15 +266,15 @@ create_tag(communication_app_tag, { workspace = "special:communication" })
 create_tag(todo_app_tag, { workspace = "special:todo" })
 
 -- Opacity mappings (Your Custom App Rules)
-hl.window_rule({ match = { tag = "browser" }, opacity = "0.99 override 0.96 override", no_blur = false, idle_inhibit = "fullscreen" })
+hl.window_rule({ match = { tag = "browser" }, opaque = true, no_blur = true, idle_inhibit = "fullscreen" })
 hl.window_rule({ match = { tag = "terminal" }, opacity = "0.85 override 0.8 override", no_blur = false })
-hl.window_rule({ match = { tag = "projects" }, opacity = "0.95 override 0.9 override", no_blur = false })
+hl.window_rule({ match = { tag = "projects" }, opacity = "0.98 override 0.95 override", no_blur = true })
 hl.window_rule({ match = { tag = "im" }, opacity = "0.95 override 0.9 override" })
-hl.window_rule({ match = { tag = "multimedia" }, opacity = "0.9 override 0.8 override" })
-hl.window_rule({ match = { tag = "player" }, opacity = "1 override 1 override", idle_inhibit = "fullscreen" })
-hl.window_rule({ match = { tag = "file_manager" }, opacity = "1 override 1 override" })
+hl.window_rule({ match = { tag = "multimedia" }, opacity = "0.95 override 0.9 override" })
+hl.window_rule({ match = { tag = "player" }, opaque = true, no_blur = true, idle_inhibit = "fullscreen" })
+hl.window_rule({ match = { tag = "file_manager" }, opaque = true, no_blur = true })
 hl.window_rule({ match = { tag = "settings" }, opacity = "0.95 override 0.9 override" })
-hl.window_rule({ match = { tag = "viewer" }, opacity = "0.95 override 0.9 override" })
+hl.window_rule({ match = { tag = "viewer" }, opaque = true, no_blur = true })
 hl.window_rule({ match = { class = "^(gedit|org.gnome.TextEditor|mousepad)$" }, opacity = "0.95 override 0.9 override" })
 
 

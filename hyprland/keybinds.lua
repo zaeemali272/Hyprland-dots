@@ -59,6 +59,7 @@ local shell_actions = {
         battery       = hl.dsp.global("zenith:battery"),
         volume        = hl.dsp.global("zenith:volume"),
         display       = hl.dsp.global("zenith:display"),
+        cheatsheet    = hl.dsp.global("zenith:cheatsheet"),
     },
     caelestia = {
         launcher      = hl.dsp.global("caelestia:launcher"),
@@ -80,6 +81,7 @@ local shell_actions = {
         battery       = hl.dsp.global("caelestia:sidebar"),
         volume        = hl.dsp.global("caelestia:sidebar"),
         display       = hl.dsp.global("caelestia:nexus"),
+        cheatsheet    = hl.dsp.global("zenith:cheatsheet"),
     },
     ["end-4"] = {
         launcher      = hl.dsp.global("quickshell:searchToggle"),
@@ -101,6 +103,7 @@ local shell_actions = {
         battery       = hl.dsp.global("quickshell:sidebarRightToggle"),
         volume        = hl.dsp.global("quickshell:sidebarRightToggle"),
         display       = hl.dsp.global("quickshell:sidebarLeftToggle"),
+        cheatsheet    = hl.dsp.global("zenith:cheatsheet"),
     }
 }
 
@@ -221,6 +224,7 @@ create_bind(vars.kbClipboard, zenith("clipboard"))
 create_bind(vars.kbEmoji, zenith("emoji"))
 create_bind(vars.kbSession, zenith("power"))
 create_bind(vars.kbShellSettings, zenith("settings"))
+create_bind(vars.kbCheatsheet, zenith("cheatsheet"))
 create_bind(vars.kbDisplay, zenith("display"), locked)
 create_bind("XF86PowerOff", zenith("power"), locked)
 create_bind("SUPER + XF86PowerOff", hl.dsp.exec_cmd("systemctl poweroff"), locked)

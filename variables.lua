@@ -12,10 +12,16 @@ return {
     fileExplorer               = "thunar",
     audioSettings              = "pavucontrol",
 
-    -- Touchpad
+    -- Keyboard Layout & Options
+    kbLayout                   = os.getenv("HYPRLAND_KB_LAYOUT") or "us",
+    kbOptions                  = os.getenv("HYPRLAND_KB_OPTIONS") or "caps:escape,grp:alt_shift_toggle",
+    kbVariant                  = os.getenv("HYPRLAND_KB_VARIANT") or "",
+
+    -- Touchpad & Mouse
     touchpadTapToClick         = true,
     touchpadDisableTyping      = true,
-    touchpadScrollFactor       = 0.3,
+    touchpadScrollFactor       = 1.0,
+    mouseScrollFactor          = 1.0,
     gestureFingers             = 3,
     workspaceSwipeFingers      = 4,
     gestureFingersMore         = 4,
@@ -165,4 +171,5 @@ return {
     kbDisplay                  = { "SUPER + P", "XF86Display", "code:246" },
     kbClipboard                = "SUPER + V",
     kbEmoji                    = "SUPER + Period",
+    kbCheatsheet               = { "SUPER + slash", "SUPER + question", "SUPER + F1" },
 }

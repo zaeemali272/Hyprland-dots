@@ -22,6 +22,11 @@ hl.env("XDG_CURRENT_DESKTOP", "Hyprland")
 hl.env("XDG_SESSION_TYPE", "wayland")
 hl.env("XDG_SESSION_DESKTOP", "Hyprland")
 
+-- Hardware Video Decoding & Acceleration (Intel Iris Xe)
+hl.env("LIBVA_DRIVER_NAME", "iHD")
+hl.env("VDPAU_DRIVER", "va_gl")
+hl.env("MESA_LOADER_DRIVER_OVERRIDE", "iris")
+
 -- Others
 hl.env("_JAVA_AWT_WM_NONREPARENTING", "1")
 

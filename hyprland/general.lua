@@ -33,7 +33,8 @@ hl.config({
     },
 
     render = {
-        direct_scanout = 0,
+        direct_scanout        = 2, -- Auto direct scanout for fullscreen apps/video (zero latency, saves battery)
+        new_render_scheduling = true, -- Reduces frame pacing jitter on integrated Intel GPU
     },
 })
 
