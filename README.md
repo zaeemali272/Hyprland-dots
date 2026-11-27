@@ -1,5 +1,9 @@
 # 🌌 Hyprland Configuration System
 
+> [!NOTE]
+> **This repository has been unified into [zenith](https://github.com/zaeemali272/zenith)** (in the `dots/hypr/` directory).
+> All future development, issues, and updates take place in the unified [zenith](https://github.com/zaeemali272/zenith) repository.
+
 A modern, highly modular, Lua-powered **Hyprland** desktop configuration environment built for Wayland. It seamlessly integrates custom window rules, dynamic Material You design schemes, touchpad gesture controls, smooth bezier animations, OSD overlays, and unified multi-shell UI support across **Zenith Shell**, **Caelestia**, and **End-4**.
 
 ---
