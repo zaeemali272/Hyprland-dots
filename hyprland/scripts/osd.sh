@@ -18,7 +18,16 @@ send_notify() {
 
 case "$ACTION" in
 brightness)
-    STEP=2
+    STEP=5
+    # Find sysfs backlight path if available
+    SYSFS_BACKLIGHT=""
+    for b in /sys/class/backlight/*; do
+        if [ -d "$b" ]; then
+            SYSFS_BACKLIGHT="$b"
+            break
+        fi
+    done
+
     # Target display backlight class explicitly if available, otherwise default device
     DEV_FLAG=""
     if brightnessctl -c backlight info >/dev/null 2>&1; then
@@ -27,27 +36,54 @@ brightness)
 
     CUR_RAW=$(brightnessctl $DEV_FLAG get 2>/dev/null || echo 0)
     MAX=$(brightnessctl $DEV_FLAG max 2>/dev/null || echo 100)
-    if (( MAX <= 0 )); then MAX=100; fi
+    if (( MAX <= 0 )); then
+        if [ -n "$SYSFS_BACKLIGHT" ] && [ -r "$SYSFS_BACKLIGHT/max_brightness" ]; then
+            MAX=$(cat "$SYSFS_BACKLIGHT/max_brightness")
+        else
+            MAX=100
+        fi
+    fi
 
     CUR=$(( (CUR_RAW * 100 + MAX / 2) / MAX ))
 
     case "$DIR" in
         up)
+            NEW_PERC=$(( CUR + STEP ))
+            if (( NEW_PERC > 100 )); then NEW_PERC=100; fi
             if (( CUR == 0 && CUR_RAW == 0 )); then
                 brightnessctl $DEV_FLAG set 1% >/dev/null 2>&1 || true
             fi
-            brightnessctl $DEV_FLAG set "+${STEP}%" >/dev/null 2>&1 || true
+            if ! brightnessctl $DEV_FLAG set "+${STEP}%" >/dev/null 2>&1; then
+                if [ -n "$SYSFS_BACKLIGHT" ] && [ -w "$SYSFS_BACKLIGHT/brightness" ]; then
+                    NEW_RAW=$(( (NEW_PERC * MAX) / 100 ))
+                    echo "$NEW_RAW" > "$SYSFS_BACKLIGHT/brightness" 2>/dev/null || true
+                fi
+            fi
             ;;
         down)
+            NEW_PERC=$(( CUR - STEP ))
+            if (( NEW_PERC < 1 )); then NEW_PERC=1; fi
             if (( CUR <= STEP )); then
-                brightnessctl $DEV_FLAG set 0% >/dev/null 2>&1 || true
+                if ! brightnessctl $DEV_FLAG set 0% >/dev/null 2>&1; then
+                    if [ -n "$SYSFS_BACKLIGHT" ] && [ -w "$SYSFS_BACKLIGHT/brightness" ]; then
+                        echo 1 > "$SYSFS_BACKLIGHT/brightness" 2>/dev/null || true
+                    fi
+                fi
             else
-                brightnessctl $DEV_FLAG set "${STEP}%-" >/dev/null 2>&1 || true
+                if ! brightnessctl $DEV_FLAG set "${STEP}%-" >/dev/null 2>&1; then
+                    if [ -n "$SYSFS_BACKLIGHT" ] && [ -w "$SYSFS_BACKLIGHT/brightness" ]; then
+                        NEW_RAW=$(( (NEW_PERC * MAX) / 100 ))
+                        echo "$NEW_RAW" > "$SYSFS_BACKLIGHT/brightness" 2>/dev/null || true
+                    fi
+                fi
             fi
             ;;
     esac
 
     CUR_RAW=$(brightnessctl $DEV_FLAG get 2>/dev/null || echo 0)
+    if [ -n "$SYSFS_BACKLIGHT" ] && [ -r "$SYSFS_BACKLIGHT/actual_brightness" ]; then
+        CUR_RAW=$(cat "$SYSFS_BACKLIGHT/actual_brightness" 2>/dev/null || echo "$CUR_RAW")
+    fi
     CUR=$(( (CUR_RAW * 100 + MAX / 2) / MAX ))
 
     if (( CUR <= 33 )); then
